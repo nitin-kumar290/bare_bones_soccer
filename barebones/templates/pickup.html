@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Pickup Events{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="text-center">Pickup Soccer Schedule</h1>
+    <div id="calendar"></div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth', // Monthly view
+            events: '/get-events/', // URL to fetch events
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay',
+            },
+            eventClick: function (info) {
+                alert('Event: ' + info.event.title);
+            },
+        });
+        calendar.render();
+    });
+</script>
+{% endblock %}

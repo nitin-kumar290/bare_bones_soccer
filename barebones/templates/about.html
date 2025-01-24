@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}About{% endblock %}
+
+{% block content %}
+<div class="bg-light text-black py-5">
+    <div class="container text-center">
+        <h1>About Bare Bones Soccer</h1>
+        <p class="lead">Embarking on a mission to elevate the soccer community in the Greater Denver area, our goal is to establish ourselves as the ultimate destination for soccer enthusiasts. We envision becoming the go-to spot for engaging soccer gatherings and delightful, social games. Through strategic partnerships and collaborations with local soccer initiatives, we're committed to unifying the Denver soccer scene, fostering a sense of community and creating lasting connections on and off the field. Join us in shaping a more collective and vibrant soccer experience in Denver!</p>
+    </div>
+</div>
+<div class="container my-5">
+    <div class="row align-items-center">
+        <div class="col-md-6">
+            <h2>Who are we?</h2>
+            <p>Bare Bones Soccer Collective is a community-driven soccer organization based in the Greater Denver Area. Committed to fostering a love for the sport, the collective organizes free pick-up soccer games and social events. With a focus on inclusivity and building connections within the community, Bare Bones Soccer Collective creates a welcoming space for soccer enthusiasts of all skill levels to come together, play and enjoy the beautiful game in a friendly & social environment.</p>
+        </div>
+        <div class="col-md-6">
+            <img src="{% static 'images/BareBones4.jpg' %}" class="img-fluid rounded" alt="Our Mission">
+        </div>
+    </div>
+</div>
+<div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-inner">
+        <div class="carousel-item active">
+            <img class="d-block w-100" src="{% static 'images/bb2.jpg' %}" class="d-block w-60 img-fluid" alt="First slide">
+        </div>
+        <div class="carousel-item">
+            <img class="d-block w-100" src="{% static 'images/bb1.jpg' %}" class="d-block w-60 img-fluid" alt="Second slide">
+        </div>
+        <div class="carousel-item">
+            <img class="d-block w-100" src="{% static 'images/BareBones3.jpg' %}" class="d-block w-60 img-fluid" alt="Third slide">
+        </div>
+        <div class="carousel-item">
+            <img class="d-block w-100" src="{% static 'images/BareBones1.jpg' %}" class="d-block w-60 img-fluid" alt="4th slide">
+        </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>
+{% endblock %}
