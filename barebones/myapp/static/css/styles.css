@@ -46,12 +46,15 @@ body, html {
 /* Navbar */
 .navbar-nav {
     margin: 0 auto;
+    justify-content: center; /* Centers the navigation links */
+
 }
 
 .nav-link {
     font-size: 1.1rem;
     text-transform: uppercase;
     letter-spacing: 0.05rem;
+    margin: 0 10px; /* Adds spacing between links */
 }
 
 /* Footer */
@@ -61,6 +64,16 @@ footer {
     text-align: center;
 }
 
+.navbar-brand {
+    font-size: 1.75rem; /* Make the brand title larger */
+    font-weight: bold;
+    color: #000; /* Ensure it stands out */
+    text-transform: uppercase;
+}
+
+.navbar-nav.ms-auto {
+    justify-content: flex-end; /* Aligns user options to the right */
+}
 /* Responsive Adjustments */
 @media (max-width: 768px) {
     .title-section h1 {
@@ -73,5 +86,11 @@ footer {
 
     .hero-section {
         height: 40vh; /* Adjust height for smaller screens */
+    }
+    .navbar-brand {
+        font-size: 1.5rem;
+    }
+    .nav-link {
+        font-size: 0.9rem;
     }
 }
