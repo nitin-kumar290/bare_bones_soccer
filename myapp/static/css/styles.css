@@ -10,18 +10,38 @@ body, html {
 /* Hero Section */
 .hero-section {
     position: relative;
-    height: 100vh; /* Adjust height as needed */
-    overflow: hidden;
+    width: 100%;
+    height: 100vh; /* Fullscreen */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start; /* Align content to the top */
+    padding-top: 80px; /* Push hero title down below navbar */
 }
 
-.hero-section img {
-    width: 100vw; /* Full viewport width */
-    height: 100%; /* Full height of the section */
-    object-fit: cover; /* Ensures the image scales without distortion */
-    display: block; /* Prevents inline element spacing issues */
-    margin: 0; /* Removes any margin that might be applied */
+.hero-content {
+    margin-top: 100px; /* Adjust space below navbar */
 }
 
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3); /* Subtle Dark Overlay */
+}
+
+.hero-title {
+    font-size: 48px;
+    color: white;
+    font-weight: bold;
+}
+
+.hero-subtitle {
+    font-size: 20px;
+    color: white;
+}
 /* Title Section */
 .title-section {
     text-align: center;
@@ -95,6 +115,52 @@ footer {
     padding: 50px 0;
     text-align: center;
 }
+
+/* .custom-navbar {
+    position: absolute;
+    width: 100%;
+    background: transparent !important; 
+    box-shadow: none; 
+    z-index: 1000;
+    transition: background 0.3s ease-in-out;
+} */
+.custom-navbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: transparent !important; /* No white background */
+    z-index: 1000; /* Ensures navbar stays visible */
+    padding: 15px 0;
+}
+
+
+.custom-navbar .navbar-brand img {
+    height: 70px;
+}
+
+
+.custom-navbar .nav-link {
+    color: white !important;
+    font-weight: bold;
+    transition: color 0.3s ease-in-out;
+}
+
+.custom-navbar .nav-link:hover {
+    color: #FFD700 !important; /* Gold Hover */
+}
+
+/* Prevent White Background */
+.fixed-top {
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+/* Make Navbar Solid on Scroll */
+.navbar-scrolled {
+    background: rgba(0, 0, 0, 0.8) !important;
+}
+
 /* Responsive Adjustments */
 @media (max-width: 768px) {
     .title-section h1 {
