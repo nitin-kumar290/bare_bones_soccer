@@ -10,7 +10,11 @@ body, html {
 /* Hero Section */
 .hero-section {
     position: relative;
-    height: 100vh; /* Adjust height as needed */
+    width: 100%;
+    height: 100vh; /* Fullscreen */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     overflow: hidden;
 }
 
@@ -20,6 +24,17 @@ body, html {
     object-fit: cover; /* Ensures the image scales without distortion */
     display: block; /* Prevents inline element spacing issues */
     margin: 0; /* Removes any margin that might be applied */
+}
+
+.hero-title {
+    font-size: 48px;
+    color: white;
+    font-weight: bold;
+}
+
+.hero-subtitle {
+    font-size: 20px;
+    color: white;
 }
 
 /* Title Section */
@@ -68,6 +83,16 @@ body, html {
     text-transform: uppercase;
     letter-spacing: 0.05rem;
     margin: 0 10px; /* Adds spacing between links */
+}
+
+.custom-navbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: transparent !important; /* No background */
+    z-index: 1000; /* Ensure it's above other elements */
+    padding: 15px 0;
 }
 
 /* Footer */
