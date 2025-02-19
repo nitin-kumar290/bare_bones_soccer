@@ -1,21 +1,23 @@
-# Use an AWS Lambda-compatible base image for Python
-FROM public.ecr.aws/lambda/python:3.9
+# Use an official Python runtime as a parent image
+FROM python:3.9-slim
+# Set the working directory in the container
+WORKDIR /app
 
-# Set the working directory inside the container
-WORKDIR /var/task
-
-# Copy the requirements.txt file and install dependencies
+# Install dependencies
 COPY requirements.txt .
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the Django app code into the container
+# Copy the project files
 COPY . .
 
+
 # Set environment variables for Django
-ENV DJANGO_SETTINGS_MODULE=myproject.settings
+ENV DJANGO_SETTINGS_MODULE=barebones.settings
+ENV PYTHONUNBUFFERED=1
 
-# Collect static files (uncomment this if running collectstatic inside the container)
-# RUN python manage.py collectstatic --noinput
+# Expose the port App Runner expects (default is 8080)
+EXPOSE 8080
 
-# Command to start the Django app with Lambda handler
-CMD ["barebones.wsgi.application"]
+# Run the WSGI server
+CMD ["gunicorn", "barebones.wsgi:application", "--bind", "0.0.0.0:8080", "--workers", "3", "--timeout", "120"]
+#["gunicorn", "--bind", "0.0.0.0:8080", "barebones.wsgi:application"]

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Home Page{% endblock %}
+
+{% block content %}
+
+<div class="container my-5 text-center">
+    <div class="row align-items-center">
+        <div class="col-md-6">
+            <img src="{% static 'images/home_action.jpg' %}" class="img-fluid rounded" alt="Our Mission">
+        </div>
+        <div class="col-md-6">
+            <h2>About Bare Bones Soccer</h2>
+            <p>Embarking on a mission to elevate the soccer community in the Greater Denver area, our goal is to establish ourselves as the ultimate destination for soccer enthusiasts. We envision becoming the go-to spot for engaging soccer gatherings and delightful, social games. Through strategic partnerships and collaborations with local soccer initiatives, we're committed to unifying the Denver soccer scene, fostering a sense of community and creating lasting connections on and off the field. Join us in shaping a more collective and vibrant soccer experience in Denver!</p>
+        </div>
+    </div>
+</div>
+<div class="container my-5 text-center">
+    <div class="row align-items-center">
+        <div class="col-md-6">
+            <h2>Who are we?</h2>
+            <p>Bare Bones Soccer Collective is a community-driven soccer organization based in the Greater Denver Area. Committed to fostering a love for the sport, the collective organizes free pick-up soccer games and social events. With a focus on inclusivity and building connections within the community, Bare Bones Soccer Collective creates a welcoming space for soccer enthusiasts of all skill levels to come together, play and enjoy the beautiful game in a friendly & social environment.</p>
+        </div>
+        <div class="col-md-6">
+            <img src="{% static 'images/home_2.jpg' %}" class="img-fluid rounded" alt="Our Mission">
+        </div>
+    </div>
+</div>
+{% endblock %}
