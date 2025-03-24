@@ -1,0 +1,252 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Sport Stable Registration{% endblock %}
+
+{% block content %}
+<div class="registration-container">
+  <div class="registration-header">
+      <h2>Register for the Sport Stable Series</h2>
+      <p class="subtitle">Join us for exciting soccer matches and be part of our community</p>
+  </div>
+
+  {% if messages %}
+      {% for message in messages %}
+          <div class="alert alert-info fade-in">{{ message }}</div>
+      {% endfor %}
+  {% endif %}
+
+  <form method="POST" novalidate class="registration-form">
+      {% csrf_token %}
+      
+      <div class="form-section personal-info">
+          <h3>Personal Information</h3>
+          <div class="form-group">
+              {{ form.full_name.label_tag }}
+              {{ form.full_name }}
+          </div>
+          <div class="form-group">
+              {{ form.email.label_tag }}
+              {{ form.email }}
+          </div>
+          <div class="form-row">
+              <div class="form-group col-md-6">
+                  {{ form.phone.label_tag }}
+                  {{ form.phone }}
+              </div>
+              <div class="form-group col-md-6">
+                  {{ form.dob.label_tag }}
+                  {{ form.dob }}
+              </div>
+          </div>
+      </div>
+
+      <div class="form-section emergency-info">
+          <h3>Emergency Contact</h3>
+          <div class="form-group">
+              {{ form.emergency_contact_name.label_tag }}
+              {{ form.emergency_contact_name }}
+          </div>
+          <div class="form-group">
+              {{ form.emergency_contact_phone.label_tag }}
+              {{ form.emergency_contact_phone }}
+          </div>
+      </div>
+
+      <div class="form-section waiver-section">
+          <h3>Waiver & Release of Liability</h3>
+          <div class="waiver-container">
+              <p class="waiver-text">
+                In consideration of being allowed to participate in any soccer games, tournaments, or events organized by Bare Bones Soccer Collective LLC ("Bare Bones Soccer"), including but not limited to those held at various locations, fields, or venues during the calendar year 2025, I, the undersigned, voluntarily agree to the following waiver and release of liability:
+
+                Release of Liability:
+                
+                I, for myself, my heirs, personal representatives, or assigns, do hereby release, waive, discharge, and covenant not to sue Bare Bones Soccer Collective LLC, its officers, employees, agents, affiliates, sponsors, volunteers, and all other businesses, venues, locations, or entities used by Bare Bones Soccer Collective LLC (collectively, the "Released Parties"), including but not limited to any fields, facilities, or establishments where events, games, practices, or related activities take place, whether on or off the premises of Bare Bones Soccer Collective LLC, including any third-party partners, hosts, or event locations. This release applies to any and all liability, claims, demands, actions, and causes of action whatsoever arising out of or related to any loss, damage, or injury, including death, that may be sustained by me, or to any property belonging to me, whether caused by the negligence of the Released Parties or otherwise, while participating in the soccer games or in any activities related to the soccer games during the year 2025.
+                
+                Assumption of Risk:
+                
+                I am fully aware of the risks involved and hazards connected with participating in the soccer games, including but not limited to physical injury, death, and property damage. I hereby elect to voluntarily participate in the soccer games, knowing that the activity may be hazardous to me and my property. I voluntarily assume full responsibility for any risks of loss, property damage, or personal injury, including death, that may be sustained by me as a result of being engaged in such activities, whether caused by the negligence of the Released Parties or otherwise.
+                
+                Indemnification:
+                
+                I agree to indemnify and hold harmless the Released Parties from any loss, liability, damage, or costs, including court costs and attorney fees, that they may incur due to my participation in the soccer games, whether caused by the negligence of the Released Parties or otherwise.
+                
+                I agree that I am at least 18 years old.
+                
+                Medical Treatment:
+                
+                I hereby consent to receive medical treatment that may be deemed advisable in the event of injury, accident, and/or illness during the soccer games.
+                
+                Governing Law:
+                
+                This waiver and release shall be governed by and construed in accordance with the laws of the State of Colorado.
+              </p>
+          </div>
+          <div class="form-group waiver-agreement">
+              <label class="form-check">
+                  {{ form.agree_to_waiver }}
+                  <span class="agreement-text">By checking here, you are consenting to the use of your electronic signature in lieu of an original signature on paper. You have the right to request that you sign a paper copy instead. By checking here, you are waiving that right. After consent, you may, upon written request to us, obtain a paper copy of an electronic record. No fee will be charged for such copy and no special hardware or software is required to view it. Your agreement to use an electronic signature with us for any documents will continue until such time as you notify us in writing that you no longer wish to use an electronic signature. There is no penalty for withdrawing your consent. You should always make sure that we have a current email address in order to contact you regarding any changes, if necessary.</span>
+              </label>
+          </div>
+      </div>
+
+      <div class="form-section signature-section">
+          <h3>Electronic Signature</h3>
+          <div class="form-group">
+              {{ form.electronic_signature.label_tag }}
+              {{ form.electronic_signature }}
+              <p class="signature-hint">Type your full legal name to sign</p>
+          </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary submit-btn">Complete Registration</button>
+  </form>
+</div>
+
+<style>
+  .registration-container {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+  }
+
+  .registration-header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+  }
+
+  .registration-header h2 {
+      color: #2c3e50;
+      font-size: 2.2rem;
+      margin-bottom: 0.5rem;
+  }
+
+  .subtitle {
+      color: #666;
+      font-size: 1.1rem;
+  }
+
+  .form-section {
+      background: #f8f9fa;
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+  }
+
+  .form-section h3 {
+      color: #2c3e50;
+      font-size: 1.4rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid #e9ecef;
+  }
+
+  .form-group {
+      margin-bottom: 1.2rem;
+  }
+
+  .form-group label {
+      font-weight: 500;
+      color: #495057;
+      margin-bottom: 0.5rem;
+      display: block;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="date"] {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ced4da;
+      border-radius: 4px;
+      transition: border-color 0.15s ease-in-out;
+  }
+
+  input[type="text"]:focus,
+  input[type="email"]:focus,
+  input[type="tel"]:focus,
+  input[type="date"]:focus {
+      border-color: #80bdff;
+      outline: 0;
+      box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+  }
+
+  .waiver-container {
+      max-height: 300px;
+      overflow-y: auto;
+      padding: 1rem;
+      background: #ffffff;
+      border: 1px solid #dee2e6;
+      border-radius: 4px;
+      margin-bottom: 1rem;
+  }
+
+  .waiver-text {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: #495057;
+  }
+
+  .waiver-agreement {
+      display: flex;
+      align-items: center;
+      margin-top: 1rem;
+  }
+
+  .agreement-text {
+      margin-left: 0.5rem;
+      font-size: 0.9rem;
+  }
+
+  .signature-hint {
+      font-size: 0.85rem;
+      color: #6c757d;
+      margin-top: 0.5rem;
+  }
+
+  .submit-btn {
+      width: 100%;
+      padding: 1rem;
+      font-size: 1.1rem;
+      font-weight: 500;
+      margin-top: 1.5rem;
+      background-color: #007bff;
+      border: none;
+      transition: background-color 0.2s ease;
+  }
+
+  .submit-btn:hover {
+      background-color: #0056b3;
+  }
+
+  .alert {
+      animation: fadeIn 0.5s;
+  }
+
+  @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+      .registration-container {
+          padding: 1rem;
+          margin: 1rem;
+      }
+
+      .form-section {
+          padding: 1rem;
+      }
+  }
+</style>
+    <!-- <form method="POST" novalidate>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Submit Registration</button>
+    </form> -->
+{% endblock %}

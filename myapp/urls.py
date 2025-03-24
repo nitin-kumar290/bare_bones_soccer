@@ -15,11 +15,13 @@ urlpatterns = [
     path('login/', views.user_login, name='login'),
     path('logout/', views.user_logout, name='logout'),
     path('pickup/', views.pickup, name='pickup'),
+    path('series/', views.series, name='series'),
     path('get-events/', views.get_events, name='get_events'),
     path('events/', views.events, name='events'),
     path('events/<int:event_id>/', views.event_detail, name='event_detail'),
     path("api/get_presigned_url/", views.get_presigned_url, name="get_presigned_url"),
     path('privacypolicy/', views.privacypolicy, name='privacypolicy'),
     path('datadeletion/', views.datadeletion, name='datadeletion'),
+    path('sports-stable-register', views.sports_stable_register, name='sports_stable_register')
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

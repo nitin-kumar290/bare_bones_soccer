@@ -1,7 +1,7 @@
 import boto3
 import uuid
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import PersonForm, UserRegistrationForm, UserLoginForm
+from .forms import PersonForm, UserRegistrationForm, UserLoginForm, SportsStableForm
 from .models import Person, Pickup, Event, EventImage
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -51,6 +51,9 @@ def contact(request):
 
 def pickup(request):
     return render(request, 'pickup.html')
+
+def series(request):
+    return render(request, 'series.html')
 
 def pickup_temp(request):
     return render(request, 'pickup-temp.html')
@@ -146,3 +149,15 @@ def get_presigned_url(request):
         "fields": response["fields"],
         "object_key": object_key
     })
+
+def sports_stable_register(request):
+    if request.method == 'POST':
+        form = SportsStableForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "You have successfully registered for the Sport Stable Series!")
+            return redirect('series')  # or wherever you want to redirect
+    else:
+        form = SportsStableForm()
+
+    return render(request, 'sports_stable_register.html', {'form': form})

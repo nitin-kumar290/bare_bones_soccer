@@ -73,21 +73,15 @@ body, html {
     justify-content: flex-end;
 }
 
-/* Custom Navbar Toggle Button */
 .navbar-toggler {
-    background-color: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(4px);
-    border-radius: 8px;
-    transition: all 0.3s ease;
+    border: none;
+    outline: none;
 }
 
-.navbar-toggler:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-    transform: translateY(-1px);
-}
-
-.navbar-toggler:active {
-    transform: translateY(1px);
+.navbar-toggler-icon {
+    background-color: white;
+    border-radius: 3px;
+    padding: 5px;
 }
 
 /* .navbar-nav .nav-link {
@@ -101,7 +95,7 @@ body, html {
 } */
 
 .navbar-nav .nav-link {
-    /* font-size: 0.95rem; */
+    font-size: 0.95rem;
     text-transform: uppercase;
     font-weight: bold;
     padding: 8px 18px;
@@ -186,6 +180,7 @@ footer {
 .full-width-banner {
     width: 100vw;
     max-width: 100%;
+    padding: 50px 0;
     text-align: center;
 }
 

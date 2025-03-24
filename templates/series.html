@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Series Events{% endblock %}
+{% block hero_background %}{% static 'images/BareBones1.jpg' %}{% endblock %}
+
+{% block content %}
+<!-- <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap" rel="stylesheet"> -->
+
+
+<div style="background-color: #ffffff;" class="text-black pt-5 full-width-banner text-center">
+    <h1 style="font-family: 'Oswald', sans-serif;">BARE BONES SOCIAL SERIES</h1>
+</div>
+<div class="container my-3 px-5">
+    <div class="bg-white text-dark py-3 text-center">
+        <h2 style="font-family: 'Oswald', sans-serif;">The Sport Stable Series</h2>
+        <h6>Wednesday Nights at Sport Stable Boulder County</h6>
+        <p class="py-2" style="font-family: 'Bebas Neue Pro'">Let's run it. Fast-paced small-sided soccer on the pickleball courts, every Wednesday night at Blue Sport Stable. Our inaugural weekly Bare Bones Social Series—where footwork meets good vibes, and the post-game hangs are just as important as the match. "King of the court" style. No team registration, just free-flowing play, music, and a community that's here to grow the game. Show up, show out, and be part of something fresh. Sponsored by Salt Athletic.
+        </p>
+    </div>
+</div>
+<div class="container w-75">
+    <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img class="d-block w-100" src="{% static 'images/bb2.jpg' %}" class="d-block w-60 img-fluid rounded" alt="First slide">
+            </div>
+            <div class="carousel-item">
+                <img class="d-block w-100" src="{% static 'images/bb1.jpg' %}" class="d-block w-60 img-fluid rounded" alt="Second slide">
+            </div>
+            <div class="carousel-item">
+                <img class="d-block w-100" src="{% static 'images/BareBones3.jpg' %}" class="d-block w-60 img-fluid rounded" alt="Third slide">
+            </div>
+            <div class="carousel-item">
+                <img class="d-block w-100" src="{% static 'images/BareBones1.jpg' %}" class="d-block w-60 img-fluid rounded" alt="4th slide">
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+</div>
+<section class="text-center py-">
+    <!-- Title -->
+<div class="container py-3">
+    <h2 class="fw-bold text-uppercase">Join the Community</h2>
+
+    <!-- Actions -->
+    <div class="d-flex justify-content-center gap-4 my-3">
+        <span class="fw-bold text-uppercase">Follow</span>
+        <span class="fw-bold text-uppercase">Sign Up</span>
+        <span class="fw-bold text-uppercase">Show Up</span>
+    </div>
+</div>
+    <!-- Sign-Up Button -->
+    <a href="{% url 'sports_stable_register' %}" style="text-decoration: none;">
+        <button class="btn btn-outline-dark btn-lg text-uppercase fw-bold px-4 py-2">Sign Up To Play</button>
+    </a>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+  
+    <!-- Social Icons -->
+    <div class="d-flex justify-content-center gap-4 fs-3 py-2">
+        <a href="https://www.instagram.com/barebonessoccer/" class="text-dark"><i class="fab fa-instagram"></i></a>
+        <a href="#" class="text-dark"><i class="fas fa-envelope"></i></a>
+        <a href="#" class="text-dark"><i class="fab fa-tiktok"></i></a>
+    </div>
+
+    <!-- Handle -->
+    <a href="https://www.instagram.com/barebonessoccer/" class="text-dark">
+        <p class="fs-3">@BAREBONESSOCCER</p>
+    </a>
+</section>
+{% endblock %}

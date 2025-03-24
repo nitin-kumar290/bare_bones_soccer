@@ -5,33 +5,7 @@ import boto3
 import uuid
 
 
-# # Initialize DynamoDB client
-# dynamodb = boto3.resource(
-#     'dynamodb',
-#     region_name='us-east-2',  # Change to your AWS region
-#     aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-#     aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
-# )
 
-# TABLE_NAME = 'ContactFormSubmissions'
-# table = dynamodb.Table(TABLE_NAME)
-
-# def save_contact_form(name, email, message):
-#     """Save a contact form submission to DynamoDB."""
-#     table.put_item(
-#         Item={
-#             'id': str(uuid.uuid4()),  # Generate a unique ID
-#             'name': name,
-#             'email': email,
-#             'message': message,
-#         }
-#     )
-
-
-# def get_contact_submissions():
-#     """Retrieve all contact form submissions."""
-#     response = table.scan()
-#     return response.get('Items', [])
 
 # Create your models here.
 class Person(models.Model):
@@ -81,3 +55,19 @@ class EventImage(models.Model):
 
     def __str__(self):
         return f"Image for {self.event.title}"
+    
+
+class SportsStable(models.Model):
+    """Stores registration details for the Sport Stable Series."""
+    full_name = models.CharField(max_length=100)
+    email = models.EmailField()
+    phone = models.CharField(max_length=20, blank=True, null=True)
+    emergency_contact_name = models.CharField(max_length=100)
+    emergency_contact_phone = models.CharField(max_length=20)
+    dob = models.DateField(verbose_name="Date of Birth")
+    electronic_signature = models.CharField(max_length=100)
+    agree_to_waiver = models.BooleanField(default=False)
+    registered_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.full_name} - {self.email}"
