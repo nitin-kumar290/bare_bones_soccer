@@ -1,0 +1,404 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Bare Bones Soccer | Pickup Soccer Community in Denver Colorado | futbol | football | Pickup Soccer{% endblock %}
+{% block hero_background %}{% static 'images/banner_small.png' %}{% endblock %}
+{% if messages %}
+{% for message in messages %}
+    <div class="alert alert-info fade-in text-center fw-bold">{{ message }}</div>
+{% endfor %}
+{% endif %}
+
+
+{% block content %}
+<div class="container mt-4 py-2">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class=" mb-1">
+                <h4 class="text-uppercase">
+                    Denver Social Soccer Games & Events 
+                </h4>
+                <h5 class="text-uppercase">
+                    By Soccer People, For Soccer People.
+                </h5>
+                <!-- <div class="border-bottom border-dark w-50 mx-auto mb-4"></div>
+                <p class="lead text-muted">
+                    Join our community of soccer enthusiasts and experience the beautiful game together.
+                </p> -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .hero-text {
+        padding: 2rem;
+    }
+
+    .hero-text h2 {
+        letter-spacing: 1px;
+        line-height: 1.4;
+        color: #212529;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .hero-text h2 {
+            font-size: 1.8rem;
+        }
+        
+        .hero-text {
+            padding: 1rem;
+        }
+    }
+</style>
+
+
+<section class="container-fluid py-1 pb-1">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6">
+        <div class="px-4 py-2 text-center">
+          <!-- Title -->
+          <div class="container text-center">
+            <div class="row justify-content-center">
+              <div class="d-flex gap-4 flex-wrap justify-content-center">
+                <a href="{% url 'series_catalog' %}" class="text-decoration-none">
+                  <button class="btn btn-outline-dark btn-lg text-uppercase hover-effect">
+                    Log in!
+                  </button>
+                </a>
+                <a href="{% url 'register' %}" class="text-decoration-none">
+                  <button class="btn btn-outline-dark btn-lg text-uppercase hover-effect">
+                    Register!
+                  </button>
+                </a>
+              </div>
+            </div>
+          </div>
+          
+          <style>
+            .hover-effect {
+              transition: all 0.3s ease;
+              border: 2px solid #212529;
+              position: relative;
+              overflow: hidden;
+              z-index: 1;
+            }
+          
+            .hover-effect:hover {
+              color: #fff;
+              background-color: #212529;
+              transform: translateY(-2px);
+              box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            }
+          
+            .btn {
+              padding: 12px 24px;
+              font-weight: 600;
+              letter-spacing: 1px;
+            }
+          
+            @media (max-width: 576px) {
+              .d-flex {
+                gap: 2rem !important;
+              }
+              
+              .btn {
+                width: 100%;
+                min-width: 200px;
+              }
+            }
+          </style>
+          
+  
+        
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+<div class="container my-3">
+    <div class="video-container">
+        <video 
+            width="100%" 
+            autoplay 
+            muted 
+            loop 
+            playsinline
+            preload="metadata"
+            class="promo-video">
+            <source src="{% static 'videos/home_page_video_large.webm' %}" type="video/webm">
+            <source src="{% static 'videos/home_page_video_large.mp4' %}" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+</div>
+
+<style>
+.video-container {
+    max-width: 650px;
+    height: 450px;
+    margin: 0 auto;
+    /* border-radius: 8px; */
+    overflow: hidden;
+    /* box-shadow: 0 4px 12px rgba(0,0,0,0.1); */
+}
+
+.promo-video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+}
+
+@media (max-width: 768px) {
+    .video-container {
+        max-width: 100%;
+        height: 400px;
+        margin: 0 15px;
+    }
+}
+@media (max-width: 768px) {
+    h2 {
+        font-size: 1.2rem !important;
+    }
+}
+</style>
+    
+
+
+<div class="container my-5 text-center bg-light">
+    <div class="row align-items-center min-vh-75">
+
+        <div class="col-md-6">
+            <div class="container py-3">
+                <img src="{% static 'images/social_series_home.jpg' %}" class="d-block w-100" alt="social series" style="border-radius: 16px;">
+            </div>
+        </div>
+
+
+        <div class="col-md-6">
+            <a href="{% url 'series' %}" class="text-black text-decoration-none"> 
+                <h2>Bare Bones Social Series</h2>
+            </a>
+            <p style="font-size: 0.75rem;">
+                The Bare Bones Social Series is pickup soccer where you can find the most electric soccer games around. All over Denver Colorado, we take over local venues and turn them into high-energy, small-sided soccer spaces/courts.
+            </p>
+            <a href="{% url 'series' %}" class="d-inline-block mb-4">
+                <button class="btn btn-outline-dark btn-sm fw-bold px-4 py-2 text-uppercase">Go to Series Page!</button>
+            </a>
+        </div>
+    </div>
+</div> 
+
+
+<div class="container my-5 text-center bg-light">
+    <div class="row align-items-center min-vh-75">
+
+        <div class="col-md-6 order-md-1 order-2">
+            <a href="{% url 'events' %}" class="text-black text-decoration-none"> 
+                <h2>Denver Soccer Events</h2>
+            </a>
+            <p style="font-size: 0.75rem;">
+                Play  Compete  Connect.
+            </p>
+            <p style="font-size: 0.75rem;">
+                From brewery takeovers to unique soccer experiences, we're always cooking up something fresh for the community.
+            </p>
+            <a href="{% url 'events' %}" class="d-inline-block mb-4">
+                <button class="btn btn-outline-dark btn-sm fw-bold px-4 py-2 text-uppercase">View events</button>
+            </a>
+        </div>
+
+        <div class="col-md-6 order-md-2 order-1">
+            <div class="container py-3">
+                <img src="{% static 'images/homepage_event.jpg' %}" class="d-block w-100" alt="social series" style="border-radius: 16px;">
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<!-- Events Preview Section -->
+<!-- <div class="container my-5 text-center">
+    <div class="row align-items-center">
+        <div class="col-md-6">
+            <a href="{% url 'events' %}" class="text-black">
+            <h2 class="text-uppercase">Events</h2>
+            </a>
+            <p>
+                Don't miss out on our special events all over Colorado but especially in the Denver Metro! From brewery takeovers to unique soccer experiences, 
+                we're always cooking up something fresh for the community.
+            </p>
+        </div>
+        <div class="col-md-6">
+                <div class="card border-secondary">
+                    <div class="card-body">
+                        <h5 class="card-title text-danger text-uppercase">🔥 Latest Event 🔥</h5>
+                        <h6 class="card-subtitle mb-2">Bare Bones Soccer x Waldschänke Ciders & Coffee</h6>
+                        <p class="card-text small">
+                            🍂⚽🍺 FREE parking lot pickup soccer with cider & schnitzel at Waldschänke Ciders & Coffee in Denver, CO. Oct 8th 2025
+                        </p>
+                        <a href="{% url 'events' %}" class="d-inline-block mb-4 ">
+
+                            <button class="btn btn-outline-dark btn-sm fw-bold px-4 py-2 text-uppercase">Go to Events Page!</button>
+                        </a>
+                    </div>
+                </div>
+        </div>
+    </div>
+</div> -->
+
+
+
+<div class="container text-center my-5">
+    <!-- <h2>Check Out Our YouTube Videos</h2> -->
+    <!-- Example embedded YouTube video -->
+    <div class="ratio ratio-16x9 mb-4">
+        <iframe 
+            src="https://www.youtube.com/embed/qyyGGtUoNRQ" 
+            title="YouTube video" 
+            allowfullscreen>
+        </iframe>
+    </div>
+
+    <!-- Another embedded video if you want multiple -->
+
+</div>
+
+<div class="container py-1">
+        <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-container">
+                <div class="carousel-inner">
+                    <div class="carousel-item active">  
+                        <img src="{% static 'images/489221048_949641437033845_6252523822237616012_n.jpg' %}" class="d-block w-100 carousel-img" alt="First slide, Denver Colorado Soccer Pickup">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="{% static 'images/some_event.jpg' %}" class="d-block w-100 carousel-img" alt="Second slide, Denver Colorado Soccer Pickup">
+                    </div>
+
+                    <div class="carousel-item">
+                        <img src="{% static 'images/488016068_1365411657914623_2491638863870245456_n.jpg' %}" class="d-block w-100 carousel-img" alt="Fourth slide, Denver Colorado Soccer Pickup">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="{% static 'images/IMG_2174.jpeg' %}" class="d-block w-100 carousel-img" alt="Fifth slide">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="{% static 'images/Banshee-House-1.jpeg' %}" class="d-block w-100 carousel-img" alt="Fifth slide">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="{% static 'images/home5.jpeg' %}" class="d-block w-100 carousel-img" alt="Fifth slide">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="{% static 'images/home4.jpeg' %}" class="d-block w-100 carousel-img" alt="Fifth slide">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="{% static 'images/488253623_1776453376245237_796594212133818981_n.jpg' %}" class="d-block w-100 carousel-img" alt="Fifth slide">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="{% static 'images/_DM49770.jpg' %}" class="d-block w-100 carousel-img" alt="Fifth slide">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="{% static 'images/BareBones (18 of 44).jpg' %}" class="d-block w-100 carousel-img" alt="Fifth slide">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="{% static 'images/488997303_1666963414182691_3369790350962877917_n.jpg' %}" class="d-block w-100 carousel-img" alt="Fifth slide">
+                    </div>
+                    
+                    
+
+
+
+
+                </div>
+            </div>
+            <!-- <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button> -->
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon bg-dark rounded-circle p-3" aria-hidden="true"></span>
+                <span class="d-none">Previous</span>  <!-- Using d-none instead of visually-hidden -->
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                <span class="carousel-control-next-icon bg-dark rounded-circle p-3" aria-hidden="true"></span>
+                <span class="d-none">Next</span>  <!-- Using d-none instead of visually-hidden -->
+            </button>
+
+        </div>
+    </div>
+
+<style>
+.carousel-container {
+    position: relative;
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    /* background-color: #f8f8f8; */
+    overflow: hidden;
+    min-height: 700px
+}
+
+.carousel-container::before {
+    content: "";
+    display: block;
+    padding-top: 75%; /* 16:9 Aspect Ratio */
+}
+
+.carousel-inner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.carousel-item {
+    position: relative;
+    height: 100%;
+}
+
+.carousel-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    /* background-color: #f8f8f8; */
+}
+
+/* .carousel-control-prev,
+.carousel-control-next {
+    background-color: rgba(255, 254, 254, 0.897);
+    width: 5%;
+} */
+
+@media (max-width: 768px) {
+    .carousel-container {
+        max-width: 100%;
+    }
+}
+</style>
+
+<div class="container-fluid text-center py-2">
+    <div class="row justify-content-center">
+        <div class="">
+            <img src="{% static 'images/bb_logo_purple.png' %}" 
+                 class="img-fluid rounded"
+                 style="max-width: 250px;" 
+                 alt="Bare Bones Soccer Logo, Denver Colorado Soccer Pickup">
+                
+                 
+        </div>
+
+    </div>
+</div>
+{% endblock %}

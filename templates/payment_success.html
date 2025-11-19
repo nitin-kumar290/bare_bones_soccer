@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Reservation Successful!{% endblock %}
+
+{% block content %}
+{% if messages %}
+{% for message in messages %}
+    <div class="alert alert-info fade-in text-center fw-bold">{{ message }}</div>
+{% endfor %}
+{% endif %}
+<div class="container text-center my-5">
+    <h2 class="text-success">You're All Set to Play! ✅</h2>
+    <!-- <p class="lead">Thank you for your payment. You've been registered for the selected week. See you on the pitch!</p> -->
+{% if dates %}
+        <div class="alert alert-success">
+            <!-- <h4>Payment Successful!</h4> -->
+            <p>You've successfully registered for the following dates:</p>
+            <ul>
+                {% for date in dates %}
+                    <li class="mb-2">{{ date }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+{% endif %}
+    <a href="{% url 'schedule' %}" class="btn btn-outline-primary mt-4">Back to Schedule</a>
+    <p class="card-text">You will be redirected to the login page in <span id="countdown">20</span> seconds...</p>
+</div>
+
+<script>
+    // Countdown timer
+    let timeLeft = 20;
+    const countdownElement = document.getElementById('countdown');
+    
+    const timer = setInterval(() => {
+        timeLeft--;
+        countdownElement.textContent = timeLeft;
+        
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            window.location.href = "{% url 'schedule' %}";
+        }
+    }, 1000);
+</script>
+<script>
+  if (window.history.replaceState) {
+    window.history.replaceState(null, null, window.location.href);
+  }
+</script>
+
+
+{% endblock %}

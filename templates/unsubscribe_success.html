@@ -1,0 +1,12 @@
+<!-- unsubscribe_success.html -->
+{% extends "base.html" %}
+{% block title %}Unsubscribe Successful{% endblock %}
+
+{% block content %}
+<div class="container mt-5 text-center">
+  <h1 class="mb-4">Unsubscribe Successful</h1>
+  <p>You have been successfully unsubscribed from our email list.</p>
+  <p>We're sorry to see you go. If you change your mind, Vist the <a href="{% url 'contact' %}">contact us page</a>.</p>
+  <a href="{% url 'home' %}" class="btn btn-outline-primary mt-3">Return to Home</a>
+</div>
+{% endblock %}

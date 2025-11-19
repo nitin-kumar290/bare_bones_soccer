@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Pickup Soccer Games | Denver Colorado Soccer pickup | football community{% endblock %}
+{% block hero_background %}{% static 'images/bb3.jpg' %}{% endblock %}
+
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+
+<div class="text-dark py-5 text-center bg-light">
+    <h1>Pickup Soccer</h1>
+    <p class="lead">Free pick up soccer organzied by Bare Bones Soccer!</p>
+</div>
+
+
+<div class="container my-1">
+    <div class="bg-white text-dark pt-3 text-center">
+        <h2>Coed Pickup</h2>
+        <h4>Every Saturday Morning 9:30 am</h4>
+        <h5>Broomfield Commons, Broomfield</h5>
+    </div>
+    <div class="row align-items-center">
+        <div class="text-center" >
+
+            <!-- Map container -->
+            <div class="container mt-3 py-2">
+                <div class="container">
+                    <!-- <p >Where it all started. Bare Bones' longest-running pickup, repping the community and keeping the game strong week after week. Whether you're a day-one player or new to the crew, come see what makes this spot special.
+                    </p> -->
+                </div>
+                <div class="container w-100 w-md-75 w-lg-75 py-2" style="max-width: 800px;">
+                    <img src="{% static 'images/Pick-Up Broomfield Commons.png' %}" class="img-fluid rounded w-100" alt="Our Mission, Denver Colorado Soccer Pickup">
+                <div class="pt-3">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d6118.557462178891!2d-105.05218335224714!3d39.9351545360843!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x876b8a8bd3e121bd%3A0x5436ec899e53b9d3!2sBroomfield%20Commons%20Sports%20Fields!5e0!3m2!1sen!2sus!4v1738967561268!5m2!1sen!2sus" width="250" height="150" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container w-100 w-md-75 w-lg-50 py-2" style="max-width: 600px;">
+    <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img class="d-block w-100" src="{% static 'images/pickup2.jpg' %}" class="d-block w-60 img-fluid rounded" alt="First slide, Denver Colorado Soccer Pickup">
+            </div>
+            <div class="carousel-item">
+                <img class="d-block w-100" src="{% static 'images/pickup1.jpg' %}" class="d-block w-60 img-fluid rounded" alt="Second slide,Denver Colorado Soccer Pickup">
+            </div>
+            <div class="carousel-item">
+                <img class="d-block w-100" src="{% static 'images/events_page3.jpg' %}" class="d-block w-60 img-fluid rounded" alt="Second slide,Denver Colorado Soccer Pickup">
+            </div>
+            <div class="carousel-item">
+                <img class="d-block w-100" src="{% static 'images/pickup3.jpeg' %}" class="d-block w-60 img-fluid rounded" alt="Second slide, Denver Colorado Soccer Pickup">
+            </div>
+            <div class="carousel-item">
+                <img class="d-block w-100" src="{% static 'images/pickup4.jpeg' %}" class="d-block w-60 img-fluid rounded" alt="Second slide">
+            </div>
+            <div class="carousel-item">
+                <img class="d-block w-100" src="{% static 'images/pickup5.jpeg' %}" class="d-block w-60 img-fluid rounded" alt="Second slide">
+            </div>
+            <div class="carousel-item">
+                <img class="d-block w-100" src="{% static 'images/pickup6.jpeg' %}" class="d-block w-60 img-fluid rounded" alt="Second slide">
+            </div>
+            <div class="carousel-item">
+                <img class="d-block w-100" src="{% static 'images/pickup7.jpeg' %}" class="d-block w-60 img-fluid rounded" alt="Second slide">
+            </div>
+            <div class="carousel-item">
+                <img class="d-block w-100" src="{% static 'images/events_page2.jpg' %}" class="d-block w-60 img-fluid rounded" alt="Second slide">
+            </div>
+            <div class="carousel-item">
+                <img class="d-block w-100" src="{% static 'images/events_page1.jpg' %}" class="d-block w-60 img-fluid rounded" alt="Third slide">
+            </div>
+            <div class="carousel-item">
+                <img class="d-block w-100" src="{% static 'images/BareBones1.jpg' %}" class="d-block w-60 img-fluid rounded" alt="4th slide">
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+</div>
+<!-- <hr class="my-2 border-secondary opacity-50 border-2 py-4"> -->
+
+
+{% endblock %}

@@ -1,0 +1,373 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Barebones Soccer Events - Denver & Colorado pickup Soccer Events{% endblock %}
+
+{% block content %}
+{% if messages %}
+{% for message in messages %}
+    <div class="alert alert-info fade-in text-center fw-bold">{{ message }}</div>
+{% endfor %}
+{% endif %}
+<div class="container my-1 px-5">
+    <div class="bg-white text-dark pt-3 text-center">
+        <h1 class="text-center" style="font-size:16px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color: #dc3545;">
+            🔥 UPCOMING EVENT 🔥
+        </h1>
+        <h2 style="font-family: 'Oswald', sans-serif; font-size: 1.5rem;">BARE BONES SOCCER WAREHOUSE PARTY</h2>
+        <h6>Thursday, Nov 20th 2025 | 6:30-9:30 PM</h6>
+        <h6>The Brighton</h6>
+        <h6>3403 Brighton Blvd, Denver, Colorado</h6>
+
+        <!-- <p class="py-2" style="font-family: 'Bebas Neue Pro'; font-size: 16px;">
+            Rapids vs. Dynamo
+        </p> -->
+         <p style="font-family: 'Oswald'; font-size: 14px; font-style: italic;">
+            FREE Pickup Soccer, 4 courts, Prizes + Food & Drinks 
+        </p> 
+    </div>
+</div>
+
+<!-- RSVP Box -->
+<div class="container my-1">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-secondary">
+                <div class="card-body text-center">
+                    <h5 class="card-title text-danger">RSVP NOW!</h5>
+                    <form method="post" action="{% url 'event_rsvp' %}">
+                        {% csrf_token %}
+                        <div class="input-group mb-3">
+                            <input type="email" name="email" class="form-control" placeholder="Enter your email" required>
+                            <button class="btn btn-secondary" type="submit">RSVP</button>
+                        </div>
+                    </form>
+                    <p class="card-text" style="font-family: 'Bebas Neue Pro'; font-size: 14px;">
+                        *Must have Bare Bones Soccer account to play* <br>
+                        Create Account <a href="{% url 'register' %}" style="font-style: italic;">HERE</a> if you don't have one.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container my-3">
+    <div class="video-container">
+        <div class="video-wrapper">
+            <video 
+                id="customVideo"
+                width="100%" 
+                loop 
+                playsinline
+                preload="metadata"
+                class="promo-video">
+                <source src="{% static 'videos/brighton_event_vid.webm' %}" type="video/webm">
+                <source src="{% static 'videos/brighton_event_vid.mp4' %}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <div class="play-button-overlay" id="playButton">
+                <div class="play-button">▶</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.video-container {
+    max-width: 650px;
+    height: 450px;
+    margin: 0 auto;
+    /* border-radius: 8px; */
+    overflow: hidden;
+    /* box-shadow: 0 4px 12px rgba(0,0,0,0.1); */
+}
+
+.video-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.promo-video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+}
+
+.play-button-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.3);
+    cursor: pointer;
+}
+
+.play-button {
+    width: 80px;
+    height: 80px;
+    background: rgba(255,255,255,0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    color: #333;
+    transition: transform 0.2s;
+}
+
+.play-button:hover {
+    transform: scale(1.1);
+}
+
+.play-button-overlay.hidden {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .video-container {
+        max-width: 100%;
+        height: 400px;
+        margin: 0 15px;
+    }
+    
+    .play-button {
+        width: 60px;
+        height: 60px;
+        font-size: 24px;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const video = document.getElementById('customVideo');
+    const playButton = document.getElementById('playButton');
+    
+    playButton.addEventListener('click', function() {
+        video.play();
+        playButton.classList.add('hidden');
+    });
+    
+    video.addEventListener('pause', function() {
+        playButton.classList.remove('hidden');
+    });
+});
+</script>
+
+
+<!-- <div class="container my-3">
+    <div class="video-container">
+        <video 
+            width="100%" 
+            controls 
+            loop 
+            playsinline
+            preload="metadata"
+            class="promo-video">
+            <source src="{% static 'videos/brighton_event_vid.webm' %}" type="video/webm">
+            <source src="{% static 'videos/brighton_event_vid.mp4' %}" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+</div>
+
+<style>
+.video-container {
+    max-width: 650px;
+    height: 450px;
+    margin: 0 auto;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.promo-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+@media (max-width: 768px) {
+    .video-container {
+        max-width: 100%;
+        height: 400px;
+        margin: 0 15px;
+    }
+}
+@media (max-width: 768px) {
+    h2 {
+        font-size: 1.2rem !important;
+    }
+}
+</style> -->
+
+
+
+
+<!-- Image gallery -->
+<!-- <div class="image-gallery py-2 pb-5">
+    <div class="row g-1">
+        <div class="col-4">
+            <img src="{% static 'images/cidery_event2.jpeg' %}" class="gallery-img" alt="pickup soccer at Waldschänke Ciders & Coffee denver colorado">
+        </div>
+        <div class="col-4">
+            <img src="{% static 'images/cidery_middle.jpg' %}" class="gallery-img" alt="pickup soccer at Waldschänke Ciders & Coffee denver colorado">
+        </div>
+        <div class="col-4">
+            <img src="{% static 'images/cidery_event.jpeg' %}" class="gallery-img" alt="pickup soccer at Waldschänke Ciders & Coffee denver colorado">
+        </div>
+    </div>
+</div>
+
+<style>
+.image-gallery {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.gallery-img {
+    width: 100%;
+    aspect-ratio: 4 / 5;   /* makes frame taller */
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    border-radius: 6px;    /* optional: soft corners */
+}
+
+@media (min-width: 768px) {
+    .image-gallery {
+        max-width: 80%;
+    }
+    .gallery-img {
+        aspect-ratio: 3 / 4;  /* a bit wider for tablets */
+    }
+}
+
+@media (min-width: 992px) {
+    .image-gallery {
+        max-width: 90%;
+    }
+    .gallery-img {
+        aspect-ratio: 16 / 20;  /* taller on desktop */
+    }
+}
+</style> -->
+
+<!-- <div class="image-gallery py-2 pb-5">
+    <div class="row g-1">
+        <div class="col-4">
+            <img src="{% static 'images/cidery_event2.jpeg' %}" class="gallery-img" alt="Sport Stable 1">
+        </div>
+        <div class="col-4">
+            <img src="{% static 'images/cidery_middle.jpg' %}" class="gallery-img" alt="Sport Stable 2">
+        </div>
+        <div class="col-4">
+            <img src="{% static 'images/cidery_event.jpeg' %}" class="gallery-img" alt="Sport Stable 3">
+        </div>
+    </div>
+</div>
+
+<style>
+.image-gallery {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.gallery-img {
+    width: 100%;
+    height: 160px;
+    max-height: 160px;
+    object-fit: cover;
+    object-position: center;
+    /* aspect-ratio: 4/3;
+    object-fit: contain; */
+}
+
+@media (min-width: 768px) {
+    .image-gallery {
+        max-width: 80%;
+    }
+    .gallery-img {
+        height: 240px;
+        max-height: 240px;
+    }
+}
+
+@media (min-width: 992px) {
+    .image-gallery {
+        max-width: 90%;
+    }
+    .gallery-img {
+        height: 300px;
+        max-height: 300px;
+    }
+}
+</style> -->
+
+
+<hr class="my-2 border-secondary opacity-50 border-2 py-4">
+
+<!-- NEWS grid -->
+<div class="container my-2" style="max-width:1240px;">
+  <h1 class="text-center" style="font-size:16px; font-weight:700; letter-spacing:3px; text-transform:uppercase;">
+    News
+  </h1>
+
+  <!-- 1 column on phones, 2 on tablets, 4 on desktops -->
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-5" style="margin:0;">
+    {% for event in events %}
+    <div class="col" style="display:flex;">
+      <a href="{{ event.get_absolute_url }}" class="news-card" style="display:block; width:100%; text-decoration:none; color:#111;">
+        <!-- Image wrapper -->
+        <div style="position:relative; overflow:hidden; background:#f3f3f3;">
+          <!-- Use aspect-ratio to keep the same feel (roughly 4:3 like the reference) -->
+          <img src="{{ event.image.url }}"
+               alt="{{ event.title }}"
+               style="display:block; width:100%; aspect-ratio: 4 / 3; object-fit:cover; transition:transform .35s ease; will-change:transform;">
+        </div>
+
+        <!-- Caption -->
+        <div style="text-align:center; margin-top:16px;">
+          <div style="font-size:12px; line-height:1.6; letter-spacing:1.5px; text-transform:uppercase;">
+            {{ event.title }}
+          </div>
+          <div style="font-size:8px; line-height:1.6; letter-spacing:1.5px; text-transform:uppercase;">
+            
+          </div>
+        </div>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Tiny bit of CSS for the hover zoom (kept inline in this file) -->
+<style>
+  .news-card:hover img { transform: scale(1.03); }
+</style>
+
+<!-- <div class="container my-5">
+    <h1 class="text-center mb-4">Our Events</h1>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for event in events %}
+        <div class="col">
+            <div class="card h-100">
+                <img src="{{ event.image.url }}" class="card-img-top" alt="{{ event.title }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ event.title }}</h5>
+                    <p class="card-text">{{ event.description|truncatewords:15 }}</p>
+                    <a href="{{ event.get_absolute_url }}" class="btn btn-primary">View Details</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div> -->
+{% endblock %}

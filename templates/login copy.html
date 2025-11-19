@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Login{% endblock %}
+{% block hero_background %}{% static 'images/login_banner.jpeg' %}{% endblock %}
+
+{% block content %}
+
+{% if messages %}
+{% for message in messages %}
+    <div class="alert alert-info fade-in text-center fw-bold">{{ message }}</div>
+{% endfor %}
+{% endif %}
+<div class="text-center mt-3">
+    <p class="mb-0"><strong>
+        Don't have an account? 
+        <a href="{% url 'register' %}" class="text-decoration-none">
+            Register now
+        </a>
+    </strong>
+    </p>
+</div>
+<div class="container my-5">
+    <h1 class="text-center">Login</h1>
+    <form method="POST" class="mt-4">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary w-100">Login</button>
+    </form>
+
+</div>
+{% endblock %}

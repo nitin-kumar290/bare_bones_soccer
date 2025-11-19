@@ -1,0 +1,42 @@
+{# username_reset.html #}
+{% extends "base.html" %}
+{% block title %}Forgot Username{% endblock %}
+
+{% block content %}
+<div class="container mt-5" style="max-width: 480px;">
+  <h1 class="mb-4 text-center">Forgot Username</h1>
+  <p>Enter the email address associated with your account. We'll send you an email containing your username.</p>
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {{ form.email.label_tag }}
+    {{ form.email }}
+    {% if form.email.errors %}
+      <div class="text-danger">{{ form.email.errors.0 }}</div>
+    {% endif %}
+    <button type="submit" id="submitBtn" class="btn btn-primary mt-3 w-100" >
+      <span id="submitLabel">Send me my username</span>
+      <span id="submitSpinner" class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
+    </button>
+  </form>
+</div>
+
+<script>
+  // Prevent form resubmission on page refresh
+  if (window.history.replaceState) {
+    window.history.replaceState(null, null, window.location.href);
+  }
+
+  // Handle form submission with loading state
+  document.querySelector('form').addEventListener('submit', function() {
+    const btn = document.getElementById('submitBtn');
+    const label = document.getElementById('submitLabel');
+    const spin = document.getElementById('submitSpinner');
+
+    // Disable UI
+    btn.disabled = true;
+    label.textContent = 'Processing…';
+    spin.classList.remove('d-none');
+  });
+</script>
+
+{% endblock %}

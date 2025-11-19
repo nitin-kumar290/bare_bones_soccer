@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Sport Stable Registration{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="mb-4">Register for the Sport Stable Series</h2>
+
+    <!-- Display success/error messages -->
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-info">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="POST" novalidate>
+      {% csrf_token %}
+      
+      {{ form.full_name.label_tag }} {{ form.full_name }}
+      {{ form.email.label_tag }} {{ form.email }}
+      {{ form.phone.label_tag }} {{ form.phone }}
+      {{ form.dob.label_tag }} {{ form.dob }}
+
+      <h4>Emergency Contact Information</h4>
+      {{ form.emergency_contact_name.label_tag }} {{ form.emergency_contact_name }}
+      {{ form.emergency_contact_phone.label_tag }} {{ form.emergency_contact_phone }}
+
+      <h4>Waiver & Release of Liability</h4>
+      <p class="waiver-text">
+        In consideration of being allowed to participate in any soccer games, tournaments, or events organized by Bare Bones Soccer Collective LLC ("Bare Bones Soccer"), including but not limited to those held at various locations, fields, or venues during the calendar year 2025, I, the undersigned, voluntarily agree to the following waiver and release of liability:
+
+        Release of Liability:
+        
+        I, for myself, my heirs, personal representatives, or assigns, do hereby release, waive, discharge, and covenant not to sue Bare Bones Soccer Collective LLC, its officers, employees, agents, affiliates, sponsors, volunteers, and all other businesses, venues, locations, or entities used by Bare Bones Soccer Collective LLC (collectively, the "Released Parties"), including but not limited to any fields, facilities, or establishments where events, games, practices, or related activities take place, whether on or off the premises of Bare Bones Soccer Collective LLC, including any third-party partners, hosts, or event locations. This release applies to any and all liability, claims, demands, actions, and causes of action whatsoever arising out of or related to any loss, damage, or injury, including death, that may be sustained by me, or to any property belonging to me, whether caused by the negligence of the Released Parties or otherwise, while participating in the soccer games or in any activities related to the soccer games during the year 2025.
+        
+        Assumption of Risk:
+        
+        I am fully aware of the risks involved and hazards connected with participating in the soccer games, including but not limited to physical injury, death, and property damage. I hereby elect to voluntarily participate in the soccer games, knowing that the activity may be hazardous to me and my property. I voluntarily assume full responsibility for any risks of loss, property damage, or personal injury, including death, that may be sustained by me as a result of being engaged in such activities, whether caused by the negligence of the Released Parties or otherwise.
+        
+        Indemnification:
+        
+        I agree to indemnify and hold harmless the Released Parties from any loss, liability, damage, or costs, including court costs and attorney fees, that they may incur due to my participation in the soccer games, whether caused by the negligence of the Released Parties or otherwise.
+        
+        I agree that I am at least 18 years old.
+        
+        Medical Treatment:
+        
+        I hereby consent to receive medical treatment that may be deemed advisable in the event of injury, accident, and/or illness during the soccer games.
+        
+        Governing Law:
+        
+        This waiver and release shall be governed by and construed in accordance with the laws of the State of Colorado.
+        
+        
+      </p>
+      <label class="form-check">
+          {{ form.agree_to_waiver }}
+          <span>By checking here, you are consenting to the use of your electronic signature in lieu of an original signature on paper. You have the right to request that you sign a paper copy instead. By checking here, you are waiving that right. After consent, you may, upon written request to us, obtain a paper copy of an electronic record. No fee will be charged for such copy and no special hardware or software is required to view it. Your agreement to use an electronic signature with us for any documents will continue until such time as you notify us in writing that you no longer wish to use an electronic signature. There is no penalty for withdrawing your consent. You should always make sure that we have a current email address in order to contact you regarding any changes, if necessary.</span>
+      </label>
+
+      <h4>Electronic Signature</h4>
+      {{ form.electronic_signature.label_tag }} {{ form.electronic_signature }}
+      <p>By typing your name, you are providing an electronic signature.</p>
+
+      <button type="submit" class="btn btn-primary mt-3">Submit Registration</button>
+  </form>
+</div>
+
+<style>
+  .waiver-text {
+      border: 1px solid #ccc;
+      padding: 15px;
+      max-height: 300px;
+      overflow-y: scroll;
+      background-color: #f8f9fa;
+  }
+</style>
+    <!-- <form method="POST" novalidate>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Submit Registration</button>
+    </form> -->
+{% endblock %}

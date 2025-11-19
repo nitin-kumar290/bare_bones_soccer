@@ -1,0 +1,263 @@
+{% extends "base.html" %}
+{% block title %}Schdule Sport Stable{% endblock %}
+
+
+{% load static %}
+
+{% block hero_background %}{% static 'images/banner_schedule.jpeg' %}{% endblock %}
+
+{% block content %}
+{% csrf_token %}
+
+<div class="container mt-5">
+    <h1 class="text-center text-uppercase">Reserve Your spot for the Sport Stable Series</h1>
+    <p class="text-center text-muted">
+        Select one or multiple games!<br/>
+        Paid dates appear in green.
+        Checkout and pay at the bottom of the page.
+    </p>
+
+    <!-- Where the date cards go -->
+    <div id="gameList" class="row row-cols-1 row-cols-md-2 g-4"></div>
+
+    <!-- Where chosen (unpaid) dates show up -->
+    <div class="mt-4">
+        <h5>Selected Dates:</h5>
+        <ul id="selectedDatesList" class="list-unstyled"></ul>
+    </div>
+
+    <!-- Payment Buttons -->
+    <div class="d-flex flex-column flex-md-row gap-2 mt-3">
+        <button class="btn btn-primary flex-fill" onclick="handleSelectedCheckout()">
+            Pay For Selected Dates
+        </button>
+        <!-- <button class="btn btn-danger flex-fill" onclick="handleLumpSumCheckout()">
+            Pay $70 For All
+        </button> -->
+    </div>
+</div>
+
+<!-- 1) Load Stripe externally. -->
+<script src="https://js.stripe.com/v3/"></script>
+<!-- 2) Then your inline script. -->
+<script>
+ const stripe = Stripe("pk_live_51Qe6VrKKPDelkA7OgycGGoqfOS3cfz4k6KQ53R2LvHJann8fxkRLFX2XF7CwBxqLOc8WfXpv3lLurLmh0og9TUlX00VSXk1ZM7");
+//  const stripe = Stripe("pk_test_51Qe6VrKKPDelkA7OOVE8XKi1D7SS3dprsHi201IIHQJFaJzUHqUgWjjaVGQUcprHjkb4DHHYpnSADtTtVrctr4rW00uBtvrMnm");
+ const csrftoken = "{{ csrf_token }}"; 
+
+
+  // Paid date strings from the server
+  const paidWeeks = JSON.parse('{{ paid_weeks_list|default:"[]"|safe }}');
+  // Make a Set for quick membership checks
+  const paidSet = new Set(paidWeeks);
+
+  // Store user’s newly selected dates for purchase
+  const selectedDates = new Set();
+
+  // Example: generate next 10 Mondays
+//   function generateUpcomingMondays(count = 10) {
+//       const dates = [];
+//       let current = new Date();
+//       // Start from tomorrow to avoid including "today" if it's Monday
+//       current.setDate(current.getDate() + 1);
+
+//       while (dates.length < count) {
+//           if (current.getDay() === 1) {
+//               const display = current.toLocaleDateString("en-US", {
+//                   weekday: "long",
+//                   month: "long",
+//                   day: "numeric",
+//                   year: "numeric",
+//               });
+//               const yyyyMmDd = current.toISOString().split("T")[0];
+//               dates.push({ date: yyyyMmDd, display });
+//           }
+//           current.setDate(current.getDate() + 1);
+//       }
+//       return dates;
+//   }
+
+function generateMondaysFromApril21ToEndOfNov2025() {
+    const startDate = new Date(2025, 3, 28);  // 3 => April (0-based index)
+    const endDate = new Date(2025, 10, 30);   // 10 => November 30 (0-based index => 10=November)
+
+    const dates = [];
+    let current = new Date(startDate);
+
+    // Loop until current > endDate
+    while (current <= endDate) {
+        // If it's a Monday (getDay() === 1)
+        if (current.getDay() === 1) {
+            const display = current.toLocaleDateString("en-US", {
+                weekday: "long",
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+            });
+            const yyyyMmDd = current.toISOString().split("T")[0];
+            dates.push({ date: yyyyMmDd, display });
+        }
+        // Move forward one day
+        current.setDate(current.getDate() + 1);
+    }
+
+    return dates;
+}
+
+
+  // Insert the cards
+  const gameDates = generateMondaysFromApril21ToEndOfNov2025();
+  const gameList = document.getElementById("gameList");
+
+  gameDates.forEach(({ date, display }, index) => {
+      const isPaid = paidSet.has(date);
+      const isFirstGame = index === 0;
+      const cardCol = document.createElement("div");
+      cardCol.classList.add("col");
+
+      cardCol.innerHTML = `
+        <div 
+          class="card shadow p-3 h-100 game-card ${isPaid ? 'paid-card' : isFirstGame ? 'free-game-card' : 'not-selected-card'}"
+          id="card-${date}"
+          data-date="${date}"
+          data-isPaid="${isPaid}"
+          data-isFirstGame="${isFirstGame}"
+          onclick="toggleCard('${date}')"
+        >
+            <div class="card-body d-flex flex-column justify-content-between">
+                <div>
+                    <h5 class="card-title text-center"><strong>${display}</strong></h5>
+                    <p class="card-text text-center">Blue Sport Stable</p>
+                    <p class="card-text text-center">1 Superior Dr, Superior, CO 80027</p>
+                    <p class="card-text text-center">5:30 pm - 8:00 pm</p>
+                    <p class="card-text text-center">${isFirstGame ? '' : '$5 Per Game'}</p>
+                </div>
+                <div class="mt-2 text-center">
+                    ${
+                      isPaid 
+                        ? '<p class="text-success my-2">Already Paid</p>'
+                        : isFirstGame
+                        ? '<p class="text-alert my-2 fw-bold text-uppercase">First Game FREE</p>'
+                        : ''
+                    }
+                </div>
+            </div>
+        </div>
+      `;
+      gameList.appendChild(cardCol);
+  });
+
+  function toggleCard(dateVal) {
+      const cardEl = document.getElementById(`card-${dateVal}`);
+      const isPaid = (cardEl.dataset.ispaid === 'true');
+      const isFirstGame = (cardEl.dataset.isfirstgame === 'true');
+
+      if (isPaid) {
+          alert("You have already paid for this date.");
+          return;
+      }
+      if (isFirstGame) {
+        alert("This is a free introduction game! No payment required.");
+        return;
+    }
+      if (selectedDates.has(dateVal)) {
+          selectedDates.delete(dateVal);
+          cardEl.classList.remove('selected-card');
+          cardEl.classList.add('not-selected-card');
+      } else {
+          selectedDates.add(dateVal);
+          cardEl.classList.remove('not-selected-card');
+          cardEl.classList.add('selected-card');
+      }
+      refreshSelectedList();
+  }
+
+  function refreshSelectedList() {
+      const listEl = document.getElementById("selectedDatesList");
+      listEl.innerHTML = "";
+      if (selectedDates.size === 0) {
+          listEl.innerHTML = "<li class='text-muted'>No dates selected.</li>";
+      } else {
+          selectedDates.forEach(d => {
+              const li = document.createElement("li");
+              li.textContent = d;
+              listEl.appendChild(li);
+          });
+      }
+  }
+
+  async function handleSelectedCheckout() {
+      if (selectedDates.size === 0) {
+          alert("Please select at least one date that is not paid.");
+          return;
+      }
+      const selectedArray = Array.from(selectedDates);
+      const response = await fetch("/api/create-multi-checkout-session", {
+          method: "POST",
+          headers: { 
+              "Content-Type": "application/json",
+              "X-CSRFToken": csrftoken
+          },
+          body: JSON.stringify({
+              lumpsum: false,
+              dates: selectedArray
+          })
+      });
+      const session = await response.json();
+      if (!session.id) {
+          alert("Error creating checkout session.");
+          return;
+      }
+      await stripe.redirectToCheckout({ sessionId: session.id });
+  }
+
+//   async function handleLumpSumCheckout() {
+//       const response = await fetch("/api/create-multi-checkout-session", {
+//           method: "POST",
+//           headers: { 
+//               "Content-Type": "application/json",
+//               "X-CSRFToken": csrftoken
+//           },
+//           body: JSON.stringify({ lumpsum: true })
+//       });
+//       const session = await response.json();
+//       if (!session.id) {
+//           alert("Error creating lumpsum checkout session.");
+//           return;
+//       }
+//       await stripe.redirectToCheckout({ sessionId: session.id });
+//   }
+
+  // initialize
+  refreshSelectedList();
+</script>
+
+<style>
+  .paid-card {
+      background-color: #d4edda; /* Light green for paid */
+      border: 2px solid #155724; /* Darker green border */
+      color: #155724;
+      cursor: not-allowed;
+  }
+  .selected-card {
+      background-color: #cce5ff; /* Light blue highlight */
+      border: 2px solid #004085;
+      color: #004085;
+  }
+  .not-selected-card {
+      background-color: #ffffff;
+      border: 1px solid #ccc;
+      color: #333;
+      cursor: pointer;
+  }
+  .game-card:hover {
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  }
+  .free-game-card {
+    background-color: #d4edda; /* Light yellow for free game */
+    border: 2px solid #155724; /* Darker yellow border */
+    color: #155724;
+    cursor: not-allowed;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}Series Catalog{% endblock %}
+
+
+{% load static %}
+
+{% block hero_background %}{% static 'images/catalog_banner.jpeg' %}{% endblock %}
+
+{% block content %}
+{% csrf_token %}
+
+{% if messages %}
+{% for message in messages %}
+    <div class="alert alert-info fade-in text-center fw-bold">{{ message }}</div>
+{% endfor %}
+{% endif %}
+
+<div class="container py-5">
+    <!-- Header Section -->
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold">Available Series</h1>
+        <p class="lead text-muted">Select a series to view schedule and register for games</p>
+        <p>FIRST SESSION IS <strong>FREE</strong>!</p>
+        <!-- <p class="text-center text-uppercase fw-bold"><em>FREE First Game April 28th!</em></p> -->
+
+    </div>
+
+    <!-- Series Cards Container -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <!-- Sports Stable Card -->
+        <div class="col">
+            <a href="{% url 'schedule' %}" class="text-decoration-none">
+                <div class="card h-100 shadow-sm hover-card">
+                    <div class="card-body text-center">
+                        <div class="mb-4">
+                            <i class="fas fa-futbol fa-3x text-primary mb-3"></i>
+                            <h3 class="card-title text-dark">Sport Stable</h3>
+                            <p class="card-text text-muted">Social Series</p>
+                        </div>
+                        <ul class="list-unstyled mb-4 text-dark">
+                            <li><i class="fas fa-map-marker-alt me-2"></i>Superior, CO</li>
+                            <li><i class="fas fa-calendar me-2"></i>Monday Nights</li>
+                            <li><i class="fas fa-clock me-2"></i>6:00 PM - 8:00 PM</li>
+                        </ul>
+                        <div class="btn btn-primary btn-lg w-100">View Schedule</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Waldshanke Card -->
+        <div class="col">
+            <a href="{% url 'waldschanke' %}" class="text-decoration-none">
+                <div class="card h-100 shadow-sm hover-card">
+                    <div class="card-body text-center">
+                        <div class="mb-4">
+                            <i class="fas fa-futbol fa-3x text-primary mb-3"></i>
+                            <h3 class="card-title text-dark">Wäldschanke Ciders</h3>
+                            <h5 class="card-text text-muted">Bare Bones Brunch Ball</h5>
+                        </div>
+                        <ul class="list-unstyled mb-4 text-dark">
+                            <li><i class="fas fa-map-marker-alt me-2"></i>Sunnyside, Denver</li>
+                            <li><i class="fas fa-calendar me-2"></i>Sunday, December 7th, 2025</li>
+                            <li><i class="fas fa-clock me-2"></i>10:30 AM - 1:30 PM</li>
+                        </ul>
+                        <div class="btn btn-primary btn-lg w-100">View Event</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Placeholder for future series (optional) -->
+        <div class="col">
+            <div class="card h-100 shadow-sm bg-light border-dashed">
+                <div class="card-body text-center d-flex align-items-center justify-content-center">
+                    <div>
+                        <i class="fas fa-plus-circle fa-3x text-muted mb-3"></i>
+                        <h3 class="card-title text-muted">More Series Coming Soon</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Add this CSS to your stylesheet or in a style tag -->
+<style>
+    .hover-card {
+        transition: transform 0.2s ease-in-out;
+    }
+
+    .hover-card:hover {
+        transform: translateY(-5px);
+        cursor: pointer;
+    }
+
+    .border-dashed {
+        border-style: dashed !important;
+        opacity: 0.7;
+    }
+
+    /* Optional gradient background for the page */
+    body {
+        background: linear-gradient(to bottom, #f8f9fa, #ffffff);
+        min-height: 100vh;
+    }
+</style>
+
+{% endblock %}

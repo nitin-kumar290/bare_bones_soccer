@@ -1,0 +1,17 @@
+<!-- unsubscribe.html -->
+{% extends "base.html" %}
+{% block title %}Unsubscribe from Emails{% endblock %}
+
+{% block content %}
+<div class="container mt-5" style="max-width: 600px;">
+  <h1 class="mb-4 text-center">Unsubscribe from Emails</h1>
+  <p>Enter your email address to unsubscribe from our mailing list.</p>
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" id="submitBtn" class="btn btn-primary mt-3 w-100">
+      Unsubscribe
+    </button>
+  </form>
+</div>
+{% endblock %}

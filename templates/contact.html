@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Contact Us | Soccer football Community{% endblock %}
+{% block hero_background %}{% static 'images/nice_group.jpg' %}{% endblock %}
+
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="text-center mb-4">Contact Us</h1>
+    <p class="text-center">Have questions? Send us a message using the form below, and we'll get back to you as soon as possible.</p>
+
+    <!-- Display messages -->
+    {% if messages %}
+        <div class="my-3">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form method="POST" action="">
+                {% csrf_token %}
+                {{ form.as_p }}  <!-- Renders form fields -->
+                <button type="submit" class="btn btn-primary w-100">Send Message</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

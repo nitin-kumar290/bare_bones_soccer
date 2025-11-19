@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}About | Soccer Community in Denver Colorado | Pickup Soccer Denver and Boulder Colorado{% endblock %}
+{% block hero_background %}{% static 'images/banner_small.png' %}{% endblock %}
+
+
+{% block content %}
+<div class="bg-light text-black py-5">
+    <div class="container text-center">
+        <h1>About Bare Bones Soccer</h1>
+        <p style="font-size: 1rem;">Based out of Denver Colorado. We're on a mission to spark energy in local soccer scenes wherever the game can be played. We host refreshing pickup games and social events that show how soccer isn't just a sport—it's a cultural connector. From breweries to parking lots, and courts to fields, we transform everyday spaces into vibrant soccer gatherings. We're building a new kind of soccer community — social, creative, and rooted in shared experiences. Take an inside look at how the world's sport brings people together, one pitch, party, and parallel at a time. By soccer people, for soccer people.</p>
+    </div>
+</div>
+<div class="container my-5">
+    <div class="row align-items-center">
+        <div class="col-md-6 text-center align-items-center">
+            <h2>Who are we?</h2>
+            <p style="font-size: 1rem;">Bare Bones Soccer Collective is a community-based soccer organization based in the Denver Metro Area. Stripping the game down to its purest form, Bare Bones Soccer is built for those who just want to play, connect and enjoy the sport without hurdles. From free weekly pickup to unique social games at breweries and local venues, it's all about bringing people together through soccer. No egos, no rules — just the game, the culture and the community.
+            </p>
+        </div>
+        <div class="col-md-6">
+            <img src="{% static 'images/BareBones4.jpg' %}" class="img-fluid rounded" alt="Our Mission">
+        </div>
+    </div>
+</div>
+<div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-inner">
+        <div class="carousel-item active">
+            <img class="d-block w-100" src="{% static 'images/bb2.jpg' %}" class="d-block w-60 img-fluid" alt="First slide - Soccer Community in Denver Colorado | Pickup Soccer Denver and Boulder Colorado">
+        </div>
+        <div class="carousel-item">
+            <img class="d-block w-100" src="{% static 'images/bb1.jpg' %}" class="d-block w-60 img-fluid" alt="Second slide - Soccer Community in Denver Colorado | Pickup Soccer Denver and Boulder Colorado">
+        </div>
+        <div class="carousel-item">
+            <img class="d-block w-100" src="{% static 'images/BareBones3.jpg' %}" class="d-block w-60 img-fluid" alt="Third slide - Soccer Community in Denver Colorado | Pickup Soccer Denver and Boulder Colorado">
+        </div>
+        <div class="carousel-item">
+            <img class="d-block w-100" src="{% static 'images/BareBones1.jpg' %}" class="d-block w-60 img-fluid" alt="4th slide - Soccer Community in Denver Colorado | Pickup Soccer Denver and Boulder Colorado">
+        </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>
+{% endblock %}

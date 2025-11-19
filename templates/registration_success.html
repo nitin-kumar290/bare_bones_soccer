@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Registration Successful{% endblock %}
+
+{% block content %}
+{% if messages %}
+{% for message in messages %}
+    <div class="alert alert-info fade-in text-center fw-bold">{{ message }}</div>
+{% endfor %}
+{% endif %}
+<div class="container text-center my-5">
+    <h2 class="text-success text-uppercase py-5">Thanks for making an account with Bare Bones Soccer Collective!</h2>
+    <!-- <p class="lead">Thank you for your payment. You've been registered for the selected week. See you on the pitch!</p> -->
+
+        <div class="alert alert-info">
+            <!-- <h4>Payment Successful!</h4> -->
+            <h4 class="fw-bold py-2">Thank you for registering account with us! Sign up for our Social Series Games. FIRST SESSION IS FREE!</h4>
+        </div>
+    <a href="{% url 'login' %}" class="btn btn-outline-primary mt-4">Log In</a>
+    <p class="card-text">You will be redirected to the login page in <span id="countdown">20</span> seconds...</p>
+</div>
+
+<script>
+    // Countdown timer
+    let timeLeft = 20;
+    const countdownElement = document.getElementById('countdown');
+    
+    const timer = setInterval(() => {
+        timeLeft--;
+        countdownElement.textContent = timeLeft;
+        
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            window.location.href = "{% url 'login' %}";
+        }
+    }, 1000);
+</script>
+
+{% endblock %}

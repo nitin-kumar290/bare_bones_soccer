@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Reservation Successful!{% endblock %}
+
+{% block content %}
+
+<div class="container text-center my-5">
+    <h2 class="text-success">Thanks for RSVPing to this event!</h2>
+    <!-- <p class="lead">Thank you for your payment. You've been registered for the selected week. See you on the pitch!</p> -->
+        <div class="alert alert-success">
+            <!-- <h4>Payment Successful!</h4> -->
+            <p>Make sure to create a Bare Bones account before playing. See ya there! ✅</p>
+        </div>
+    <a href="{% url 'events' %}" class="btn btn-outline-primary mt-4">Back to Events</a>
+    <p class="card-text">You will be redirected to the events page in <span id="countdown">25</span> seconds...</p>
+</div>
+
+<script>
+    // Countdown timer
+    let timeLeft = 25;
+    const countdownElement = document.getElementById('countdown');
+    
+    const timer = setInterval(() => {
+        timeLeft--;
+        countdownElement.textContent = timeLeft;
+        
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            window.location.href = "{% url 'events' %}";
+        }
+    }, 1000);
+</script>
+<script>
+  if (window.history.replaceState) {
+    window.history.replaceState(null, null, window.location.href);
+  }
+</script>
+
+
+{% endblock %}

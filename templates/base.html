@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    {% csrf_token %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <head>
+        <link href="https://fonts.googleapis.com/css2?family=Oswald&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+
+        <style>
+            h1, h2, h3, h4, h5, h6 {
+                font-family: 'Oswald', sans-serif;
+            }
+            p {
+                font-family: 'Bebas Neue Pro', sans-serif;
+                font-size: 1.2rem;
+                font-weight: lighter;
+                line-height: 1.5;
+                letter-spacing: 0.5px; 
+                color: #333;
+        }
+        </style>
+    </head>
+
+    <title>{% block title %}Bare Bones Soccer{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.6/index.global.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.6/index.global.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    
+
+       <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17617578293">
+        </script>
+        <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'AW-17617578293');
+        </script>
+    
+    <!-- Meta Pixel Code -->
+        <script>
+        !function(f,b,e,v,n,t,s)
+        {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+        n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+        n.queue=[];t=b.createElement(e);t.async=!0;
+        t.src=v;s=b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t,s)}(window, document,'script',
+        'https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', '580190001252813');
+        fbq('track', 'PageView');
+        </script>
+        <noscript><img height="1" width="1" style="display:none"
+        src="https://www.facebook.com/tr?id=580190001252813&ev=PageView&noscript=1"
+        /></noscript>
+    <!-- End Meta Pixel Code -->
+
+</head>
+<body>
+    
+    <!-- <header class="hero-section" style="background: url('{% static 'images/bb_banner.jpg' %}') no-repeat center center/cover;"> -->
+    <!-- In base.html -->
+    <header class="hero-section" style="background: url('{% block hero_background %}{% static 'images/banner_small.png' %}{% endblock %}') no-repeat center center/cover;">
+    <!-- <header class="hero-section">
+            <img src="{% static 'images/banner_small.png' %}" alt="Hero Image" class="hero-image" /> -->
+            <!-- Any text or overlay here -->
+
+        <nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
+            <div class="container">
+                <!-- Logo -->
+                <a class="navbar-brand bg-light bg-opacity-10" href="{% url 'home' %}">
+                     <img src="{% static 'images/logo_blue.png' %}" alt="Logo" class="logo">
+                </a>
+        
+                <!-- Mobile Toggle Button -->
+                <nav class="navbar navbar-expand-lg">
+                    <button class="navbar-toggler bg-light bg-opacity-10 border border-light rounded-3 p-2 ms-auto" 
+                            type="button" 
+                            data-bs-toggle="collapse" 
+                            data-bs-target="#navbarNav" 
+                            aria-controls="navbarNav" 
+                            aria-expanded="false" 
+                            aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                </nav>
+                <!-- <button class="navbar-toggler custom-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button> -->
+        
+                <!-- Navbar Links -->
+                <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                    <ul class="navbar-nav" style="font-family: 'Oswald', sans-serif;">
+                        <li class="nav-item fs-5"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+                        <li class="nav-item fs-5"><a class="nav-link special-link" href="{% url 'series' %}">Series</a></li>
+                        <li class="nav-item fs-5"><a class="nav-link" href="{% url 'events' %}">Events</a></li>
+                        <li class="nav-item fs-5"><a class="nav-link" href="{% url 'pickup' %}">Pick Up</a></li>
+                        <li class="nav-item fs-5"><a class="nav-link" href="{% url 'about' %}">About</a></li>
+                        <li class="nav-item fs-5"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
+                    </ul>
+        
+                    <ul class="navbar-nav" style="font-family: 'Oswald', sans-serif;">
+                        {% if user.is_authenticated %}
+                        <li class="nav-item fs-5">
+                            <a class="nav-link" href="{% url 'series_catalog' %}">Sign Up to Play!</a>
+                        </li>
+                        <li class="nav-item fs-5">
+                            <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                        </li>
+                        {% else %}
+                        <li class="nav-item fs-5">
+                            <a class="nav-link" href="{% url 'login' %}">Sign In to Play!</a>
+                        </li>
+                        <!-- <li class="nav-item fs-6">
+                            <a class="nav-link" href="{% url 'register' %}">Register</a>
+                        </li> -->
+                        {% endif %}
+                    </ul>
+                </div>
+
+            </div>
+        </nav>
+
+        <!-- <div class="overlay align-items-center justify-content-center"></div>
+        <div class="container text-center">
+            <h1 class="hero-title">Bare Bones Soccer Collective</h1>
+            <p class="hero-subtitle">The Culture of Football, Redefined.</p>
+        </div> -->
+
+    </header>
+    
+    
+    <!-- <div class="title-section text-center py-4">
+        <img src="{% static 'images/bb_logo_purple.png' %}" class="img-fluid" style="width: 15%;" alt="Bare Bones Soccer logo">
+         <h6>By Soccer People, For Soccer People</h6>
+        <p class="lead">Connecting Denver's soccer community through the beautiful game.</p>
+    </div>  -->
+    <main>
+        {% block content %}
+
+        {% endblock %}
+    </main>
+    <footer class="bg-light text-center p-3">
+        <div class="container text-center my-5">
+            <!-- Icons (Font Awesome) -->
+                 <link
+                   rel="stylesheet"
+                   href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+                 />
+                 <div class="d-flex justify-content-center gap-4 fs-3">
+                   <a href="https://www.instagram.com/barebonessoccer/" class="text-dark">
+                     <i class="fab fa-instagram"></i>
+                   </a>
+                   <a href="{% url 'contact' %}" class="text-dark">
+                     <i class="fas fa-envelope"></i>
+                   </a>
+                   <!-- <a href="#" class="text-dark"><i class="fab fa-tiktok"></i></a> -->
+                 </div>
+         
+                 <!-- Social Handle -->
+                 <a href="https://www.instagram.com/barebonessoccer/" class="text-dark d-block mt-3">
+                   <p class="fs-3 mb-0">@BAREBONESSOCCER</p>
+                 </a>
+       </div>
+
+        <p>&copy; 2025 Bare Bones Soccer. All rights reserved.</p>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

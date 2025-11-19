@@ -1,0 +1,532 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}Register{% endblock %}
+{% block hero_background %}{% static 'images/jpeg-optimizer_good1.jpg' %}{% endblock %}
+
+{% block content %}
+<div class="registration-container">
+    <div class="registration-header">
+    <strong>
+        <h2>Register an Account with Bare Bones Soccer Collective</h2>
+        <p class="subtitle">Join us for exciting soccer games and events. Join our community!</p>
+    </strong>
+        <div class="text-center mt-3">
+            <p class="mb-0">
+                Already have an account? 
+                <a href="{% url 'login' %}" class="text-decoration-none">
+                    Login now
+                </a>
+            </p>
+        </div>
+    </div>
+
+  
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-info fade-in">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+  
+    <form method="POST" novalidate class="registration-form">
+        {% csrf_token %}
+        
+        <div class="form-section personal-info">
+            <h3>Account Information</h3>
+            <div class="form-group" required>
+                {{ user_form.username.label }}
+                {{ user_form.username }} 
+
+                {% if user_form.username.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ user_form.username.errors }}
+                    </div>
+                {% endif %}
+
+            </div>
+            <div class="form-group">
+                {{ user_form.email.label }}
+                {{ user_form.email }}
+
+                {% if user_form.email.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ user_form.email.errors }}
+                    </div>
+                {% endif %}
+
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    {{ user_form.password.label }}
+                    {{ user_form.password }}
+
+                    {% if user_form.password.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ user_form.password.errors }}
+                    </div>
+                {% endif %}
+
+                </div>
+                <div class="form-group col-md-6">
+                    {{ user_form.confirm_password.label }}
+                    {{ user_form.confirm_password }}
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-section personal-info">
+            <h3>Player Information</h3>
+            <div class="form-group">
+                {{ profile_form.full_name.label }}
+                {{ profile_form.full_name }}
+
+                {% if profile_form.full_name.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ profile_form.full_name.errors }}
+                    </div>
+                {% endif %}
+
+            </div>
+            <div class="form-group">
+                {{ profile_form.phone.label_tag }}
+                {{ profile_form.phone }}
+
+                {% if profile_form.phone.errors %}
+            <div class="invalid-feedback d-block">
+                    {{ profile_form.phone.errors }}
+                </div>
+            {% endif %}
+            <small class="form-text text-muted">Format: (123) 456-7890</small>
+
+                {% if profile_form.phone.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ profile_form.phone.errors }}
+                    </div>
+                {% endif %}
+                <small class="form-text text-muted">Format: (123) 456-7890</small>
+            </div>
+            <!-- <div class="form-row">
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        {{ profile_form.dob.label_tag }}
+                        {{ profile_form.dob }}
+                        {% if profile_form.dob.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ profile_form.dob.errors }}
+                            </div>
+                        {% endif %}
+                        <small class="form-text text-muted">Must be 18 or older to register</small>
+                    </div>
+                </div>
+            </div> -->
+            
+            
+        </div>
+  
+        <div class="form-section emergency-info">
+            <h3>Emergency Contact</h3>
+            <div class="form-group">
+                {{ profile_form.emergency_contact_name.label }}
+                <!-- <span class="required-field">*</span> -->
+                {{ profile_form.emergency_contact_name }}
+                {% if profile_form.emergency_contact_name.errors %}
+                <div class="invalid-feedback d-block">
+                    {{ profile_form.emergency_contact_name.errors }}
+                </div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ profile_form.emergency_contact_phone.label_tag }}
+                {{ profile_form.emergency_contact_phone }}
+
+                {% if profile_form.emergency_contact_phone.errors %}
+                <div class="invalid-feedback d-block">
+                    {{ profile_form.emergency_contact_phone.errors }}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+  
+        <div class="form-section waiver-section">
+            <h3>Waiver & Release of Liability</h3>
+            <!-- Age category selection notice -->
+            <div id="waiver-selection-notice" class="alert alert-info">
+                Please select your age group to view the appropriate waiver.
+            </div>
+
+            <div class="form-group">
+                {{ profile_form.age_category.label_tag }}
+                <div class="age-category-options">
+                    {% for choice in profile_form.age_category %}
+                        <div class="form-check">
+                            {{ choice.tag }}
+                            <label class="form-check-label" for="{{ choice.id_for_label }}">
+                                {{ choice.choice_label }}
+                            </label>
+                        </div>
+                    {% endfor %}
+                </div>
+                    {% if profile_form.age_category.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ profile_form.age_category.errors }}
+                        </div>
+                    {% endif %}
+            </div>
+            <!-- Dynamic waiver container -->
+            <div class="waiver-container" id="waiver-container" style="display: none;">
+                <div id="waiver-text" class="waiver-text">
+                    <!-- Waiver content will be inserted here by JavaScript -->
+                </div>
+            </div>
+            
+
+            <div class="form-group waiver-agreement">
+                <label class="form-check">
+                    {{ profile_form.agree_to_waiver }}
+
+                    {% if profile_form.agree_to_waiver.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ profile_form.agree_to_waiver.errors }}
+                    </div>
+                    {% endif %}
+
+                    <span class="agreement-text">By checking here, you are consenting to the use of your electronic signature in lieu of an original signature on paper. You have the right to request that you sign a paper copy instead. By checking here, you are waiving that right. After consent, you may, upon written request to us, obtain a paper copy of an electronic record. No fee will be charged for such copy and no special hardware or software is required to view it. Your agreement to use an electronic signature with us for any documents will continue until such time as you notify us in writing that you no longer wish to use an electronic signature. There is no penalty for withdrawing your consent. You should always make sure that we have a current email address in order to contact you regarding any changes, if necessary.</span>
+                </label>
+            </div>
+            <div class="form-group waiver-agreement">
+                <label class="form-check">
+                    {{ profile_form.marketing_opt_in }}
+                    <span class="agreement-text">Opt in for Bare Bones Soccer news and updates on all games, events and more!</span>
+                </label>
+            </div>
+        </div>
+  
+        <div class="form-section signature-section">
+            <h3>Electronic Signature</h3>
+            <div class="form-group">
+                {{ profile_form.electronic_signature.label }}
+                {{ profile_form.electronic_signature }}
+
+                {% if profile_form.electronic_signature.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ profile_form.electronic_signature.errors }}
+                    </div>
+                {% endif %}
+
+                <p class="signature-hint">Type your full legal name to sign</p>
+            </div>
+        </div>
+  
+        <button type="submit" id="registerSubmit" 
+class="btn btn-primary submit-btn"
+>
+  <span id="registerSubmitLabel">Complete Registration</span>
+  <span id="registerSpinner" class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
+</button>
+
+        <strong>
+            <h2></h2>
+            <p class="subtitle"> Once you finish account registration you will recieve an email confirmation. If you don't see the email please check your spam folder.</p>
+        </strong>
+    </form>
+
+  </div>
+  
+  <style>
+    .registration-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    }
+  
+    .registration-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+  
+    .registration-header h2 {
+        color: #2c3e50;
+        font-size: 2.2rem;
+        margin-bottom: 0.5rem;
+    }
+  
+    .subtitle {
+        color: #666;
+        font-size: 1.1rem;
+    }
+  
+    .form-section {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+    }
+  
+    .form-section h3 {
+        color: #2c3e50;
+        font-size: 1.4rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e9ecef;
+    }
+  
+    .form-group {
+        margin-bottom: 1.2rem;
+    }
+  
+    .form-group label {
+        font-weight: 500;
+        color: #495057;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+  
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="date"] {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        transition: border-color 0.15s ease-in-out;
+    }
+  
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="tel"]:focus,
+    input[type="date"]:focus {
+        border-color: #80bdff;
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+    }
+  
+    .waiver-container {
+        max-height: 300px;
+        overflow-y: auto;
+        padding: 1rem;
+        background: #ffffff;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        margin-bottom: 1rem;
+    }
+  
+    .waiver-text {
+        font-size: 0.9rem;
+        line-height: 1.6;
+        color: #495057;
+    }
+  
+    .waiver-agreement {
+        display: flex;
+        align-items: center;
+        margin-top: 1rem;
+    }
+  
+    .agreement-text {
+        margin-left: 0.5rem;
+        font-size: 0.9rem;
+    }
+  
+    .signature-hint {
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin-top: 0.5rem;
+    }
+  
+    .submit-btn {
+        width: 100%;
+        padding: 1rem;
+        font-size: 1.1rem;
+        font-weight: 500;
+        margin-top: 1.5rem;
+        background-color: #007bff;
+        border: none;
+        transition: background-color 0.2s ease;
+    }
+  
+    .submit-btn:hover {
+        background-color: #0056b3;
+    }
+  
+    .alert {
+        animation: fadeIn 0.5s;
+    }
+    .age-category-options {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+    .age-category-options .form-check {
+        position: relative;
+        margin: 0;
+    }
+
+    .age-category-options input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .age-category-options .form-check-label {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        background-color: #f8f9fa;
+        border: 2px solid #dee2e6;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 500;
+        color: #495057;
+        transition: all 0.3s ease;
+        text-align: center;
+        min-width: 120px;
+    }
+
+    .age-category-options .form-check-label:hover {
+        background-color: #e9ecef;
+        border-color: #adb5bd;
+    }
+
+    .age-category-options input[type="radio"]:checked + .form-check-label {
+        background-color: #007bff;
+        border-color: #007bff;
+        color: white;
+        box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+    }
+
+    .age-category-options input[type="radio"]:focus + .form-check-label {
+        outline: none;
+        box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+    }
+
+
+#waiver-selection-notice {
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background-color: #d1ecf1;
+    border: 1px solid #bee5eb;
+    border-radius: 4px;
+    color: #0c5460;
+}
+
+  
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+  
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .registration-container {
+            padding: 1rem;
+            margin: 1rem;
+        }
+  
+        .form-section {
+            padding: 1rem;
+        }
+    }
+  </style>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('.registration-form');
+    const btn = document.getElementById('registerSubmit');
+    const label = document.getElementById('registerSubmitLabel');
+    const spin = document.getElementById('registerSpinner');
+    
+    // Form submission handling
+    form.addEventListener('submit', function(e) {
+        btn.disabled = true;
+        label.textContent = 'Creating Account...';
+        spin.classList.remove('d-none');
+    });
+    
+    // Age category and waiver handling
+    const ageCategoryInputs = document.querySelectorAll('input[name="age_category"]');
+    const waiverContainer = document.getElementById('waiver-container');
+    const waiverText = document.getElementById('waiver-text');
+    const waiverAgreement = document.getElementById('waiver-agreement');
+    const waiverNotice = document.getElementById('waiver-selection-notice');
+    
+    // Define waiver texts
+    const adultWaiver = `
+        <p>In consideration of being allowed to participate in any soccer games, tournaments, or events organized by Bare Bones Soccer Collective LLC ("Bare Bones Soccer"), including but not limited to those held at various locations, fields, or venues, I, the undersigned, voluntarily agree to the following waiver and release of liability:</p>
+        
+        <p><strong>Release of Liability:</strong></p>
+        <p>I, for myself, my heirs, personal representatives, or assigns, do hereby release, waive, discharge, and covenant not to sue Bare Bones Soccer Collective LLC, its officers, employees, agents, affiliates, sponsors, volunteers, and all other businesses, venues, locations, or entities used by Bare Bones Soccer Collective LLC...</p>
+        
+        <p><strong>Assumption of Risk:</strong></p>
+        <p>I am fully aware of the risks involved and hazards connected with participating in the soccer games, including but not limited to physical injury, death, and property damage...</p>
+        
+        <p><strong>I agree that I am at least 18 years old.</strong></p>
+        
+        <p><strong>Medical Treatment:</strong></p>
+        <p>I hereby consent to receive medical treatment that may be deemed advisable in the event of injury, accident, and/or illness during the soccer games.</p>
+        
+        <p><strong>Governing Law:</strong></p>
+        <p>This waiver and release shall be governed by and construed in accordance with the laws of the State of Colorado.</p>
+    `;
+    
+    const minorWaiver = `
+        <p><strong>Minor Participant Waiver and Release of Liability</strong></p>
+        <p><strong>Bare Bones Soccer Collective LLC</strong></p>
+        <p>In consideration of my child/ward being allowed to participate in any soccer games, tournaments, or events organized by Bare Bones Soccer Collective LLC ("Bare Bones Soccer"), including but not limited to those held at various locations, fields, or venues, I, the undersigned parent or legal guardian, voluntarily agree to the following waiver and release of liability on behalf of my minor child/ward:</p>
+        
+        <p><strong>Release of Liability</strong></p>
+        <p>I, for myself, my child/ward, our heirs, personal representatives, or assigns, do hereby release, waive, discharge, and covenant not to sue Bare Bones Soccer Collective LLC, its officers, employees, agents, affiliates, sponsors, volunteers, and all other businesses, venues, locations, or entities used by Bare Bones Soccer Collective LLC (collectively, the "Released Parties"), including but not limited to any fields, facilities, or establishments where events, games, practices, or related activities take place, whether on or off the premises of Bare Bones Soccer Collective LLC, including any third-party partners, hosts, or event locations. <br><br>This release applies to any and all liability, claims, demands, actions, and causes of action whatsoever arising out of or related to any loss, damage, or injury, including death, that may be sustained by my child/ward, or to any property belonging to my child/ward, whether caused by the negligence of the Released Parties or otherwise, while participating in the soccer games or in any activities related to the soccer games.</p>
+        
+        <p><strong>Assumption of Risk</strong></p>
+        <p>I am fully aware of the risks and hazards connected with my child/ward’s participation in soccer games, including but not limited to physical injury, death, and property damage. I hereby elect to voluntarily allow my child/ward to participate in the soccer games, knowing that the activity may be hazardous. I voluntarily assume full responsibility for any risks of loss, property damage, or personal injury, including death, that may be sustained by my child/ward as a result of being engaged in such activities, whether caused by the negligence of the Released Parties or otherwise.</p>
+        
+        <p><strong>Indemnification</strong></p>
+        <p>I agree to indemnify and hold harmless the Released Parties from any loss, liability, damage, or costs, including court costs and attorney fees, that they may incur due to my child/ward’s participation in the soccer games, whether caused by the negligence of the Released Parties or otherwise.</p>
+        
+        <p><strong>Medical Treatment</strong></p>
+        <p>I hereby consent to allow my child/ward to receive medical treatment that may be deemed advisable in the event of injury, accident, and/or illness during the soccer games.</p>
+
+        <p><strong>Certification of Minor Status</strong></p>
+        <p>I certify that I am the parent or legal guardian of the minor named below, that the minor is under 18 years of age, and that I have the authority to execute this waiver and release on their behalf.</p>
+
+        <p><strong>Governing Law:</strong></p>
+        <p>This waiver and release shall be governed by and construed in accordance with the laws of the State of Colorado.</p>
+    `;
+    
+    // Handle age category changes
+    ageCategoryInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            if (this.value === 'adult') {
+                waiverText.innerHTML = adultWaiver;
+            } else if (this.value === 'minor') {
+                waiverText.innerHTML = minorWaiver;
+            }
+            
+            // Show waiver container and hide notice
+            waiverContainer.style.display = 'block';
+            waiverAgreement.style.display = 'block';
+            waiverNotice.style.display = 'none';
+        });
+    });
+    
+    // Check if age category is already selected (for form errors)
+    const selectedCategory = document.querySelector('input[name="age_category"]:checked');
+    if (selectedCategory) {
+        selectedCategory.dispatchEvent(new Event('change'));
+    }
+});
+</script>
+
+<!-- <div class="container my-5">
+    <h1 class="text-center">Create an Account</h1>
+    <form method="POST" class="mt-4">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary w-100">Register</button>
+    </form>
+</div> -->
+{% endblock %}

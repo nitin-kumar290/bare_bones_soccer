@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Payment Successful{% endblock %}
+
+{% block content %}
+<div class="container text-center my-5">
+    <h2 class="text-success">Something went wrong</h2>
+    <p class="lead">Try again when you are ready. If the issue presists please contact us</p>
+    <a href="{% url 'series_catalog' %}" class="btn btn-outline-primary mt-4">Back to Schedule</a>
+</div>
+{% endblock %}
