@@ -228,12 +228,15 @@ def user_login(request):
             if user is not None:
                 login(request, user)
                 messages.success(request, "You are now logged in!")
-                return redirect('series_catalog')
+                # Check for next parameter, default to series_catalog if not present
+                next_url = request.GET.get('next') or request.POST.get('next', 'series_catalog')
+                return redirect(next_url)
             else:
                 messages.error(request, "Invalid username or password")
     else:
         form = UserLoginForm()
     return render(request, 'login.html', {'form': form})
+
 
 
 def user_logout(request):
@@ -254,8 +257,28 @@ def get_events(request):
 
 
 def events(request):
-    events = Event.objects.all()  # Fetch all events
-    return render(request, 'events.html', {'events': events})
+    events = Event.objects.all()
+    
+    paid_players_count = OneOffEvent.objects.filter(
+        event_name='WALDSCHANKE BRUNCH BALL',
+        status='Paid'
+    ).count()
+    
+    spectator_count = OneOffEvent.objects.filter(
+        event_name='WALDSCHANKE BRUNCH BALL',
+        status='Free Spectator'
+    ).count()
+    
+    player_cap_reached = paid_players_count >= 36
+    
+    return render(request, 'events.html', {
+        'events': events,
+        'paid_players_count': paid_players_count,
+        'spectator_count': spectator_count,
+        'player_cap_reached': player_cap_reached
+    })
+
+
 
 def privacypolicy(request):
     return render(request, 'privacy-policy.html')
@@ -688,10 +711,115 @@ def waldschanke(request):
         event_name='WALDSCHANKE BRUNCH BALL'
     ).exists()
     
+    # Count paid players (excluding free spectators)
+    paid_players_count = OneOffEvent.objects.filter(
+        event_name='WALDSCHANKE BRUNCH BALL',
+        status='Paid'
+    ).count()
+    
+    player_cap_reached = paid_players_count >= 36
+    
     return render(request, 'waldschanke.html', {
         'event_date': event_date,
-        'has_registered': has_registered
+        'has_registered': has_registered,
+        'player_cap_reached': player_cap_reached,
+        'paid_players_count': paid_players_count
     })
+
+
+@login_required
+def register_free_spectator(request):
+    if request.method == 'POST':
+        user = request.user
+        
+        # Check if already registered
+        if OneOffEvent.objects.filter(user=user, event_name='WALDSCHANKE BRUNCH BALL').exists():
+            return JsonResponse({'error': 'Already registered'}, status=400)
+        
+        OneOffEvent.objects.create(
+            user=user,
+            event_name='WALDSCHANKE BRUNCH BALL',
+            event_date='2025-12-07',
+            payment_id='FREE_SPECTATOR',
+            amount=0.00,
+            status='Free Spectator'
+        )
+        
+        # Send confirmation email
+        subject = "You're registered as a spectator for Bare Bones Brunch Ball!"
+        message = f"""
+        <!DOCTYPE html>
+<html>
+<body>
+<!-- Email content with direct image URL -->
+
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#ffffff; margin:0; padding:0;">
+  <tr>
+    <td align="center" style="padding:0;">
+      <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="width:100%; max-width:600px; margin:0 auto;">
+        <tr>
+          <td align="center" style="padding:24px;">
+            <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width:600px; width:100%; font-family:Arial, Helvetica, sans-serif; color:#111;">
+              
+              <!-- Header -->
+              <tr>
+                <td style="font-size:22px; line-height:30px; text-align:center; font-weight:bold;">
+                  🏟️⚽ 12/7 EVENT CONFIRMATION!
+                </td>
+              </tr>
+              
+              <tr><td style="height:8px; line-height:8px;">&nbsp;</td></tr>
+              
+              <!-- Hook -->
+              <tr>
+                <td style="font-size:16px; line-height:24px; text-align:center;">
+                    
+                    You're all set! Your spot for Bare Bones Brunch Ball at Wäldschanke is confirmed 🙌  </td>
+              </tr>        
+              <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
+              
+              <!-- Details bullets -->
+              <tr>
+                <td style="font-size:16px; line-height:26px;">
+                    📅 <b>Sunday, Dec 7, 2025</b><br>
+                    ⏰ <b>10:30 AM – 1:30 PM</b><br>
+                    📍 <b>Wäldschanke Ciders & Coffee — Sunnyside, Denver</b><br>
+                
+                  🍔 Food + Drinks | 🎶 Music<br>
+                  <i>*Remember proper shoes! Flats/grippy sneakers *</i><br><br>
+                  
+                  
+                </td>
+              </tr>
+              
+              <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
+              
+              <tr>
+                <td style="font-size:16px; line-height:24px; text-align:center;">
+                  See you on the court!
+                <br>
+                The Bare Bones Crew
+                </td>
+              </tr>
+              
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>          
+        """
+        send_email_ses(user.email, subject, message)
+        
+        return JsonResponse({'success': True, 'redirect': '/spectator-registration-success/'})
+    
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+
 
 
 @login_required
@@ -711,8 +839,8 @@ def create_waldschanke_checkout_session(request):
         line_items=[{
             "price_data": {
                 "currency": "usd",
-                "product_data": {"name": "Waldschänke Brunch Ball - Dec 7, 2025"},
-                "unit_amount": 100,  # $15.00
+                "product_data": {"name": "Bare Bones Brunch Ball - Dec 7, 2025"},
+                "unit_amount": 1500,  # $15.00
             },
             "quantity": 1,
         }],
@@ -742,16 +870,71 @@ def waldschanke_payment_success(request):
                 )
                 
                 # Send confirmation email
-                subject = "You're registered for Waldschänke Brunch Ball!"
+                subject = "You're registered for Bare Bones Brunch Ball!"
                 message = f"""
-                <p>Hey {request.user.username},</p>
-                <p>You're all set for Waldschänke Brunch Ball!</p>
-                <p><strong>Sunday, December 7, 2025</strong><br>
-                Wäldschanke Ciders - 4100 Jason St, Denver<br>
-                10:30 AM - 1:30 PM</p>
-                <p>Get ready for unlimited pickup games, player prize packages & raffle entry!</p>
-                <p>See you there!</p>
-                <p>The Bare Bones Crew</p>
+                <!DOCTYPE html>
+<html>
+<body>
+<!-- Email content with direct image URL -->
+
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#ffffff; margin:0; padding:0;">
+  <tr>
+    <td align="center" style="padding:0;">
+      <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="width:100%; max-width:600px; margin:0 auto;">
+        <tr>
+          <td align="center" style="padding:24px;">
+            <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width:600px; width:100%; font-family:Arial, Helvetica, sans-serif; color:#111;">
+              
+              <!-- Header -->
+              <tr>
+                <td style="font-size:22px; line-height:30px; text-align:center; font-weight:bold;">
+                  🏟️⚽ 12/7 EVENT CONFIRMATION!
+                </td>
+              </tr>
+              
+              <tr><td style="height:8px; line-height:8px;">&nbsp;</td></tr>
+              
+              <!-- Hook -->
+              <tr>
+                <td style="font-size:16px; line-height:24px; text-align:center;">
+                    You're all set! Your spot for Bare Bones Brunch Ball at Wäldschanke is confirmed 🙌                </td>
+              </tr>        
+              <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
+              
+              <!-- Details bullets -->
+              <tr>
+                <td style="font-size:16px; line-height:26px;">
+                    📅 <b>Sunday, Dec 7, 2025</b><br>
+                    ⏰ <b>10:30 AM – 1:30 PM</b><br>
+                    📍 <b>Wäldschanke Ciders & Coffee — Sunnyside, Denver</b><br>
+                
+                  🍔 Food + Drinks | 🎶 Music<br>
+                  <i>*Remember proper shoes! Flats/grippy sneakers *</i><br><br>
+                  
+                  
+                </td>
+              </tr>
+              
+              <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
+              
+              <tr>
+                <td style="font-size:16px; line-height:24px; text-align:center;">
+                  See you on the court!
+                <br>
+                The Bare Bones Crew
+                </td>
+              </tr>
+              
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>          
                 """
                 send_email_ses(request.user.email, subject, message)
                 
@@ -768,6 +951,8 @@ def waldschanke_payment_success(request):
         return redirect('waldschanke')
 
 
+def spectator_registration_success(request):
+    return render(request, 'spectator_registration_success.html')
 
 
 def promo_video(request):

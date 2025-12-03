@@ -59,5 +59,9 @@ urlpatterns = [
     path('waldschanke/', views.waldschanke, name='waldschanke'),
     path('api/create-waldschanke-checkout-session', views.create_waldschanke_checkout_session),
      path('waldschanke-payment-success/', views.waldschanke_payment_success),
+     path('api/register-free-spectator', views.register_free_spectator, name='register_free_spectator'),
+     path('spectator-registration-success/', views.spectator_registration_success, name='spectator_registration_success'),
+
+
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

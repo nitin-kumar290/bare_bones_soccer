@@ -136,6 +136,9 @@
             
             <form method="POST" class="mt-4">
                 {% csrf_token %}
+                    {% if request.GET.next %}
+                        <input type="hidden" name="next" value="{{ request.GET.next }}">
+                    {% endif %}         
                 {{ form.as_p }}
                 <button type="submit" id="submitBtn" class="btn btn-primary w-100">
                     <span id="submitLabel">Login</span>

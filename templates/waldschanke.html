@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Waldschänke Brunch Ball{% endblock %}
+{% block title %}Bare Bones Soccer Brunch Ball{% endblock %}
 
 {% load static %}
 
@@ -9,51 +9,72 @@
 {% csrf_token %}
 
 <div class="container mt-5">
-    <h1 class="text-center text-uppercase">Reserve Your Spot Below for Waldschänke Brunch Ball 12/7</h1>
-    <p class="text-center text-muted text-uppercase">
-        A ONE TIME EVENT AT WÄLDSCHANKE CIDERS<br/>
-        UNLIMITED PICKUP GAMES, PLAYER PRIZE PACKAGE & RAFFLE ENTRY
+    <h1 class="text-center text-uppercase">Reserve Your Spot Below for BARE BONES Brunch Ball 12/7</h1>
+    <p class="text-center text-muted text-uppercase" style="font-style: italic;">
+        NONSTOP PICKUP GAMES, BRUNCH MENU, FREE 5 OZ DRINK & PLAYER PRIZE ENTRY<br/>
+        
     </p>
 
-    <!-- Event Card -->
-    <div class="row row-cols-1 row-cols-md-2 g-4 justify-content-center">
+<!-- Combined Purchase & Stats Box -->
+<div class="container my-4">
+    <div class="row justify-content-center">
         <div class="col-md-6">
-            <div class="card shadow p-3 h-100 game-card {% if has_registered %}paid-card{% else %}not-selected-card{% endif %}"
-                 id="event-card"
-                 onclick="{% if not has_registered %}registerForEvent(){% endif %}">
-                <div class="card-body d-flex flex-column justify-content-between">
-                    <div>
-                        <h5 class="card-title text-center"><strong>Sunday, August 2, 2025</strong></h5>
-                        <p class="card-text text-center">Wäldschanke Ciders</p>
-                        <p class="card-text text-center">4100 Jason St, Denver</p>
-                        <p class="card-text text-center">10:30 AM - 1:30 PM</p>
-                        <p class="card-text text-center">$15 FOR EVENT</p>
+            <div class="purchase-card">
+                {% if has_registered %}
+                    <!-- Already Registered -->
+                    <div class="success-alert mb-3">
+                        <span class="alert-icon">✅</span>
+                        <span class="alert-text">ALREADY REGISTERED</span>
                     </div>
-                    <div class="mt-2 text-center">
-                        {% if has_registered %}
-                            <p class="text-success text-uppercase fw-bold my-2">Already Registered</p>
-                        {% else %}
-                            <p class="text-primary fw-bold my-2">Click to Register</p>
-                        {% endif %}
+                {% elif player_cap_reached %}
+                    <!-- Capacity Reached Version -->
+                    <div class="capacity-alert mb-3">
+                        <span class="alert-icon">⚽</span>
+                        <span class="alert-text">PLAYER SPOTS FULL!</span>
                     </div>
+                    
+                    <button class="purchase-btn spectator-btn" onclick="registerAsSpectator()">
+                        <span class="btn-text">👥 REGISTER AS SPECTATOR</span>
+                        <span class="btn-icon">→</span>
+                    </button>
+                    
+                    <div class="price-section">
+                        <span class="price">FREE</span>
+                        <span class="price-label">spectator entry</span>
+                    </div>
+                {% else %}
+                    <!-- Normal Registration -->
+                    <button class="purchase-btn" onclick="registerForEvent()">
+                        <span class="btn-text">🎫 BUY TICKET NOW</span>
+                        <span class="btn-icon">→</span>
+                    </button>
+                    
+                    <div class="price-section">
+                        <span class="price">$15</span>
+                        <span class="price-label">per person</span>
+                    </div>
+                {% endif %}
+
+                <div class="spots-counter">
+                    <span class="spots-text"><strong>{{ paid_players_count }}/36 SPOTS TAKEN</strong></span>
                 </div>
+                
             </div>
         </div>
     </div>
 </div>
 
-<!-- 1) Load Stripe externally. -->
+
+
+</div>
+
 <script src="https://js.stripe.com/v3/"></script>
 
-
-<!-- 2) Then your inline script. -->
 <script>
 const stripe = Stripe("pk_live_51Qe6VrKKPDelkA7OgycGGoqfOS3cfz4k6KQ53R2LvHJann8fxkRLFX2XF7CwBxqLOc8WfXpv3lLurLmh0og9TUlX00VSXk1ZM7");
 const csrftoken = "{{ csrf_token }}";
 
 async function registerForEvent() {
-    const card = document.getElementById('event-card');
-    
     try {
         const res = await fetch("/api/create-waldschanke-checkout-session", {
             method: "POST",
@@ -72,6 +93,32 @@ async function registerForEvent() {
         alert("Error creating checkout. Please try again.");
     }
 }
+
+async function registerAsSpectator() {
+    try {
+        const res = await fetch("/api/register-free-spectator", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}"
+            }
+        });
+        
+        if (res.ok) {
+            const data = await res.json();
+            if (data.redirect) {
+                window.location.href = data.redirect;
+            }
+        } else {
+            const error = await res.json();
+            alert(error.error || "Registration failed. Please try again.");
+        }
+    } catch (err) {
+        console.error(err);
+        alert("Error registering. Please try again.");
+    }
+}
+
 </script>
 
 <style>
@@ -80,6 +127,12 @@ async function registerForEvent() {
     border: 2px solid #155724;
     color: #155724;
     cursor: not-allowed;
+}
+.spectator-card {
+    background-color: #fff3cd;
+    border: 2px solid #856404;
+    color: #856404;
+    cursor: pointer;
 }
 .not-selected-card {
     background-color: #ffffff;
@@ -90,5 +143,133 @@ async function registerForEvent() {
 .game-card:hover {
     box-shadow: 0 0 10px rgba(0,0,0,0.2);
 }
+
+.purchase-card {
+    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+    border: 1px solid #d64f5d;
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(220, 53, 69, 0.15);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.purchase-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(220, 53, 69, 0.25);
+}
+
+.purchase-btn {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    border: none;
+    border-radius: 50px;
+    padding: 1rem 2.5rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto 1rem auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.spectator-btn {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+}
+
+.spectator-btn:hover {
+    background: linear-gradient(135deg, #20c997 0%, #17a2b8 100%);
+}
+
+.capacity-alert {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    border: 1px solid #ffeaa7;
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.success-alert {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    border: 1px solid #c3e6cb;
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.spots-counter {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 25px;
+    padding: 0.5rem 1rem;
+    margin-bottom: 1rem;
+    display: inline-block;
+}
+
+.spots-text {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: #212529;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.price-section {
+    margin-bottom: 1rem;
+}
+
+.price {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #dc3545;
+    font-family: 'Oswald', sans-serif;
+}
+
+.price-label {
+    display: block;
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+}
+
+.purchase-note {
+    font-family: 'Bebas Neue Pro';
+    font-size: 14px;
+    color: #6c757d;
+    line-height: 1.4;
+    margin: 0;
+}
+
+.account-link {
+    color: #dc3545;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.account-link:hover {
+    color: #c82333;
+    text-decoration: underline;
+}
+
 </style>
 {% endblock %}
