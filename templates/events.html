@@ -194,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="col-md-6">
             <div class="purchase-card">
                 <p class="purchase-note pb-3">
-                    *Must have Bare Bones Soccer account* <br>
+                    *Must be logged in to Bare Bones Soccer account to purchase* <br>
                     Create Account <a href="{% url 'register' %}" class="account-link">HERE</a> if you don't have one.
                 </p>
                 {% if player_cap_reached %}
@@ -229,7 +229,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         </button>
                     {% else %}
                         <a href="{% url 'login' %}?next={% url 'waldschanke' %}" class="purchase-btn">
-                            <span class="btn-text">🎫 BUY TICKETS NOW</span>
+                            <span class="btn-text">🎫 BUY TICKET NOW</span>
                             <span class="btn-icon">→</span>
                         </a>
                     {% endif %}
@@ -237,7 +237,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     <div class="price-section">
                         <span class="price">$15</span>
-                        <span class="price-label">per person</span>
+                        <span class="price-label">per player</span>
                     </div>
                 {% endif %}
 
