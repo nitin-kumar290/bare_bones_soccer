@@ -161,9 +161,18 @@ document.addEventListener('DOMContentLoaded', function() {
 </script> -->
 
 
+
+
+
+
 <!-- <hr class="my-2 border-secondary opacity-50 border-2 py-4"> -->
 
 
+
+
+
+
+<!-- 
 <div class="container my-1 px-5">
     <div class="bg-white text-dark pt-3 text-center">
         <h1 class="text-center" style="font-size:16px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color: #dc3545;">
@@ -174,9 +183,6 @@ document.addEventListener('DOMContentLoaded', function() {
         <h6>Wäldschanke Ciders</h6>
         <h6>4100 Jason St, Denver, CO</h6>
 
-        <!-- <p class="py-2" style="font-family: 'Bebas Neue Pro'; font-size: 16px;">
-            Rapids vs. Dynamo
-        </p> -->
          <p style="font-family: 'Oswald'; font-size: 14px; font-style: italic;">
             NONSTOP pickup games, Brunch Menu, FREE Drink, Player Prize Entry & More!
         </p> 
@@ -188,7 +194,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
-<!-- Combined Purchase & Stats Box -->
 <div class="container my-4">
     <div class="row justify-content-center">
         <div class="col-md-6">
@@ -198,7 +203,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     Create Account <a href="{% url 'register' %}" class="account-link">HERE</a> if you don't have one.
                 </p>
                 {% if player_cap_reached %}
-                    <!-- Capacity Reached Version -->
+                    // Capacity Reached Version
                     <div class="capacity-alert mb-3">
                         <span class="alert-icon">⚽</span>
                         <span class="alert-text">PLAYER SPOTS FULL!</span>
@@ -221,7 +226,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <span class="price-label">spectator entry</span>
                     </div>
                 {% else %}
-                    <!-- Normal Version -->
+                    // Normal Version 
                     {% if user.is_authenticated %}
                         <button class="purchase-btn" onclick="buyTicketNow()">
                             <span class="btn-text">🎫 BUY TICKET NOW</span>
@@ -472,7 +477,7 @@ async function registerAsSpectator() {
 
 
 
-<!-- Image gallery -->
+
 <div class="image-gallery py-2 pb-5">
     <div class="row g-1">
         <div class="col-4">
@@ -522,7 +527,10 @@ async function registerAsSpectator() {
         aspect-ratio: 16 / 20;
     }
 }
-</style>
+</style> -->
+
+
+
 
 <!-- <div class="image-gallery py-2 pb-5">
     <div class="row g-1">
@@ -574,6 +582,10 @@ async function registerAsSpectator() {
     }
 }
 </style> -->
+
+
+
+
 
 
 <hr class="my-2 border-secondary opacity-50 border-2 py-4">
