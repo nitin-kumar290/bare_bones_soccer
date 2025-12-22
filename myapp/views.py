@@ -816,7 +816,7 @@ def register_free_spectator(request):
                 <td style="font-size:16px; line-height:26px;">
                     📅 <b>Sunday, Jan 18th, 2025</b><br>
                     ⏰ <b>11:00AM - 2:00PM</b><br>
-                    📍 <b>Wäldschanke Ciders & Coffee — Sunnyside, Denver</b><br>
+                    📍 <b>Waldschänke Ciders & Coffee — Sunnyside, Denver</b><br>
                 
                   🍔 Food + Drinks | 🎶 Music<br>
                   <i>*Remember proper shoes! Flats/grippy sneakers *</i><br><br>
@@ -939,7 +939,7 @@ def waldschanke_payment_success(request):
                 <td style="font-size:16px; line-height:26px;">
                     📅 <b>Sunday, Jan 18th, 2026</b><br>
                     ⏰ <b>11:00AM - 2:00PM</b><br>
-                    📍 <b>Wäldschanke Ciders & Coffee — Sunnyside, Denver</b><br>
+                    📍 <b>Waldschänke Ciders & Coffee — Sunnyside, Denver</b><br>
                 
                   🍔 Food + Drinks | 🎶 Music<br>
                   <i>*Remember proper shoes! Flats/grippy sneakers *</i><br><br>
