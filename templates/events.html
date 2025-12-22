@@ -172,14 +172,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
-<!-- 
+
 <div class="container my-1 px-5">
     <div class="bg-white text-dark pt-3 text-center">
         <h1 class="text-center" style="font-size:16px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color: #dc3545;">
             🔥 Next EVENT 🔥
         </h1>
         <h2 style="font-family: 'Oswald', sans-serif; font-size: 1.5rem;">BARE BONES BRUNCH BALL</h2>
-        <h6>Sunday, Dec 7 2025 | 10:30 AM-1:30 PM</h6>
+        <h6>Sunday, Jan 18th 2025 | 11:00AM - 2:00PM</h6>
         <h6>Wäldschanke Ciders</h6>
         <h6>4100 Jason St, Denver, CO</h6>
 
@@ -203,7 +203,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     Create Account <a href="{% url 'register' %}" class="account-link">HERE</a> if you don't have one.
                 </p>
                 {% if player_cap_reached %}
-                    // Capacity Reached Version
+                    <!-- // Capacity Reached Version -->
                     <div class="capacity-alert mb-3">
                         <span class="alert-icon">⚽</span>
                         <span class="alert-text">PLAYER SPOTS FULL!</span>
@@ -226,7 +226,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <span class="price-label">spectator entry</span>
                     </div>
                 {% else %}
-                    // Normal Version 
+                    <!-- // Normal Version  -->
                     {% if user.is_authenticated %}
                         <button class="purchase-btn" onclick="buyTicketNow()">
                             <span class="btn-text">🎫 BUY TICKET NOW</span>
@@ -480,13 +480,13 @@ async function registerAsSpectator() {
 
 <div class="image-gallery py-2 pb-5">
     <div class="row g-1">
-        <div class="col-4">
+        <div class="col-12 col-md-4">
             <img src="{% static 'images/Waldyevent1.jpeg' %}" class="gallery-img" alt="pickup soccer at Waldschänke Ciders & Coffee denver colorado">
         </div>
-        <div class="col-4">
+        <div class="col-12 col-md-4">
             <img src="{% static 'images/waldyevent2.jpeg' %}" class="gallery-img" alt="pickup soccer at Waldschänke Ciders & Coffee denver colorado">
         </div>
-        <div class="col-4">
+        <div class="col-12 col-md-4">
             <img src="{% static 'images/waldyevent3.jpeg' %}" class="gallery-img" alt="pickup soccer at Waldschänke Ciders & Coffee denver colorado">
         </div>
     </div>
@@ -501,7 +501,7 @@ async function registerAsSpectator() {
 .gallery-img {
     width: 100%;
     height: 250px;  
-    aspect-ratio: 4 / 5;   /* makes frame taller */
+    /* aspect-ratio: 4 / 5;   makes frame taller */
     object-fit: contain;
     object-position: center;
     display: block;
@@ -514,7 +514,7 @@ async function registerAsSpectator() {
     }
     .gallery-img {
         height: 300px;     /* Larger height for tablets */
-        aspect-ratio: 3 / 4;
+        /* aspect-ratio: 3 / 4; */
     }
 }
 
@@ -524,10 +524,10 @@ async function registerAsSpectator() {
     }
     .gallery-img {
         height: 350px;     /* Larger height for desktop */
-        aspect-ratio: 16 / 20;
+        /* aspect-ratio: 16 / 20; */
     }
 }
-</style> -->
+</style>
 
 
 
@@ -581,7 +581,7 @@ async function registerAsSpectator() {
         max-height: 300px;
     }
 }
-</style> -->
+</style>
 
 
 

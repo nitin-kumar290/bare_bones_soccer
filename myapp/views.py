@@ -79,6 +79,17 @@ def contact(request):
         form  = PersonForm(request.POST)
         if form.is_valid():
             form.save()
+
+            # Send email to admin
+            subject = "New Contact Form Submission"
+            message = f"""
+            <p>New contact form submission received:</p>
+            <p><strong>Name:</strong> {form.cleaned_data['name']}</p>
+            <p><strong>Email:</strong> {form.cleaned_data['email']}</p>
+            <p><strong>Message:</strong> {form.cleaned_data['message']}</p>
+            """
+            send_email_ses('soccerbarebones@gmail.com', subject, message)
+
             messages.success(request, "Thank you for contacting us! Your message has been received.")
             return redirect('contact')
     else:
@@ -230,6 +241,28 @@ def user_login(request):
                 messages.success(request, "You are now logged in!")
                 # Check for next parameter, default to series_catalog if not present
                 next_url = request.GET.get('next') or request.POST.get('next', 'series_catalog')
+                
+                # If next is waldschanke, create checkout session directly
+                if next_url == '/waldschanke/' or next_url == 'waldschanke':
+                    if OneOffEvent.objects.filter(user=user, event_name='WALDSCHANKE BRUNCH BALL 2').exists():
+                        return redirect('waldschanke')
+                    
+                    session = stripe.checkout.Session.create(
+                        payment_method_types=["card"],
+                        line_items=[{
+                            "price_data": {
+                                "currency": "usd",
+                                "product_data": {"name": "Bare Bones Brunch Ball 2 - Jan 18, 2025"},
+                                "unit_amount": 1500,
+                            },
+                            "quantity": 1,
+                        }],
+                        mode="payment",
+                        success_url=request.build_absolute_uri('/waldschanke-payment-success/') + f"?session_id={{CHECKOUT_SESSION_ID}}",
+                        cancel_url=request.build_absolute_uri('/payment-cancel/'),
+                    )
+                    return redirect(session.url)
+                
                 return redirect(next_url)
             else:
                 messages.error(request, "Invalid username or password")
@@ -260,12 +293,12 @@ def events(request):
     events = Event.objects.all()
     
     paid_players_count = OneOffEvent.objects.filter(
-        event_name='WALDSCHANKE BRUNCH BALL',
+        event_name='WALDSCHANKE BRUNCH BALL 2',
         status='Paid'
     ).count()
     
     spectator_count = OneOffEvent.objects.filter(
-        event_name='WALDSCHANKE BRUNCH BALL',
+        event_name='WALDSCHANKE BRUNCH BALL 2',
         status='Free Spectator'
     ).count()
     
@@ -705,15 +738,15 @@ def rsvp_success(request):
 
 @login_required
 def waldschanke(request):
-    event_date = datetime(2025, 12, 7).date()
+    event_date = datetime(2026, 1, 18).date()
     has_registered = OneOffEvent.objects.filter(
         user=request.user, 
-        event_name='WALDSCHANKE BRUNCH BALL'
+        event_name='WALDSCHANKE BRUNCH BALL 2'
     ).exists()
     
     # Count paid players (excluding free spectators)
     paid_players_count = OneOffEvent.objects.filter(
-        event_name='WALDSCHANKE BRUNCH BALL',
+        event_name='WALDSCHANKE BRUNCH BALL 2',
         status='Paid'
     ).count()
     
@@ -733,13 +766,13 @@ def register_free_spectator(request):
         user = request.user
         
         # Check if already registered
-        if OneOffEvent.objects.filter(user=user, event_name='WALDSCHANKE BRUNCH BALL').exists():
+        if OneOffEvent.objects.filter(user=user, event_name='WALDSCHANKE BRUNCH BALL 2').exists():
             return JsonResponse({'error': 'Already registered'}, status=400)
         
         OneOffEvent.objects.create(
             user=user,
-            event_name='WALDSCHANKE BRUNCH BALL',
-            event_date='2025-12-07',
+            event_name='WALDSCHANKE BRUNCH BALL 2',
+            event_date='2026-01-18',
             payment_id='FREE_SPECTATOR',
             amount=0.00,
             status='Free Spectator'
@@ -764,7 +797,7 @@ def register_free_spectator(request):
               <!-- Header -->
               <tr>
                 <td style="font-size:22px; line-height:30px; text-align:center; font-weight:bold;">
-                  🏟️⚽ 12/7 EVENT CONFIRMATION!
+                  🏟️⚽ 1/18 EVENT CONFIRMATION!
                 </td>
               </tr>
               
@@ -781,8 +814,8 @@ def register_free_spectator(request):
               <!-- Details bullets -->
               <tr>
                 <td style="font-size:16px; line-height:26px;">
-                    📅 <b>Sunday, Dec 7, 2025</b><br>
-                    ⏰ <b>10:30 AM – 1:30 PM</b><br>
+                    📅 <b>Sunday, Jan 18th, 2025</b><br>
+                    ⏰ <b>11:00AM - 2:00PM</b><br>
                     📍 <b>Wäldschanke Ciders & Coffee — Sunnyside, Denver</b><br>
                 
                   🍔 Food + Drinks | 🎶 Music<br>
@@ -831,7 +864,7 @@ def create_waldschanke_checkout_session(request):
     user = request.user
     
     # Check if already registered
-    if OneOffEvent.objects.filter(user=user, event_name='WALDSCHANKE BRUNCH BALL').exists():
+    if OneOffEvent.objects.filter(user=user, event_name='WALDSCHANKE BRUNCH BALL 2').exists():
         return JsonResponse({'error': 'Already registered'}, status=400)
 
     session = stripe.checkout.Session.create(
@@ -839,7 +872,7 @@ def create_waldschanke_checkout_session(request):
         line_items=[{
             "price_data": {
                 "currency": "usd",
-                "product_data": {"name": "Bare Bones Brunch Ball - Dec 7, 2025"},
+                "product_data": {"name": "Bare Bones Brunch Ball 2 - Jan 18, 2025"},
                 "unit_amount": 1500,  # $15.00
             },
             "quantity": 1,
@@ -862,8 +895,8 @@ def waldschanke_payment_success(request):
             if session.payment_status == "paid":
                 OneOffEvent.objects.create(
                     user=request.user,
-                    event_name='WALDSCHANKE BRUNCH BALL',
-                    event_date='2025-12-07',
+                    event_name='WALDSCHANKE BRUNCH BALL 2',
+                    event_date='2026-01-18',
                     payment_id=session_id,
                     amount=15.00,
                     status='Paid'
@@ -888,7 +921,7 @@ def waldschanke_payment_success(request):
               <!-- Header -->
               <tr>
                 <td style="font-size:22px; line-height:30px; text-align:center; font-weight:bold;">
-                  🏟️⚽ 12/7 EVENT CONFIRMATION!
+                  🏟️⚽ 1/18 EVENT CONFIRMATION!
                 </td>
               </tr>
               
@@ -904,8 +937,8 @@ def waldschanke_payment_success(request):
               <!-- Details bullets -->
               <tr>
                 <td style="font-size:16px; line-height:26px;">
-                    📅 <b>Sunday, Dec 7, 2025</b><br>
-                    ⏰ <b>10:30 AM – 1:30 PM</b><br>
+                    📅 <b>Sunday, Jan 18th, 2026</b><br>
+                    ⏰ <b>11:00AM - 2:00PM</b><br>
                     📍 <b>Wäldschanke Ciders & Coffee — Sunnyside, Denver</b><br>
                 
                   🍔 Food + Drinks | 🎶 Music<br>
