@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Registration Successful!{% endblock %}
+
+{% block content %}
+{% if messages %}
+{% for message in messages %}
+    <div class="alert alert-info fade-in text-center fw-bold">{{ message }}</div>
+{% endfor %}
+{% endif %}
+<div class="container text-center my-5">
+    <h2 class="text-success">You're All Set for The Brighton Warehouse Event! ✅</h2>
+    
+    <div class="alert alert-success">
+        <p>You've successfully registered for:</p>
+        <h4>Brighton Warehouse Event</h4>
+        <p><strong>Friday, Feb 13, 2026</strong></p>
+        <p>The Brighton Warehouse - 3403 Brighton Blvd, Denver, Colorado</p>
+        <p>6:30PM - 9:30PM</p>
+    </div>
+    
+    <a href="{% url 'events' %}" class="btn btn-outline-primary mt-4">Back to Event Page</a>
+    <p class="card-text">You will be redirected to the event page in <span id="countdown">20</span> seconds...</p>
+</div>
+
+<script>
+    let timeLeft = 20;
+    const countdownElement = document.getElementById('countdown');
+    
+    const timer = setInterval(() => {
+        timeLeft--;
+        countdownElement.textContent = timeLeft;
+        
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            window.location.href = "{% url 'brighton' %}";
+        }
+    }, 1000);
+</script>
+<script>
+  if (window.history.replaceState) {
+    window.history.replaceState(null, null, window.location.href);
+  }
+</script>
+{% endblock %}

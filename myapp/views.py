@@ -206,8 +206,8 @@ def activate(request, uidb64, token):
         <p>The Bare Bones Crew</p>
     """
         recipient_list = [user.email]  # user_form.email also works
-        send_email_ses(user.email, subject, message)
-        #send_mail(subject, message, settings.EMAIL_HOST_USER, recipient_list, fail_silently=False)
+        # send_email_ses(user.email, subject, message)
+        send_mail(subject, message, settings.EMAIL_HOST_USER, recipient_list, fail_silently=False)
 
         messages.success(request, "Account created! Please sign in.")
         login(request, user)
@@ -291,21 +291,29 @@ def get_events(request):
 
 def events(request):
     events = Event.objects.all()
+
+    has_registered = False
+    if request.user.is_authenticated:
+        has_registered = OneOffEvent.objects.filter(
+            user=request.user, 
+            event_name='brighton'
+        ).exists()
     
     paid_players_count = OneOffEvent.objects.filter(
-        event_name='WALDSCHANKE BRUNCH BALL 2',
+        event_name='brighton',
         status='Paid'
     ).count()
     
     spectator_count = OneOffEvent.objects.filter(
-        event_name='WALDSCHANKE BRUNCH BALL 2',
+        event_name='brighton',
         status='Free Spectator'
     ).count()
     
-    player_cap_reached = paid_players_count >= 36
+    player_cap_reached = paid_players_count >= 70
     
     return render(request, 'events.html', {
         'events': events,
+        'has_registered': has_registered,
         'paid_players_count': paid_players_count,
         'spectator_count': spectator_count,
         'player_cap_reached': player_cap_reached
@@ -545,14 +553,14 @@ def payment_success(request):
                     <p>See you on the courts!</p>
                     <p>The Bare Bones Crew</p>
                     """
-                    send_email_ses(request.user.email, subject, message)
-                    # send_mail(
-                    #     subject,
-                    #     message,
-                    #     settings.EMAIL_HOST_USER,
-                    #     [request.user.email],
-                    #     fail_silently=False
-                    # )
+                    # send_email_ses(request.user.email, subject, message)
+                    send_mail(
+                        subject,
+                        message,
+                        settings.EMAIL_HOST_USER,
+                        [request.user.email],
+                        fail_silently=False
+                    )
                     
                     # 4) Show success page
                     messages.success(request, "Payment successful!")
@@ -597,13 +605,13 @@ def payment_success(request):
             # # )
             send_email_ses(request.user.email, subject, message)
 
-            # send_mail(
-            #     subject,
-            #     message,
-            #     settings.EMAIL_HOST_USER,
-            #     [request.user.email],
-            #     fail_silently=False
-            # )
+            send_mail(
+                subject,
+                message,
+                settings.EMAIL_HOST_USER,
+                [request.user.email],
+                fail_silently=False
+            )
             
             # 4) Show success page
             messages.success(request, "Sign Up successful!")
@@ -758,6 +766,207 @@ def waldschanke(request):
         'player_cap_reached': player_cap_reached,
         'paid_players_count': paid_players_count
     })
+
+
+@login_required
+def brighton(request):
+    event_date = datetime(2026, 2, 13).date()
+    has_registered = OneOffEvent.objects.filter(
+        user=request.user, 
+        event_name='brighton'
+    ).exists()
+    
+    # Count paid players (excluding free spectators)
+    paid_players_count = OneOffEvent.objects.filter(
+        event_name='brighton',
+        status='Paid'
+    ).count()
+    
+    player_cap_reached = paid_players_count >= 70
+    
+    return render(request, 'brighton.html', {
+        'event_date': event_date,
+        'has_registered': has_registered,
+        'player_cap_reached': player_cap_reached,
+        'paid_players_count': paid_players_count
+    })
+
+@login_required
+def create_brighton_checkout_session(request):
+    stripe.api_key = settings.STRIPE_SECRET_KEY 
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Only POST allowed'}, status=405)
+
+    user = request.user
+    
+    # Check if already registered
+    if OneOffEvent.objects.filter(user=user, event_name='brighton').exists():
+        return JsonResponse({'error': 'Already registered'}, status=400)
+
+    session = stripe.checkout.Session.create(
+        payment_method_types=["card"],
+        line_items=[{
+            "price_data": {
+                "currency": "usd",
+                "product_data": {"name": "The Brighton Warehouse Party - Feb 13, 2026"},
+                "unit_amount": 100,  # $10.00
+            },
+            "quantity": 1,
+        }],
+        mode="payment",
+        success_url=request.build_absolute_uri('/brighton-payment-success/') + f"?session_id={{CHECKOUT_SESSION_ID}}",
+        cancel_url=request.build_absolute_uri('/payment-cancel/'),
+    )
+
+    return JsonResponse({"id": session.id})
+
+
+@login_required
+def brighton_payment_success(request):
+    session_id = request.GET.get("session_id")
+    
+    try:
+        if session_id and not OneOffEvent.objects.filter(payment_id=session_id).exists():
+            session = stripe.checkout.Session.retrieve(session_id)
+            if session.payment_status == "paid":
+                OneOffEvent.objects.create(
+                    user=request.user,
+                    event_name='brighton',
+                    event_date='2026-03-15',
+                    payment_id=session_id,
+                    amount=10.00,
+                    status='Paid'
+                )
+                
+                subject = "You're registered for the Warehouse Soccer Party!"
+                html_message = f"""
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <!-- Email content with direct image URL -->
+
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#ffffff; margin:0; padding:0;">
+                <tr>
+                    <td align="center" style="padding:0;">
+                    <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="width:100%; max-width:600px; margin:0 auto;">
+                        <tr>
+                        <td align="center" style="padding:24px;">
+                            <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width:600px; width:100%; font-family:Arial, Helvetica, sans-serif; color:#111;">
+                            
+                            <!-- Header -->
+                            <tr>
+                                <td style="font-size:22px; line-height:30px; text-align:center; font-weight:bold;">
+                                🏟️⚽ 2/13 WAREHOUSE PARTY CONFIRMATION!
+                                </td>
+                            </tr>
+                            
+                            <tr><td style="height:8px; line-height:8px;">&nbsp;</td></tr>
+                            
+                            <!-- Hook -->
+                            <tr>
+                                <td style="font-size:16px; line-height:24px; text-align:center;">
+                                    You're ready to play! Your spot for The Brighton Warehouse Party is confirmed 🙌                </td>
+                            </tr>        
+                            <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
+                            
+                            <!-- Details bullets -->
+                            <tr>
+                                <td style="font-size:16px; line-height:26px;">
+                                    📅 <b>Friday, Feb 18th, 2026</b><br>
+                                    ⏰ <b>6:30PM - 9:30PM</b><br>
+                                    📍 <a href="https://maps.google.com/?q=3403+Brighton+Blvd,+Denver,+Colorado" target="_blank" style="font-family: 'Oswald', sans-serif;">The Brighton - 3403 Brighton Blvd, Denver, Colorado</a><br>
+                                
+                                🍔 Food + Drinks | 🎶 Music & More<br>
+                                <i>*Remember proper shoes! Flats/indoor soccer shoes*</i><br><br>
+                                
+                                
+                                </td>
+                            </tr>
+                            
+                            <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
+                            
+                            <tr>
+                                <td style="font-size:16px; line-height:24px; text-align:center;">
+                                See you on the court!
+                                <br>
+                                The Bare Bones Crew
+                                </td>
+                            </tr>
+                            
+                            </table>
+                        </td>
+                        </tr>
+                    </table>
+                    </td>
+                </tr>
+                </table>
+
+                </body>
+                </html>          
+                """
+                email = EmailMessage(
+                    subject,
+                    html_message,
+                    settings.EMAIL_HOST_USER,
+                    [request.user.email]
+                )
+                email.content_subtype = "html"
+                email.send()
+                
+                messages.success(request, "Registration successful!")
+                return render(request, 'brighton_payment_success.html')
+            else:
+                messages.error(request, "Payment was not completed.")
+                return redirect('brighton')
+        else:
+            messages.error(request, "Invalid session or already processed.")
+            return redirect('brighton')
+    except stripe.error.StripeError as e:
+        messages.error(request, f"Error verifying payment: {e}")
+        return redirect('brighton')
+
+@login_required
+def register_brighton_spectator(request):
+    if request.method == 'POST':
+        user = request.user
+        
+        if OneOffEvent.objects.filter(user=user, event_name='brighton').exists():
+            return JsonResponse({'error': 'Already registered'}, status=400)
+        
+        OneOffEvent.objects.create(
+            user=user,
+            event_name='brighton',
+            event_date='2026-02-13',
+            payment_id='FREE_SPECTATOR',
+            amount=0.00,
+            status='Free Spectator'
+        )
+        
+        subject = "You're Going! See ya at The Brighton Warehouse Party!"
+        html_message = f"""
+        <!DOCTYPE html>
+        <html>
+        <body>
+        <p>You signed up to come watch & enjoy festivities!</p>
+        <p>📅 <b>Friday, Feb 13th, 2026</b><br>
+        ⏰ <b>6:30PM - 9:30PM</b><br>
+        📍 <b>Event Location</b></p>
+        <p>See you there!<br>The Bare Bones Crew</p>
+        </body>
+        </html>
+        """
+        email = EmailMessage(
+                    subject,
+                    html_message,
+                    settings.EMAIL_HOST_USER,
+                    [request.user.email]
+                )
+        email.content_subtype = "html"
+        email.send()
+        
+        return JsonResponse({'success': True, 'redirect': '/spectator-registration-success/'})
+    
+    return JsonResponse({'error': 'Invalid request'}, status=400)
 
 
 @login_required

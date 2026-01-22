@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+{% block title %}Bare Bones Soccer Brunch Ball{% endblock %}
+
+{% load static %}
+
+{% block hero_background %}{% static 'images/banner_schedule.jpeg' %}{% endblock %}
+
+{% block content %}
+{% csrf_token %}
+
+<div class="container" style="max-width: 600px; margin-top: 80px;">
+    <div class="text-center mb-4">
+        <p class="reserve-text">RESERVE YOUR SPOT FOR:</p>
+        <h1 class="event-title">Bones & Roses - Warehouse Party</h1>
+        <a href="https://maps.google.com/?q=3403+Brighton+Blvd,+Denver,+Colorado" target="_blank" style="font-family: 'Oswald', sans-serif;">The Brighton - 3403 Brighton Blvd, Denver, Colorado</a>
+        <ul class="list-unstyled mb-4 text-dark">
+                            <li><i class="fas fa-calendar me-2"></i>Friday, Feb 13th, 2026</li>
+                            <li><i class="fas fa-clock me-2"></i>6:30PM - 9:30PM</li>
+                        </ul>
+        <p class="event-details">NONSTOP Soccer • 4 Courts • Food & Drinks • Giveaways</p>
+    </div>
+
+    <div class="registration-card">
+        {% if has_registered %}
+            <div class="status-indicator registered">
+                ✓ ALREADY REGISTERED
+            </div>
+            <div class="price-display">$10</div>
+            <div class="spots-info">{{ paid_players_count }}/70 SPOTS TAKEN</div>
+        {% elif player_cap_reached %}
+            <button class="register-btn spectator" onclick="registerAsSpectator()">
+                REGISTER AS SPECTATOR
+            </button>
+            <div class="price-display">FREE</div>
+            <div class="spots-info">{{ paid_players_count }}/36 SPOTS TAKEN</div>
+        {% else %}
+            <button class="register-btn" onclick="registerForEvent()">
+                REGISTER NOW
+            </button>
+            <div class="price-display">$10</div>
+            <div class="spots-info">{{ paid_players_count }}/70 SPOTS TAKEN</div>
+        {% endif %}
+    </div>
+
+</div>
+
+<script src="https://js.stripe.com/v3/"></script>
+
+<script>
+    
+const stripe = Stripe("pk_live_51Qe6VrKKPDelkA7OgycGGoqfOS3cfz4k6KQ53R2LvHJann8fxkRLFX2XF7CwBxqLOc8WfXpv3lLurLmh0og9TUlX00VSXk1ZM7");
+const csrftoken = "{{ csrf_token }}";
+
+async function registerForEvent() {
+    try {
+        const res = await fetch("/api/create-brighton-checkout-session", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrftoken
+            }
+        });
+        const session = await res.json();
+
+        if (!session.id) throw new Error("No session ID returned.");
+        
+        await stripe.redirectToCheckout({ sessionId: session.id });
+    } catch (err) {
+        console.error(err);
+        alert("Error creating checkout. Please try again.");
+    }
+}
+
+async function registerAsSpectator() {
+    try {
+        const res = await fetch("/api/register-brighton-spectator", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}"
+            }
+        });
+        
+        if (res.ok) {
+            const data = await res.json();
+            if (data.redirect) {
+                window.location.href = data.redirect;
+            }
+        } else {
+            const error = await res.json();
+            alert(error.error || "Registration failed. Please try again.");
+        }
+    } catch (err) {
+        console.error(err);
+        alert("Error registering. Please try again.");
+    }
+}
+</script>
+
+<style>
+    @font-face {
+    font-family: 'Copper Black';
+    src: url('{% static "fonts/copper-black.woff2" %}') format('woff2'),
+         url('{% static "fonts/copper-black.woff" %}') format('woff');
+}
+.reserve-text {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 10px;
+    letter-spacing: 2px;
+}
+
+.event-title {
+    font-family: 'Copper Black', 'Georgia', serif;
+    font-size: 28px;
+    font-weight: normal;
+    color: #333;
+    margin-bottom: 15px;
+    line-height: 1.2;
+}
+
+.event-details {
+    font-style: italic;
+    color: #666;
+    font-size: 16px;
+    margin-bottom: 40px;
+}
+
+.registration-card {
+    background: #fff;
+    border: 2px solid #e8d5d7;
+    border-radius: 12px;
+    padding: 30px;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.status-indicator {
+    background: #f8d7da;
+    color: #721c24;
+    padding: 12px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 20px;
+    display: inline-block;
+}
+
+.register-btn {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 20px;
+    transition: background 0.3s;
+}
+
+.register-btn:hover {
+    background: #c82333;
+}
+
+.register-btn.spectator {
+    background: #28a745;
+}
+
+.register-btn.spectator:hover {
+    background: #218838;
+}
+
+.price-display {
+    font-size: 36px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.spots-info {
+    color: #666;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.social-section {
+    text-align: center;
+    margin-top: 60px;
+}
+
+.social-icons {
+    margin-bottom: 10px;
+}
+
+.social-icons span {
+    font-size: 20px;
+    margin: 0 10px;
+    opacity: 0.7;
+}
+
+.social-handle {
+    color: #666;
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 1px;
+}
+</style>
+{% endblock %}

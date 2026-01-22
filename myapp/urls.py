@@ -61,6 +61,10 @@ urlpatterns = [
      path('waldschanke-payment-success/', views.waldschanke_payment_success),
      path('api/register-free-spectator', views.register_free_spectator, name='register_free_spectator'),
      path('spectator-registration-success/', views.spectator_registration_success, name='spectator_registration_success'),
+     path('brighton/', views.brighton, name='brighton'),
+     path('api/create-brighton-checkout-session', views.create_brighton_checkout_session),
+     path('brighton-payment-success/', views.brighton_payment_success),
+     path('api/register-brighton-spectator', views.register_brighton_spectator, name='register_brighton_spectator'),
 
 
 ]

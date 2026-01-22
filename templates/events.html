@@ -8,61 +8,20 @@
     <div class="alert alert-info fade-in text-center fw-bold">{{ message }}</div>
 {% endfor %}
 {% endif %}
-
-
-<!-- <div class="container my-1 px-5">
-    <div class="bg-white text-dark pt-3 text-center">
-        <h1 class="text-center" style="font-size:16px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color: #dc3545;">
-            🔥 UPCOMING EVENT 🔥
-        </h1>
-        <h2 style="font-family: 'Oswald', sans-serif; font-size: 1.5rem;">BARE BONES SOCCER WAREHOUSE PARTY</h2>
-        <h6>Thursday, Nov 20th 2025 | 6:30-9:30 PM</h6>
-        <h6>The Brighton</h6>
-        <h6>3403 Brighton Blvd, Denver, Colorado</h6>
-
-
-         <p style="font-family: 'Oswald'; font-size: 14px; font-style: italic;">
-            FREE Pickup Soccer, 4 courts, Prizes + Food & Drinks 
-        </p> 
-    </div>
-</div>
-
-
 <div class="container my-1">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card border-secondary">
-                <div class="card-body text-center">
-                    <h5 class="card-title text-danger">RSVP NOW!</h5>
-                    <form method="post" action="{% url 'event_rsvp' %}">
-                        {% csrf_token %}
-                        <div class="input-group mb-3">
-                            <input type="email" name="email" class="form-control" placeholder="Enter your email" required>
-                            <button class="btn btn-secondary" type="submit">RSVP</button>
-                        </div>
-                    </form>
-                    <p class="card-text" style="font-family: 'Bebas Neue Pro'; font-size: 14px;">
-                        *Must have Bare Bones Soccer account to play* <br>
-                        Create Account <a href="{% url 'register' %}" style="font-style: italic;">HERE</a> if you don't have one.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="container my-3">
     <div class="video-container">
         <div class="video-wrapper">
             <video 
                 id="customVideo"
                 width="100%" 
                 loop 
+                autoplay
+                muted
                 playsinline
                 preload="metadata"
                 class="promo-video">
-                <source src="{% static 'videos/brighton_event_vid.webm' %}" type="video/webm">
-                <source src="{% static 'videos/brighton_event_vid.mp4' %}" type="video/mp4">
+                <!-- <source src="{% static 'videos/the_brighton_event_2.webm' %}" type="video/webm"> -->
+                <source src="{% static 'videos/the_brighton_event_2.mp4' %}" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
             <div class="play-button-overlay" id="playButton">
@@ -95,7 +54,7 @@
     object-position: center;
 }
 
-.play-button-overlay {
+/* .play-button-overlay {
     position: absolute;
     top: 0;
     left: 0;
@@ -127,7 +86,7 @@
 
 .play-button-overlay.hidden {
     display: none;
-}
+} */
 
 @media (max-width: 768px) {
     .video-container {
@@ -136,44 +95,359 @@
         margin: 0 15px;
     }
     
-    .play-button {
+    /* .play-button {
         width: 60px;
         height: 60px;
         font-size: 24px;
-    }
+    } */
 }
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const video = document.getElementById('customVideo');
-    const playButton = document.getElementById('playButton');
     
-    playButton.addEventListener('click', function() {
-        video.play();
-        playButton.classList.add('hidden');
-    });
-    
-    video.addEventListener('pause', function() {
-        playButton.classList.remove('hidden');
+    // Try to autoplay (some browsers require user interaction)
+    video.play().catch(function(error) {
+        console.log('Autoplay failed:', error);
     });
 });
-</script> -->
+</script>
+
+ <div class="container my-1 px-1">
+    <div class="bg-white text-dark pt-3 text-center">
+        <h1 class="text-center" style="font-size:16px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color: #dc3545;">
+            🔥 UPCOMING EVENT 🔥
+        </h1>
+        
+        <h2 style="font-family: 'Oswald', sans-serif; font-size: 1.5rem;">Bones & Roses 💀🌹</h2>
+        <h4 style="font-family: 'Oswald', sans-serif; font-size: 1.5rem;">WAREHOUSE SOCCER PARTY</h4>
+        <h6>Friday, Feb 13th 2026 | 6:30-9:30 PM</h6>
+<a href="https://maps.google.com/?q=3403+Brighton+Blvd,+Denver,+Colorado" target="_blank" style="font-family: 'Oswald', sans-serif;">The Brighton - 3403 Brighton Blvd, Denver, Colorado</a>
+         <p style="font-family: 'Oswald'; font-size: 14px; font-style: italic;">
+            NONSTOP Soccer, 4 Courts, Food & Drinks, Giveaways 
+        </p> 
+    </div>
+</div>
+
+<div class="container my-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="purchase-card">
+                <p class="purchase-note pb-3">
+                    *Must be logged in to Bare Bones Soccer account to purchase* <br>
+                    Create Account <a href="{% url 'register' %}" class="account-link">HERE</a> if you don't have one.
+                </p>
+                {% if has_registered %}
+                    <div class="capacity-alert mb-3">
+                        <span class="alert-icon">✓</span>
+                        <span class="alert-text">ALREADY REGISTERED</span>
+                    </div>
+                    <div class="price-section">
+                        <span class="price">$10</span>
+                        <span class="price-label">per player</span>
+                    </div>
+                {% elif player_cap_reached %}
+                    <div class="capacity-alert mb-3">
+                        <span class="alert-icon">⚽</span>
+                        <span class="alert-text">PLAYER SPOTS FULL!</span>
+                    </div>
+                    {% if user.is_authenticated %}
+                        <button class="purchase-btn spectator-btn" onclick="registerAsSpectator()">
+                            <span class="btn-text">👥 REGISTER AS SPECTATOR</span>
+                            <span class="btn-icon">→</span>
+                        </button>
+                    {% else %}
+                        <a href="{% url 'login' %}?next={% url 'brighton' %}" class="purchase-btn spectator-btn">
+                            <span class="btn-text">👥 REGISTER AS SPECTATOR</span>
+                            <span class="btn-icon">→</span>
+                        </a>
+                    {% endif %}
+                    <div class="price-section">
+                        <span class="price">FREE</span>
+                        <span class="price-label">spectator entry</span>
+                    </div>
+                {% else %}
+                    {% if user.is_authenticated %}
+                        <button class="purchase-btn" onclick="buyTicketNow()">
+                            <span class="btn-text">🎫 BUY TICKET NOW</span>
+                            <span class="btn-icon">→</span>
+                        </button>
+                    {% else %}
+                        <a href="{% url 'login' %}?next={% url 'brighton' %}" class="purchase-btn">
+                            <span class="btn-text">🎫 BUY TICKET NOW</span>
+                            <span class="btn-icon">→</span>
+                        </a>
+                    {% endif %}
+                    <div class="price-section">
+                        <span class="price">$10</span>
+                        <span class="price-label">per player</span>
+                    </div>
+                {% endif %}
+
+                <div class="spots-counter">
+                    <span class="spots-text"><strong>{{ paid_players_count }}/70 SPOTS TAKEN</strong></span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+const stripe = Stripe("pk_live_51Qe6VrKKPDelkA7OgycGGoqfOS3cfz4k6KQ53R2LvHJann8fxkRLFX2XF7CwBxqLOc8WfXpv3lLurLmh0og9TUlX00VSXk1ZM7");
+
+async function buyTicketNow() {
+    try {
+        const res = await fetch("/api/create-brighton-checkout-session", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}"
+            }
+        });
+        const session = await res.json();
+
+        if (!session.id) throw new Error("No session ID returned.");
+        
+        await stripe.redirectToCheckout({ sessionId: session.id });
+    } catch (err) {
+        console.error(err);
+        alert("Error creating checkout. Please try again.");
+    }
+}
+
+async function registerAsSpectator() {
+    try {
+        const res = await fetch("/api/register_brighton_spectator", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}"
+            }
+        });
+        
+        if (res.ok) {
+            const data = await res.json();
+            if (data.redirect) {
+                window.location.href = data.redirect;
+            }
+        } else {
+            const error = await res.json();
+            alert(error.error || "Registration failed. Please try again.");
+        }
+    } catch (err) {
+        console.error(err);
+        alert("Error registering. Please try again.");
+    }
+}
+</script>
+
+
+
+<style>
+.purchase-card {
+    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+    border: 1px solid #d64f5d;
+    border-radius: 16px;
+    padding: 1.5rem;  /* Reduced from 2rem */
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(220, 53, 69, 0.15);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.purchase-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(220, 53, 69, 0.25);
+}
+
+.spots-counter {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 25px;
+    padding: 0.5rem 1rem;
+    margin-bottom: 1rem;
+    display: inline-block;
+}
+
+.spots-text {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: #212529;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+
+.purchase-btn {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    border: none;
+    border-radius: 50px;
+    padding: 1rem 2.5rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto 1rem auto;  /* Reduced from 1.5rem */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.purchase-btn:hover {
+    background: linear-gradient(135deg, #c82333 0%, #a71e2a 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.6);
+}
+
+.btn-text {
+    flex: 1;
+}
+
+.btn-icon {
+    font-size: 1.2rem;
+    transition: transform 0.3s ease;
+}
+
+.purchase-btn:hover .btn-icon {
+    transform: translateX(4px);
+}
+
+.price-section {
+    margin-bottom: 1rem;
+}
+
+.price {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #dc3545;
+    font-family: 'Oswald', sans-serif;
+}
+
+.price-label {
+    display: block;
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+}
+
+.purchase-note {
+    font-family: 'Bebas Neue Pro';
+    font-size: 14px;
+    color: #6c757d;
+    line-height: 1.4;
+    margin: 0;
+}
+
+.account-link {
+    color: #dc3545;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.account-link:hover {
+    color: #c82333;
+    text-decoration: underline;
+}
+
+.spectator-btn {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+}
+
+.spectator-btn:hover {
+    background: linear-gradient(135deg, #20c997 0%, #17a2b8 100%);
+}
+
+.capacity-alert {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    border: 1px solid #ffeaa7;
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.alert-icon {
+    font-size: 1.2rem;
+}
+
+.alert-text {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #856404;
+}
+
+
+@media (max-width: 768px) {
+    .purchase-card {
+        padding: 1.5rem;
+        margin: 0 1rem;
+    }
+    
+    .price {
+        font-size: 2rem;
+    }
+    
+    .purchase-btn {
+        font-size: 1rem;
+        padding: 0.9rem 2rem;
+    }
+}
+</style>
+
+<!-- <div class="container my-1">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-secondary">
+                <div class="card-body text-center">
+                    <h5 class="card-title text-danger">RSVP NOW!</h5>
+                    <form method="post" action="{% url 'event_rsvp' %}">
+                        {% csrf_token %}
+                        <div class="input-group mb-3">
+                            <input type="email" name="email" class="form-control" placeholder="Enter your email" required>
+                            <button class="btn btn-secondary" type="submit">RSVP</button>
+                        </div>
+                    </form>
+                    <p class="card-text" style="font-family: 'Bebas Neue Pro'; font-size: 14px;">
+                        *Must have Bare Bones Soccer account to play* <br>
+                        Create Account <a href="{% url 'register' %}" style="font-style: italic;">HERE</a> if you don't have one.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> -->
 
 
 
 
 
 
-<!-- <hr class="my-2 border-secondary opacity-50 border-2 py-4"> -->
+
+
+<hr class="my-2 border-secondary opacity-50 border-2 py-4">
 
 
 
 
-
-
-
-<div class="container my-1 px-5">
+<!-- <div class="container my-1 px-5">
     <div class="bg-white text-dark pt-3 text-center">
         <h1 class="text-center" style="font-size:16px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color: #dc3545;">
             🔥 Next EVENT 🔥
@@ -203,7 +477,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     Create Account <a href="{% url 'register' %}" class="account-link">HERE</a> if you don't have one.
                 </p>
                 {% if player_cap_reached %}
-                    <!-- // Capacity Reached Version -->
+                     // Capacity Reached Version 
                     <div class="capacity-alert mb-3">
                         <span class="alert-icon">⚽</span>
                         <span class="alert-text">PLAYER SPOTS FULL!</span>
@@ -226,7 +500,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <span class="price-label">spectator entry</span>
                     </div>
                 {% else %}
-                    <!-- // Normal Version  -->
+                     // Normal Version  
                     {% if user.is_authenticated %}
                         <button class="purchase-btn" onclick="buyTicketNow()">
                             <span class="btn-text">🎫 BUY TICKET NOW</span>
@@ -527,7 +801,7 @@ async function registerAsSpectator() {
         /* aspect-ratio: 16 / 20; */
     }
 }
-</style>
+</style> -->
 
 
 
