@@ -5,117 +5,246 @@
 {% block hero_background %}{% static 'images/BareBones1.jpg' %}{% endblock %}
 
 {% block content %}
-<!-- <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap" rel="stylesheet"> -->
 
+<style>
+    .series-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .series-title {
+        text-align: center;
+        font-size: 2.5rem;
+        font-weight: 400;
+        letter-spacing: 0.3em;
+        margin: 40px 0;
+        text-transform: uppercase;
+    }
+    
+    .series-card {
+        background: #f5f5f5;
+        border-radius: 8px;
+        overflow: hidden;
+        margin-bottom: 40px;
+    }
+    
+    .series-image {
+        width: 100%;
+        height: 400px;
+        object-fit: cover;
+    }
+    
+    .series-content {
+        padding: 30px;
+        text-align: center;
+    }
+    
+    .series-content h2 {
+        font-size: 2rem;
+        font-weight: 400;
+        margin-bottom: 15px;
+    }
+    
+    .series-subtitle {
+        font-style: italic;
+        margin-bottom: 20px;
+        color: #333;
+    }
+    
+    .series-description {
+        line-height: 1.6;
+        margin-bottom: 25px;
+        color: #555;
+    }
+    
+    .play-btn {
+        background: #2c2c2c;
+        color: white;
+        border: none;
+        padding: 12px 40px;
+        font-size: 1rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+    
+    .play-btn:hover {
+        background: #000;
+    }
+    
+    @media (max-width: 768px) {
+        .series-title {
+            font-size: 1.8rem;
+            letter-spacing: 0.2em;
+        }
+        
+        .series-image {
+            height: 250px;
+        }
+        
+        .series-content {
+            padding: 20px;
+        }
+        
+        .series-content h2 {
+            font-size: 1.5rem;
+        }
+    }
+</style>
 
-<!-- <div style="background-color: #ffffff;" class="text-black pt-5 full-width-banner text-center">
-    <h1 style="font-family: 'Oswald', sans-serif;">SOCIAL SERIES EVENTS</h1>
-</div> -->
-<div class="container my-1 px-5">
-    <div class="bg-white text-dark pt-3 text-center">
-        <h2 style="font-family: 'Oswald', sans-serif;">SPORT STABLE SOCIAL SERIES</h2>
-        <h6>Monday nights at Blue Sport Stable, Superior Colorado</h6>
-        <p class="py-2" style="font-family: 'Bebas Neue Pro'">
-            Fast paced small-sided games on the pickleball courts, every Monday night at Blue Sport Stable. Inagural weekly Bare Bones social series - footwork meets good vibes, good food and post game hangs are encouraged. “King of the court” style. No team registration, just rotating pickup games, music and community love. Show up, show out and be part of something special.
-        </p>
-    </div>
+<div class="series-container">
+    <h1 class="series-title">Bare Bones Soccer Series</h1>
+    
+    <!-- Sport Stable Card -->
+    <div class="series-card">
+            <div class="container my-3">
+<div class="video-container">
+    <video 
+        id="customVideo"
+        width="100%" 
+        loop 
+        autoplay
+        muted
+        playsinline
+        preload="metadata"
+        class="promo-video">
+        <source src="{% static 'videos/sport_stable_series.mp4' %}" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+</div>
 </div>
 
-<section class="container-fluid py-1">
-    <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-6">
-            <div class="px-1 py-1">
-                <!-- Title -->
-                <div class="text-center">
+<style>
+.video-container {
+    max-width: 650px;
+    margin: 0 auto;
+    line-height: 0;
+}
 
-                    <!-- Sign-Up Button -->
-                    <a href="{% url 'series_catalog' %}" class="d-inline-block mb-4">
-                        <button class="btn btn-outline-dark btn-lg text-uppercase fw-bold px-4 py-2" style="border-width: 3px;">log in!</button>
-                    </a>
-                    <a href="{% url 'login' %}" class="text-decoration-none">
-                        <h6 class=" text-black text-uppercase mb-4">Log in and schedule your next games!</h6>
-                    </a>
-                     
-                </div>
-            </div>
+.promo-video {
+    width: 100%;
+    height: auto;
+    display: block;
+    margin: 0;
+    padding: 0;
+}
+
+@media (max-width: 768px) {
+    .video-container {
+        max-width: 100%;
+        margin: 0 15px;
+        line-height: 0;
+    }
+    
+    .promo-video {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+}
+
+
+
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const video = document.getElementById('customVideo');
+    
+    // Try to autoplay (some browsers require user interaction)
+    video.play().catch(function(error) {
+        console.log('Autoplay failed:', error);
+    });
+});
+</script>
+        <div class="series-content">
+            <h2>Sport Stable Pickup</h2>
+            <p class="series-subtitle">Weekly Monday night soccer. <em>Sport Stable. Superior, Colorado.</em></p>
+            <p class="series-description">
+                Fast-paced, small-sided, coed 4v4 pickup. Community-first "King" of the court format, rotating runs, music and post-game hangs.
+            </p>
+            <a href="{% url 'schedule' %}">
+                <button class="play-btn">LET'S PLAY!</button>
+            </a>
         </div>
     </div>
-</section>
 
-<!-- <section class="container text-center py-2 border">
-<div class="container py-3">
-    <h2 class="fw-bold text-uppercase">Join the Community</h2>
 
-    <div class="d-flex justify-content-center gap-4 my-3">
-        <span class="fw-bold text-uppercase">Follow</span>
-        <span class="fw-bold text-uppercase">Sign Up</span>
-        <span class="fw-bold text-uppercase">Show Up</span>
-    </div>
-</div>
-    <a href="{% url 'series_catalog' %}" style="text-decoration: none;">
-        <button class="btn btn-outline-dark btn-lg text-uppercase fw-bold px-4 py-2">Sign Up To Play</button>
-    </a>
+    
+    <!-- La Familia Card -->
+    <div class="series-card">
+        <div class="container my-3">
+            <div class="video-container">
+                <video 
+                    id="customVideo2"
+                    width="100%" 
+                    loop 
+                    autoplay
+                    muted
+                    playsinline
+                    preload="metadata"
+                    class="promo-video">
+                    <source src="{% static 'videos/la_fam_series.mp4' %}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            </div>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
-  
-    <div class="d-flex justify-content-center gap-4 fs-3 py-2">
-        <a href="https://www.instagram.com/barebonessoccer/" class="text-dark"><i class="fab fa-instagram"></i></a>
-        <a href="#" class="text-dark"><i class="fas fa-envelope"></i></a>
-        <a href="#" class="text-dark"><i class="fab fa-tiktok"></i></a>
-    </div>
+            <style>
+            .video-container {
+                max-width: 650px;
+                max-height: 400px;
+                margin: 0 auto;
+                line-height: 0;
+                overflow: hidden;
+            }
 
-    <a href="https://www.instagram.com/barebonessoccer/" class="text-dark">
-        <p class="fs-3">@BAREBONESSOCCER</p>
-    </a>
-</section> -->
+            .promo-video {
+                width: 100%;
+                height: 100%;
+                max-height: 400px;
+                display: block;
+                object-fit: cover;
+                margin: 0;
+                padding: 0;
+            }
 
-<div class="container w-100 w-md-75 w-lg-50 py-2" style="max-width: 600px;">
-    <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
-        <div class="carousel-inner">
-            <div class="carousel-item active">
-                <img class="d-block w-100" src="{% static 'images/ss1.jpg' %}" class="d-block w-60 img-fluid rounded" alt="First slide- Soccer Series | | Denver Colorado Soccer BareBones | futbol | football | Pickup Soccer">
-            </div>
-            <div class="carousel-item">
-                <img class="d-block w-100" src="{% static 'images/ss2.jpeg' %}" class="d-block w-60 img-fluid rounded" alt="Second slide Soccer Series | | Denver Colorado Soccer BareBones | futbol | football | Pickup Soccer">
-            </div>
-            <div class="carousel-item">
-                <img class="d-block w-100" src="{% static 'images/ss3.jpg' %}" class="d-block w-60 img-fluid rounded" alt="Second slide Soccer Series | | Denver Colorado Soccer BareBones | futbol | football | Pickup Soccer">
-            </div>
-            <div class="carousel-item">
-                <img class="d-block w-100" src="{% static 'images/ss4.jpg' %}" class="d-block w-60 img-fluid rounded" alt="Second slide Soccer Series | | Denver Colorado Soccer BareBones | futbol | football | Pickup Soccer">
-            </div>
-            <div class="carousel-item">
-                <img class="d-block w-100" src="{% static 'images/ss5.jpg' %}" class="d-block w-60 img-fluid rounded" alt="Second slide Soccer Series | | Denver Colorado Soccer BareBones | futbol | football | Pickup Soccer">
-            </div>
-            <div class="carousel-item">
-                <img class="d-block w-100" src="{% static 'images/ss6.jpg' %}" class="d-block w-60 img-fluid rounded" alt="Second slide Soccer Series | | Denver Colorado Soccer BareBones | futbol | football | Pickup Soccer">
-            </div>
-            <div class="carousel-item">
-                <img class="d-block w-100" src="{% static 'images/pickup6.jpeg' %}" class="d-block w-60 img-fluid rounded" alt="Second slide Soccer Series | | Denver Colorado Soccer BareBones | futbol | football | Pickup Soccer">
-            </div>
-            <div class="carousel-item">
-                <img class="d-block w-100" src="{% static 'images/pickup7.jpeg' %}" class="d-block w-60 img-fluid rounded" alt="Second slide Soccer Series | | Denver Colorado Soccer BareBones | futbol | football | Pickup Soccer">
-            </div>
-            <div class="carousel-item">
-                <img class="d-block w-100" src="{% static 'images/events_page2.jpg' %}" class="d-block w-60 img-fluid rounded" alt="Second slide Soccer Series | | Denver Colorado Soccer BareBones | futbol | football | Pickup Soccer">
-            </div>
-            <div class="carousel-item">
-                <img class="d-block w-100" src="{% static 'images/events_page1.jpg' %}" class="d-block w-60 img-fluid rounded" alt="Third slide Soccer Series | | Denver Colorado Soccer BareBones | futbol | football | Pickup Soccer">
-            </div>
-            <div class="carousel-item">
-                <img class="d-block w-100" src="{% static 'images/BareBones1.jpg' %}" class="d-block w-60 img-fluid rounded" alt="4th slide Soccer Series | | Denver Colorado Soccer BareBones | futbol | football | Pickup Soccer">
-            </div>
+            @media (max-width: 768px) {
+                .video-container {
+                    max-width: 100%;
+                    max-height: 300px;
+                    margin: 0 15px;
+                }
+                
+                .promo-video {
+                    max-height: 300px;
+                }
+            }
+            </style>
+
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const video = document.getElementById('customVideo2');
+                
+                video.play().catch(function(error) {
+                    console.log('Autoplay failed:', error);
+                });
+            });
+            </script>
+
+        <div class="series-content">
+            <h2>La Familia Pickup</h2>
+            <p class="series-subtitle">Weekly Thursday night soccer. <em>La Familia Rec Center. Denver, CO.</em></p>
+            <p class="series-description">
+                Community-first, coed 4v4 pickup. Limited series run, partnering with Denver Parks & Rec to add more!
+            </p>
+            <a href="https://anc.apm.activecommunities.com/denver/activity/search?locale=en-US&activity_select_param=2&activity_keyword=CWS%3A%20Bare%20Bones%20Indoor&viewMode=list" target="_blank">
+                <button class="play-btn">LET'S PLAY!</button>
+            </a>
         </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-        </button>
     </div>
 </div>
-
 
 {% endblock %}

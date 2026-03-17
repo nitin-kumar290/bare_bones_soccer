@@ -4,11 +4,14 @@
 {% block content %}
 
 <div class="container text-center my-5">
-    <h2 class="text-success">Thanks for RSVPing to this event!</h2>
+    <h2 class="text-success">Thanks for RSVPing to Brunch Ball!</h2>
     <!-- <p class="lead">Thank you for your payment. You've been registered for the selected week. See you on the pitch!</p> -->
         <div class="alert alert-success">
             <!-- <h4>Payment Successful!</h4> -->
-            <p>Make sure to create a Bare Bones account before playing. See ya there! ✅</p>
+                    <p class="card-text" style="font-family: 'Bebas Neue Pro'; font-size: 14px;">
+                        *Must have Bare Bones Soccer account to play* <br>
+                        Create Account <a href="{% url 'register' %}" style="font-style: italic;">HERE</a> if you don't have one.
+                    </p>
         </div>
     <a href="{% url 'events' %}" class="btn btn-outline-primary mt-4">Back to Events</a>
     <p class="card-text">You will be redirected to the events page in <span id="countdown">25</span> seconds...</p>

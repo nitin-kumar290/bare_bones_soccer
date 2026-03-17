@@ -3,12 +3,12 @@
 
 {% load static %}
 
-{% block hero_background %}{% static 'images/banner_schedule.jpeg' %}{% endblock %}
+{% block hero_background %}{% static 'images/walds.jpeg' %}{% endblock %}
 
 {% block content %}
 {% csrf_token %}
 
-<div class="container" style="max-width: 600px; margin-top: 80px;">
+<div class="container" style="max-width: 600px; margin-top: 20px;">
     <div class="text-center mb-4">
         <p class="reserve-text">RESERVE YOUR SPOT FOR:</p>
         <h1 class="event-title">Bones & Roses - Warehouse Party</h1>
@@ -38,7 +38,7 @@
                 REGISTER NOW
             </button>
             <div class="price-display">$10</div>
-            <div class="spots-info">{{ paid_players_count }}/70 SPOTS TAKEN</div>
+            <!-- <div class="spots-info">{{ paid_players_count }}/70 SPOTS TAKEN</div> -->
         {% endif %}
     </div>
 

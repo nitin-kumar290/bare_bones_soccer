@@ -9,25 +9,48 @@
 {% csrf_token %}
 
 <div class="container mt-5">
-    <h1 class="text-center text-uppercase">Reserve Your Spot Below for BARE BONES Brunch Ball - Jan 18th 11:00AM to 2:00PM</h1>
+    <h1 class="text-center text-uppercase">Reserve Your Spot Below for BARE BONES Brunch Ball - March 1st 11:00AM to 2:00PM</h1>
     <p class="text-center text-muted text-uppercase" style="font-style: italic;">
         NONSTOP PICKUP GAMES, BRUNCH MENU, FREE 5 OZ DRINK & PLAYER PRIZE ENTRY<br/>
         
     </p>
 
+
+    <div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-secondary">
+                <div class="card-body text-center">
+                    <h5 class="card-title text-danger">RSVP NOW!</h5>
+                    <form method="post" action="{% url 'event_rsvp' %}">
+                        {% csrf_token %}
+                        <div class="input-group mb-3">
+                            <input type="email" name="email" class="form-control" placeholder="Enter your email" required>
+                            <button class="btn btn-secondary" type="submit">RSVP</button>
+                        </div>
+                    </form>
+                    <p class="card-text" style="font-family: 'Bebas Neue Pro'; font-size: 14px;">
+                        *Must have Bare Bones Soccer account to play* <br>
+                        Create Account <a href="{% url 'register' %}" style="font-style: italic;">HERE</a> if you don't have one.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- Combined Purchase & Stats Box -->
-<div class="container my-4">
+<!-- <div class="container my-4">
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="purchase-card">
+
                 {% if has_registered %}
-                    <!-- Already Registered -->
                     <div class="success-alert mb-3">
                         <span class="alert-icon">✅</span>
                         <span class="alert-text">ALREADY REGISTERED</span>
                     </div>
                 {% elif player_cap_reached %}
-                    <!-- Capacity Reached Version -->
+
                     <div class="capacity-alert mb-3">
                         <span class="alert-icon">⚽</span>
                         <span class="alert-text">PLAYER SPOTS FULL!</span>
@@ -43,7 +66,7 @@
                         <span class="price-label">spectator entry</span>
                     </div>
                 {% else %}
-                    <!-- Normal Registration -->
+                    
                     <button class="purchase-btn" onclick="registerForEvent()">
                         <span class="btn-text">🎫 BUY TICKET NOW</span>
                         <span class="btn-icon">→</span>
@@ -55,9 +78,9 @@
                     </div>
                 {% endif %}
 
-                <div class="spots-counter">
+                <!-- <div class="spots-counter">
                     <span class="spots-text"><strong>{{ paid_players_count }}/36 SPOTS TAKEN</strong></span>
-                </div>
+                </div> 
                 
             </div>
         </div>
@@ -271,5 +294,5 @@ async function registerAsSpectator() {
     text-decoration: underline;
 }
 
-</style>
+</style> -->
 {% endblock %}

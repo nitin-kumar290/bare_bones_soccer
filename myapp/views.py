@@ -188,26 +188,98 @@ def activate(request, uidb64, token):
         # Send them a welcome email
         subject = "Welcome to Bare Bones Soccer!"
         message = f"""
-        <p>Hey {user.username},</p>
-        <p>You're officially in! Welcome to Bare Bones Soccer — the most social, one-of-a-kind soccer communities around. We're pumped to have you! Here's what you need to know:</p>
-        <p>💥 Your first pickup session at Blue Sport Stable (Superior) is FREE!! (Just $5 every Monday after that)
-        <br>
-        ⚡ Fast-paced court soccer with music & good vibes — this is part of our weekly Social Series, where we partner with local businesses for unique footy experiences.
-        <br>
-        📍 Blue Sport Stable - 1 Superior Drive, Superior
-        <br>
-        ⏰ Monday nights, 6:00-8:00 PM
-        <br>
-        🍔 20% off food & drinks 🍻 at Stable Bar & Grill (on-site restaurant)
-        </p>
-        <p><a href="https://barebonessoccer.com/login/"> Sign in to reserve your spot!</a></p>
-        <p>We also run free pickup every Saturday at 9:30AM at Broomfield Commons Sports Fields. For all other pickup and event updates, check our Instagram stories weekly.</p>
-        <p>See you out there — on the court, the pitch, or wherever the game takes us.</p>
-        <p>The Bare Bones Crew</p>
-    """
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <!-- Email content with direct image URL -->
+
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#ffffff; margin:0; padding:0;">
+                <tr>
+                    <td align="center" style="padding:0;">
+                    <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="width:100%; max-width:600px; margin:0 auto;">
+                        <tr>
+                        <td align="center" style="padding:24px;">
+                            <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width:600px; width:100%; font-family:Arial, Helvetica, sans-serif; color:#111;">
+                            
+                            <!-- Header -->
+                            <tr>
+                                <td style="font-size:22px; line-height:30px; text-align:center; font-weight:bold;">
+                                You're officially in — welcome to Bare Bones Soccer!
+                                </td>
+                            </tr>
+                            
+                            <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
+                            
+                            <!-- Main Content -->
+                            <tr>
+                                <td style="font-size:16px; line-height:24px; text-align:center;">
+                                We're not just running soccer games.<br>
+                                We're building a community and pushing a cultural shift in how soccer is experienced in America.
+                                Bare Bones exists to make the game more social, more meaningful and more fun.<br>Pickup runs, special events, local partnerships and good people who just love the game and being around others who do.
+                                </td>
+                            </tr>
+                    
+                            
+                            <tr><td style="height:24px; line-height:24px;">&nbsp;</td></tr>
+                            
+                            <!-- How to Get Involved -->
+                            <tr>
+                                <td style="font-size:18px; line-height:24px; text-align:center; font-weight:bold;">
+                                How to get involved right away:
+                                </td>
+                            </tr>
+                            
+                            <tr><td style="height:16px; line-height:16px;">&nbsp;</td></tr>
+                            
+                            <!-- Details -->
+                            <tr>
+                                <td style="font-size:16px; padding:0 24px; text-align:center; line-height:26px;">
+                                ⚽ FREE Saturday pickup at Broomfield Commons Sports Fields (9:30 AM)<br><br>
+                                
+                                💬 Join our WhatsApp group for last-minute runs, updates, and community chatter:<br>
+                                👉 <a href="https://chat.whatsapp.com/IzHQHb1UODABuoABqXotvm" target="_blank" style="color:#0066cc;">Join WhatsApp Group</a><br><br>
+                                
+                                We post weekly updates and event info on Instagram Stories, so keep an eye out there too.<br><br>
+                                
+                                Whether you're here to play hard, play casual, or just be part of something social — you're in the right place.
+                                </td>
+                            </tr>
+                            
+                            <tr><td style="height:24px; line-height:24px;">&nbsp;</td></tr>
+                            
+                            <!-- Closing -->
+                            <tr>
+                                <td style="font-size:16px; line-height:24px; text-align:center;">
+                                See you soon,<br>
+                                The Bare Bones Crew
+                                </td>
+                            </tr>
+                            
+                            <tr><td style="height:16px; line-height:16px;">&nbsp;</td></tr>
+                            
+                            <tr>
+                                <td style="font-size:14px; line-height:20px; text-align:center; font-style:italic; color:#666;">
+                                By soccer people, For soccer people
+                                </td>
+                            </tr>
+                            
+                            </table>
+                        </td>
+                        </tr>
+                    </table>
+                    </td>
+                </tr>
+                </table>
+
+                </body>
+                </html>          
+                """
+
         recipient_list = [user.email]  # user_form.email also works
         # send_email_ses(user.email, subject, message)
-        send_mail(subject, message, settings.EMAIL_HOST_USER, recipient_list, fail_silently=False)
+        email = EmailMessage(subject, message, to=[user.email])
+        email.content_subtype = "html"
+        email.send()
 
         messages.success(request, "Account created! Please sign in.")
         login(request, user)
@@ -296,20 +368,20 @@ def events(request):
     if request.user.is_authenticated:
         has_registered = OneOffEvent.objects.filter(
             user=request.user, 
-            event_name='brighton'
+            event_name='WALDSCHANKE BRUNCH BALL 3'
         ).exists()
     
     paid_players_count = OneOffEvent.objects.filter(
-        event_name='brighton',
+        event_name='WALDSCHANKE BRUNCH BALL 3',
         status='Paid'
     ).count()
     
     spectator_count = OneOffEvent.objects.filter(
-        event_name='brighton',
+        event_name='WALDSCHANKE BRUNCH BALL 3',
         status='Free Spectator'
     ).count()
     
-    player_cap_reached = paid_players_count >= 70
+    player_cap_reached = paid_players_count >= 34
     
     return render(request, 'events.html', {
         'events': events,
@@ -554,13 +626,10 @@ def payment_success(request):
                     <p>The Bare Bones Crew</p>
                     """
                     # send_email_ses(request.user.email, subject, message)
-                    send_mail(
-                        subject,
-                        message,
-                        settings.EMAIL_HOST_USER,
-                        [request.user.email],
-                        fail_silently=False
-                    )
+
+                    email = EmailMessage(subject, message, to=[request.user.email])
+                    email.content_subtype = "html"
+                    email.send()
                     
                     # 4) Show success page
                     messages.success(request, "Payment successful!")
@@ -595,24 +664,11 @@ def payment_success(request):
             <p>See you on the courts!</p>
             <p>The Bare Bones Crew</p>
             """
-            # # subject = "Bare Bones Soccer Payment Confirmation"
-            # # message = (
-            # #     f"Hi {request.user.username},\n\n"
-            # #     f"Thank you. You've successfully signed up for the following session dates:\n"
-            # #     + ", ".join(dates) +
-            # #     "\nWe look forward to seeing you on the pitch!\n\n"
-            # #     "Cheers,\nBare Bones Soccer"
-            # # )
-            send_email_ses(request.user.email, subject, message)
-
-            send_mail(
-                subject,
-                message,
-                settings.EMAIL_HOST_USER,
-                [request.user.email],
-                fail_silently=False
-            )
             
+            email = EmailMessage(subject, message, to=[request.user.email])
+            email.content_subtype = "html"
+            email.send()
+
             # 4) Show success page
             messages.success(request, "Sign Up successful!")
             return render(
@@ -728,8 +784,8 @@ def event_rsvp(request):
         form = EventRSVPForm(request.POST)
         if form.is_valid():
             rsvp = form.save(commit=False)
-            rsvp.event_name = "BARE BONES SOCCER WAREHOUSE PARTY"
-            rsvp.event_date = "2025-11-20"  # Update this date as needed
+            rsvp.event_name = "WALDSCHANKE BRUNCH BALL 3"
+            rsvp.event_date = "2026-03-01"  # Update this date as needed
             try:
                 rsvp.save()
                 #messages.success(request, "RSVP successful! See you there!")
@@ -746,15 +802,15 @@ def rsvp_success(request):
 
 @login_required
 def waldschanke(request):
-    event_date = datetime(2026, 1, 18).date()
+    event_date = datetime(2026, 3, 1).date()
     has_registered = OneOffEvent.objects.filter(
         user=request.user, 
-        event_name='WALDSCHANKE BRUNCH BALL 2'
+        event_name='WALDSCHANKE BRUNCH BALL 3'
     ).exists()
     
     # Count paid players (excluding free spectators)
     paid_players_count = OneOffEvent.objects.filter(
-        event_name='WALDSCHANKE BRUNCH BALL 2',
+        event_name='WALDSCHANKE BRUNCH BALL 3',
         status='Paid'
     ).count()
     
@@ -809,7 +865,7 @@ def create_brighton_checkout_session(request):
             "price_data": {
                 "currency": "usd",
                 "product_data": {"name": "The Brighton Warehouse Party - Feb 13, 2026"},
-                "unit_amount": 100,  # $10.00
+                "unit_amount": 1000,  # $10.00
             },
             "quantity": 1,
         }],
@@ -871,8 +927,8 @@ def brighton_payment_success(request):
                             
                             <!-- Details bullets -->
                             <tr>
-                                <td style="font-size:16px; line-height:26px;">
-                                    📅 <b>Friday, Feb 18th, 2026</b><br>
+                                <td style="font-size:16px;padding:24px; text-align: center; line-height:26px;">
+                                    📅 <b>Friday, Feb 13th, 2026</b><br>
                                     ⏰ <b>6:30PM - 9:30PM</b><br>
                                     📍 <a href="https://maps.google.com/?q=3403+Brighton+Blvd,+Denver,+Colorado" target="_blank" style="font-family: 'Oswald', sans-serif;">The Brighton - 3403 Brighton Blvd, Denver, Colorado</a><br>
                                 
@@ -975,13 +1031,13 @@ def register_free_spectator(request):
         user = request.user
         
         # Check if already registered
-        if OneOffEvent.objects.filter(user=user, event_name='WALDSCHANKE BRUNCH BALL 2').exists():
+        if OneOffEvent.objects.filter(user=user, event_name='WALDSCHANKE BRUNCH BALL 3').exists():
             return JsonResponse({'error': 'Already registered'}, status=400)
         
         OneOffEvent.objects.create(
             user=user,
-            event_name='WALDSCHANKE BRUNCH BALL 2',
-            event_date='2026-01-18',
+            event_name='WALDSCHANKE BRUNCH BALL 3',
+            event_date='2026-03-01',
             payment_id='FREE_SPECTATOR',
             amount=0.00,
             status='Free Spectator'
@@ -1006,7 +1062,7 @@ def register_free_spectator(request):
               <!-- Header -->
               <tr>
                 <td style="font-size:22px; line-height:30px; text-align:center; font-weight:bold;">
-                  🏟️⚽ 1/18 EVENT CONFIRMATION!
+                  🏟️⚽ 3/01 EVENT CONFIRMATION!
                 </td>
               </tr>
               
@@ -1023,7 +1079,7 @@ def register_free_spectator(request):
               <!-- Details bullets -->
               <tr>
                 <td style="font-size:16px; line-height:26px;">
-                    📅 <b>Sunday, Jan 18th, 2025</b><br>
+                    📅 <b> March 1st, 2026</b><br>
                     ⏰ <b>11:00AM - 2:00PM</b><br>
                     📍 <b>Waldschänke Ciders & Coffee — Sunnyside, Denver</b><br>
                 
@@ -1055,7 +1111,10 @@ def register_free_spectator(request):
 </body>
 </html>          
         """
-        send_email_ses(user.email, subject, message)
+        email = EmailMessage(subject, message, to=[user.email])
+        email.content_subtype = "html"
+        email.send()
+
         
         return JsonResponse({'success': True, 'redirect': '/spectator-registration-success/'})
     
@@ -1073,7 +1132,7 @@ def create_waldschanke_checkout_session(request):
     user = request.user
     
     # Check if already registered
-    if OneOffEvent.objects.filter(user=user, event_name='WALDSCHANKE BRUNCH BALL 2').exists():
+    if OneOffEvent.objects.filter(user=user, event_name='WALDSCHANKE BRUNCH BALL 3').exists():
         return JsonResponse({'error': 'Already registered'}, status=400)
 
     session = stripe.checkout.Session.create(
@@ -1081,7 +1140,7 @@ def create_waldschanke_checkout_session(request):
         line_items=[{
             "price_data": {
                 "currency": "usd",
-                "product_data": {"name": "Bare Bones Brunch Ball 2 - Jan 18, 2025"},
+                "product_data": {"name": "Bare Bones Brunch Ball 3 - March 1st, 2026"},
                 "unit_amount": 1500,  # $15.00
             },
             "quantity": 1,
@@ -1104,8 +1163,8 @@ def waldschanke_payment_success(request):
             if session.payment_status == "paid":
                 OneOffEvent.objects.create(
                     user=request.user,
-                    event_name='WALDSCHANKE BRUNCH BALL 2',
-                    event_date='2026-01-18',
+                    event_name='WALDSCHANKE BRUNCH BALL 3',
+                    event_date='2026-03-01',
                     payment_id=session_id,
                     amount=15.00,
                     status='Paid'
@@ -1130,7 +1189,7 @@ def waldschanke_payment_success(request):
               <!-- Header -->
               <tr>
                 <td style="font-size:22px; line-height:30px; text-align:center; font-weight:bold;">
-                  🏟️⚽ 1/18 EVENT CONFIRMATION!
+                  🏟️⚽ 3/01 EVENT CONFIRMATION!
                 </td>
               </tr>
               
@@ -1146,7 +1205,7 @@ def waldschanke_payment_success(request):
               <!-- Details bullets -->
               <tr>
                 <td style="font-size:16px; line-height:26px;">
-                    📅 <b>Sunday, Jan 18th, 2026</b><br>
+                    📅 <b>Sunday, March 1st, 2026</b><br>
                     ⏰ <b>11:00AM - 2:00PM</b><br>
                     📍 <b>Waldschänke Ciders & Coffee — Sunnyside, Denver</b><br>
                 
@@ -1178,8 +1237,11 @@ def waldschanke_payment_success(request):
 </body>
 </html>          
                 """
-                send_email_ses(request.user.email, subject, message)
-                
+                # send_email_ses(request.user.email, subject, message)
+                email = EmailMessage(subject, message, to=[request.user.email])
+                email.content_subtype = "html"
+                email.send()
+
                 messages.success(request, "Registration successful!")
                 return render(request, 'waldschanke_payment_success.html')
             else:
