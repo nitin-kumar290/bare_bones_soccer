@@ -441,7 +441,7 @@ async function registerAsSpectator() {
             🔥 Next EVENT 🔥
         </h1>
         <h2 style="font-family: 'Oswald', sans-serif; font-size: 1.5rem;">BARE BONES BRUNCH BALL</h2>
-        <h6>Sunday, April  12th, 2026 | 11:00AM - 2:00PM</h6>
+        <h6>Sunday, March  1st, 2026 | 11:00AM - 2:00PM</h6>
         <h6>Waldschänke Ciders</h6>
         <h6>4100 Jason St, Denver, CO</h6>
 
@@ -456,107 +456,85 @@ async function registerAsSpectator() {
 
 
 
-<div class="container my-4">
+<!-- <div class="container my-4">
     <div class="row justify-content-center">
-        {% if has_registered %}
-            <div class="col-md-6">
-                <div class="success-alert">
-                    <span class="alert-icon">✅</span>
-                    <span class="alert-text">ALREADY REGISTERED</span>
-                </div>
-            </div>
-        {% elif player_cap_reached %}
-            <div class="col-md-6">
-                <div class="capacity-alert">
-                    <span class="alert-icon">⚽</span>
-                    <span class="alert-text">PLAYER SPOTS FULL!</span>
-                </div>
-                <button class="purchase-btn spectator-btn" onclick="registerAsSpectator()">
-                    <span class="btn-text">👥 REGISTER AS SPECTATOR</span>
-                </button>
-                {% if user.is_authenticated %}
-                    <button class="purchase-btn" onclick="registerAsSpectator()">
-                        BUY NOW
-                    </button>
-                {% else %}
-                    <a href="{% url 'login' %}?next={% url 'events' %}" class="purchase-btn">
-                        BUY NOW
-                    </a>
-                {% endif %}
-
-            </div>
-        {% else %}
-            <!-- Two Ticket Options -->
-            <div class="col-md-5 mb-3">
-                <div class="ticket-card">
-                    <h3 class="ticket-title">⚽ PLAYER TICKET</h3>
-                    <div class="price-section">
-                        <span class="price">$10</span>
+        <div class="col-md-6">
+            <div class="purchase-card">
+                <p class="purchase-note pb-3">
+                    *Must be logged in to Bare Bones Soccer account to purchase* <br>
+                    Create Account <a href="{% url 'register' %}" class="account-link">HERE</a> if you don't have one.
+                </p>
+                {% if player_cap_reached %}
+                     // Capacity Reached Version 
+                    <div class="capacity-alert mb-3">
+                        <span class="alert-icon">⚽</span>
+                        <span class="alert-text">PLAYER SPOTS FULL!</span>
                     </div>
-                    <ul class="ticket-features">
-                        <li>✓ Unlimited Pickup Games</li>
-                        <li>✓ Free 5oz Drink</li>
-                        <li>✓ Prize Entry</li>
-                    </ul>
+                    
                     {% if user.is_authenticated %}
-                        <button class="purchase-btn" onclick="registerForEvent('player')">
-                            BUY NOW
+                        <button class="purchase-btn spectator-btn" onclick="registerAsSpectator()">
+                            <span class="btn-text">👥 REGISTER AS SPECTATOR</span>
+                            <span class="btn-icon">→</span>
+                        </button>
+                    {% else %}
+                        <a href="{% url 'login' %}?next={% url 'waldschanke' %}" class="purchase-btn spectator-btn">
+                            <span class="btn-text">👥 REGISTER AS SPECTATOR</span>
+                            <span class="btn-icon">→</span>
+                        </a>
+                    {% endif %}
+                    
+                    <div class="price-section">
+                        <span class="price">FREE</span>
+                        <span class="price-label">spectator entry</span>
+                    </div>
+                {% else %}
+                    {% if user.is_authenticated %}
+                        <button class="purchase-btn" onclick="buyTicketNow()">
+                            <span class="btn-text">🎫 BUY TICKET NOW</span>
+                            <span class="btn-icon">→</span>
                         </button>
                     {% else %}
                         <a href="{% url 'login' %}?next={% url 'waldschanke' %}" class="purchase-btn">
-                            BUY NOW
+                            <span class="btn-text">🎫 BUY TICKET NOW</span>
+                            <span class="btn-icon">→</span>
                         </a>
                     {% endif %}
 
-                </div>
-            </div>
-            
-            <div class="col-md-5 mb-3">
-                <div class="ticket-card featured">
-                    <div class="badge">BEST VALUE</div>
-                    <h3 class="ticket-title">🍽️ PLAYER + BRUNCH</h3>
+                    
                     <div class="price-section">
                         <span class="price">$15</span>
+                        <span class="price-label">per player</span>
                     </div>
-                    <ul class="ticket-features">
-                        <li>✓ Unlimited Pickup Games</li>
-                        <li>✓ Free 5oz Drink</li>
-                        <li>✓ Prize Entry</li>
-                        <li>✓ Full Brunch Menu</li>
-                    </ul>
-                    {% if user.is_authenticated %}
-                        <button class="purchase-btn" onclick="registerForEvent('player_plus')">
-                            BUY NOW
-                        </button>
-                    {% else %}
-                        <a href="{% url 'login' %}?next={% url 'waldschanke' %}" class="purchase-btn">
-                            BUY NOW
-                        </a>
-                    {% endif %}
+                {% endif %}
 
-                </div>
+                 <!-- <div class="spots-counter">
+                    <span class="spots-text"><strong>{{ paid_players_count }}/36 SPOTS TAKEN</strong></span>
+                </div> 
+                
+                
             </div>
-        {% endif %}
+        </div>
     </div>
 </div>
+
 
 <script src="https://js.stripe.com/v3/"></script>
 <script>
 const stripe = Stripe("pk_live_51Qe6VrKKPDelkA7OgycGGoqfOS3cfz4k6KQ53R2LvHJann8fxkRLFX2XF7CwBxqLOc8WfXpv3lLurLmh0og9TUlX00VSXk1ZM7");
-const csrftoken = "{{ csrf_token }}";
 
-async function registerForEvent(ticketType) {
+async function buyTicketNow() {
     try {
         const res = await fetch("/api/create-waldschanke-checkout-session", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "X-CSRFToken": csrftoken
-            },
-            body: JSON.stringify({ ticket_type: ticketType })
+                "X-CSRFToken": "{{ csrf_token }}"
+            }
         });
         const session = await res.json();
+
         if (!session.id) throw new Error("No session ID returned.");
+        
         await stripe.redirectToCheckout({ sessionId: session.id });
     } catch (err) {
         console.error(err);
@@ -570,63 +548,106 @@ async function registerAsSpectator() {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "X-CSRFToken": csrftoken
+                "X-CSRFToken": "{{ csrf_token }}"
             }
         });
+        
         if (res.ok) {
             const data = await res.json();
-            if (data.redirect) window.location.href = data.redirect;
+            if (data.redirect) {
+                window.location.href = data.redirect;
+            }
+        } else {
+            const error = await res.json();
+            alert(error.error || "Registration failed. Please try again.");
         }
     } catch (err) {
+        console.error(err);
         alert("Error registering. Please try again.");
     }
 }
 </script>
 
+
+
 <style>
-.row {
-    display: flex;
-    align-items: stretch; /* Makes all columns same height */
-}
-
-.ticket-card {
-    background: #fff;
-    border: 2px solid #e9ecef;
+.purchase-card {
+    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+    border: 1px solid #d64f5d;
     border-radius: 16px;
-    padding: 2rem;
+    padding: 1.5rem;  /* Reduced from 2rem */
     text-align: center;
-    transition: transform 0.3s, box-shadow 0.3s;
-    position: relative;
-    height: 100%; /* Makes card fill the column height */
-    display: flex;
-    flex-direction: column;
+    box-shadow: 0 8px 32px rgba(220, 53, 69, 0.15);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.ticket-card.featured {
-    border-color: #dc3545;
-    box-shadow: 0 8px 32px rgba(220, 53, 69, 0.2);
-}
-
-.ticket-card:hover {
+.purchase-card:hover {
     transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(220, 53, 69, 0.25);
 }
 
-.badge {
-    position: absolute;
-    top: -12px;
-    right: 20px;
-    background: #dc3545;
-    color: white;
-    padding: 0.25rem 1rem;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 700;
-}
-
-.ticket-title {
-    font-family: 'Oswald', sans-serif;
-    font-size: 1.5rem;
+.spots-counter {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 25px;
+    padding: 0.5rem 1rem;
     margin-bottom: 1rem;
+    display: inline-block;
+}
+
+.spots-text {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: #212529;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+
+.purchase-btn {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    border: none;
+    border-radius: 50px;
+    padding: 1rem 2.5rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto 1rem auto;  /* Reduced from 1.5rem */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.purchase-btn:hover {
+    background: linear-gradient(135deg, #c82333 0%, #a71e2a 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.6);
+}
+
+.btn-text {
+    flex: 1;
+}
+
+.btn-icon {
+    font-size: 1.2rem;
+    transition: transform 0.3s ease;
+}
+
+.purchase-btn:hover .btn-icon {
+    transform: translateX(4px);
 }
 
 .price-section {
@@ -634,49 +655,108 @@ async function registerAsSpectator() {
 }
 
 .price {
-    font-size: 3rem;
+    font-size: 2.5rem;
     font-weight: 800;
     color: #dc3545;
     font-family: 'Oswald', sans-serif;
 }
 
-.ticket-features {
-    list-style: none;
-    padding: 0;
-    margin: 1.5rem 0;
-    text-align: left;
-    flex-grow: 1; /* Pushes button to bottom */
+.price-label {
+    display: block;
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
 }
 
-.ticket-features li {
-    padding: 0.5rem 0;
-    font-size: 1rem;
+.purchase-note {
+    font-family: 'Bebas Neue Pro';
+    font-size: 14px;
+    color: #6c757d;
+    line-height: 1.4;
+    margin: 0;
 }
 
-.purchase-btn {
-    background: #dc3545;
-    border: none;
-    border-radius: 50px;
-    padding: 1rem 2rem;
-    font-size: 1rem;
-    font-weight: 700;
-    color: white;
-    cursor: pointer;
-    width: 100%;
-    transition: all 0.3s;
-    margin-top: auto; /* Keeps button at bottom */
+.account-link {
+    color: #dc3545;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
 }
 
-.featured-btn {
-    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+.account-link:hover {
+    color: #c82333;
+    text-decoration: underline;
 }
 
-.purchase-btn:hover {
-    transform: scale(1.05);
+.spectator-btn {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
 }
-</style>
+
+.spectator-btn:hover {
+    background: linear-gradient(135deg, #20c997 0%, #17a2b8 100%);
+}
+
+.capacity-alert {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    border: 1px solid #ffeaa7;
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.alert-icon {
+    font-size: 1.2rem;
+}
+
+.alert-text {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #856404;
+}
 
 
+@media (max-width: 768px) {
+    .purchase-card {
+        padding: 1.5rem;
+        margin: 0 1rem;
+    }
+    
+    .price {
+        font-size: 2rem;
+    }
+    
+    .purchase-btn {
+        font-size: 1rem;
+        padding: 0.9rem 2rem;
+    }
+}
+</style> -->
+
+<div class="container my-1">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-secondary">
+                <div class="card-body text-center">
+                    <h5 class="card-title text-danger">RSVP NOW!</h5>
+                    <form method="post" action="{% url 'event_rsvp' %}">
+                        {% csrf_token %}
+                        <div class="input-group mb-3">
+                            <input type="email" name="email" class="form-control" placeholder="Enter your email" required>
+                            <button class="btn btn-secondary" type="submit">RSVP</button>
+                        </div>
+                    </form>
+                    <p class="card-text" style="font-family: 'Bebas Neue Pro'; font-size: 14px;">
+                        *Must have Bare Bones Soccer account to play* <br>
+                        Create Account <a href="{% url 'register' %}" style="font-style: italic;">HERE</a> if you don't have one.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 

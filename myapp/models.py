@@ -137,9 +137,15 @@ class EventRSVP(models.Model):
     
 
 class OneOffEvent(models.Model):
+    TICKET_TYPE_CHOICES = [
+        ('player', 'Player Ticket'),
+        ('player_plus', 'Player + Brunch Ticket'),
+        ('spectator', 'Spectator (Free)'),
+    ]
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     event_name = models.CharField(max_length=100)
     event_date = models.DateField()
+    ticket_type = models.CharField(max_length=20, choices=TICKET_TYPE_CHOICES, default='player')
     payment_id = models.CharField(max_length=100)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=20, default='Paid')

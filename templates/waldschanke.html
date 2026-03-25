@@ -9,35 +9,232 @@
 {% csrf_token %}
 
 <div class="container mt-5">
-    <h1 class="text-center text-uppercase">Reserve Your Spot Below for BARE BONES Brunch Ball - March 1st 11:00AM to 2:00PM</h1>
+    <h1 class="text-center text-uppercase">Reserve Your Spot Below for BARE BONES Brunch Ball - April 12th 11:00AM to 2:00PM</h1>
     <p class="text-center text-muted text-uppercase" style="font-style: italic;">
         NONSTOP PICKUP GAMES, BRUNCH MENU, FREE 5 OZ DRINK & PLAYER PRIZE ENTRY<br/>
         
     </p>
 
-
-    <div class="container my-5">
+<div class="container my-4">
     <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card border-secondary">
-                <div class="card-body text-center">
-                    <h5 class="card-title text-danger">RSVP NOW!</h5>
-                    <form method="post" action="{% url 'event_rsvp' %}">
-                        {% csrf_token %}
-                        <div class="input-group mb-3">
-                            <input type="email" name="email" class="form-control" placeholder="Enter your email" required>
-                            <button class="btn btn-secondary" type="submit">RSVP</button>
-                        </div>
-                    </form>
-                    <p class="card-text" style="font-family: 'Bebas Neue Pro'; font-size: 14px;">
-                        *Must have Bare Bones Soccer account to play* <br>
-                        Create Account <a href="{% url 'register' %}" style="font-style: italic;">HERE</a> if you don't have one.
-                    </p>
+        {% if has_registered %}
+            <div class="col-md-6">
+                <div class="success-alert">
+                    <span class="alert-icon">✅</span>
+                    <span class="alert-text">ALREADY REGISTERED</span>
                 </div>
             </div>
-        </div>
+        {% elif player_cap_reached %}
+            <div class="col-md-6">
+                <div class="capacity-alert">
+                    <span class="alert-icon">⚽</span>
+                    <span class="alert-text">PLAYER SPOTS FULL!</span>
+                </div>
+                <button class="purchase-btn spectator-btn" onclick="registerAsSpectator()">
+                    <span class="btn-text">👥 REGISTER AS SPECTATOR</span>
+                </button>
+                {% if user.is_authenticated %}
+                    <button class="purchase-btn" onclick="registerAsSpectator()">
+                        BUY NOW
+                    </button>
+                {% else %}
+                    <a href="{% url 'login' %}?next={% url 'events' %}" class="purchase-btn">
+                        BUY NOW
+                    </a>
+                {% endif %}
+
+            </div>
+        {% else %}
+            <!-- Two Ticket Options -->
+            <div class="col-md-5 mb-3">
+                <div class="ticket-card">
+                    <h3 class="ticket-title">⚽ PLAYER TICKET</h3>
+                    <div class="price-section">
+                        <span class="price">$10</span>
+                    </div>
+                    <ul class="ticket-features">
+                        <li>✓ Unlimited Pickup Games</li>
+                        <li>✓ Free 5oz Drink</li>
+                        <li>✓ Prize Entry</li>
+                    </ul>
+                    {% if user.is_authenticated %}
+                        <button class="purchase-btn" onclick="registerForEvent('player')">
+                            BUY NOW
+                        </button>
+                    {% else %}
+                        <a href="{% url 'login' %}?next={% url 'events' %}" class="purchase-btn">
+                            BUY NOW
+                        </a>
+                    {% endif %}
+
+                </div>
+            </div>
+            
+            <div class="col-md-5 mb-3">
+                <div class="ticket-card featured">
+                    <div class="badge">BEST VALUE</div>
+                    <h3 class="ticket-title">🍽️ PLAYER + BRUNCH</h3>
+                    <div class="price-section">
+                        <span class="price">$15</span>
+                    </div>
+                    <ul class="ticket-features">
+                        <li>✓ Unlimited Pickup Games</li>
+                        <li>✓ Free 5oz Drink</li>
+                        <li>✓ Prize Entry</li>
+                        <li>✓ Full Brunch Menu</li>
+                    </ul>
+                    {% if user.is_authenticated %}
+                        <button class="purchase-btn" onclick="registerForEvent('player')">
+                            BUY NOW
+                        </button>
+                    {% else %}
+                        <a href="{% url 'login' %}?next={% url 'events' %}" class="purchase-btn">
+                            BUY NOW
+                        </a>
+                    {% endif %}
+
+                </div>
+            </div>
+        {% endif %}
     </div>
 </div>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+const stripe = Stripe("pk_live_51Qe6VrKKPDelkA7OgycGGoqfOS3cfz4k6KQ53R2LvHJann8fxkRLFX2XF7CwBxqLOc8WfXpv3lLurLmh0og9TUlX00VSXk1ZM7");
+const csrftoken = "{{ csrf_token }}";
+
+async function registerForEvent(ticketType) {
+    try {
+        const res = await fetch("/api/create-waldschanke-checkout-session", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrftoken
+            },
+            body: JSON.stringify({ ticket_type: ticketType })
+        });
+        const session = await res.json();
+        if (!session.id) throw new Error("No session ID returned.");
+        await stripe.redirectToCheckout({ sessionId: session.id });
+    } catch (err) {
+        console.error(err);
+        alert("Error creating checkout. Please try again.");
+    }
+}
+
+async function registerAsSpectator() {
+    try {
+        const res = await fetch("/api/register-free-spectator", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrftoken
+            }
+        });
+        if (res.ok) {
+            const data = await res.json();
+            if (data.redirect) window.location.href = data.redirect;
+        }
+    } catch (err) {
+        alert("Error registering. Please try again.");
+    }
+}
+</script>
+
+<style>
+.row {
+    display: flex;
+    align-items: stretch; /* Makes all columns same height */
+}
+
+.ticket-card {
+    background: #fff;
+    border: 2px solid #e9ecef;
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s;
+    position: relative;
+    height: 100%; /* Makes card fill the column height */
+    display: flex;
+    flex-direction: column;
+}
+
+.ticket-card.featured {
+    border-color: #dc3545;
+    box-shadow: 0 8px 32px rgba(220, 53, 69, 0.2);
+}
+
+.ticket-card:hover {
+    transform: translateY(-4px);
+}
+
+.badge {
+    position: absolute;
+    top: -12px;
+    right: 20px;
+    background: #dc3545;
+    color: white;
+    padding: 0.25rem 1rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.ticket-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.price-section {
+    margin-bottom: 1rem;
+}
+
+.price {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #dc3545;
+    font-family: 'Oswald', sans-serif;
+}
+
+.ticket-features {
+    list-style: none;
+    padding: 0;
+    margin: 1.5rem 0;
+    text-align: left;
+    flex-grow: 1; /* Pushes button to bottom */
+}
+
+.ticket-features li {
+    padding: 0.5rem 0;
+    font-size: 1rem;
+}
+
+.purchase-btn {
+    background: #dc3545;
+    border: none;
+    border-radius: 50px;
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    font-weight: 700;
+    color: white;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.3s;
+    margin-top: auto; /* Keeps button at bottom */
+}
+
+.featured-btn {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+}
+
+.purchase-btn:hover {
+    transform: scale(1.05);
+}
+</style>
+
 <!-- Combined Purchase & Stats Box -->
 <!-- <div class="container my-4">
     <div class="row justify-content-center">

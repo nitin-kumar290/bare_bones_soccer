@@ -802,15 +802,15 @@ def rsvp_success(request):
 
 @login_required
 def waldschanke(request):
-    event_date = datetime(2026, 3, 1).date()
+    event_date = datetime(2026, 4, 12).date()
     has_registered = OneOffEvent.objects.filter(
         user=request.user, 
-        event_name='WALDSCHANKE BRUNCH BALL 3'
+        event_name='WALDSCHANKE BRUNCH BALL 4'
     ).exists()
     
     # Count paid players (excluding free spectators)
     paid_players_count = OneOffEvent.objects.filter(
-        event_name='WALDSCHANKE BRUNCH BALL 3',
+        event_name='WALDSCHANKE BRUNCH BALL 4',
         status='Paid'
     ).count()
     
@@ -1031,13 +1031,13 @@ def register_free_spectator(request):
         user = request.user
         
         # Check if already registered
-        if OneOffEvent.objects.filter(user=user, event_name='WALDSCHANKE BRUNCH BALL 3').exists():
+        if OneOffEvent.objects.filter(user=user, event_name='WALDSCHANKE BRUNCH BALL 4').exists():
             return JsonResponse({'error': 'Already registered'}, status=400)
         
         OneOffEvent.objects.create(
             user=user,
-            event_name='WALDSCHANKE BRUNCH BALL 3',
-            event_date='2026-03-01',
+            event_name='WALDSCHANKE BRUNCH BALL 4',
+            event_date='2026-04-12',
             payment_id='FREE_SPECTATOR',
             amount=0.00,
             status='Free Spectator'
@@ -1129,24 +1129,36 @@ def create_waldschanke_checkout_session(request):
     if request.method != 'POST':
         return JsonResponse({'error': 'Only POST allowed'}, status=405)
 
+    data = json.loads(request.body)
+    ticket_type = data.get('ticket_type', 'player')
     user = request.user
     
     # Check if already registered
-    if OneOffEvent.objects.filter(user=user, event_name='WALDSCHANKE BRUNCH BALL 3').exists():
+    if OneOffEvent.objects.filter(user=user, event_name='WALDSCHANKE BRUNCH BALL 4').exists():
         return JsonResponse({'error': 'Already registered'}, status=400)
 
+    # Set price based on ticket type
+    prices = {
+        'player': 1500,  # $15
+        'player_plus': 2500,  # $25
+    }
+
+    names = {
+        'player': 'Player Ticket - Bare Bones Brunch Ball 3',
+        'player_plus': 'Player + Brunch Ticket - Bare Bones Brunch Ball 3',
+    }
     session = stripe.checkout.Session.create(
         payment_method_types=["card"],
         line_items=[{
             "price_data": {
                 "currency": "usd",
-                "product_data": {"name": "Bare Bones Brunch Ball 3 - March 1st, 2026"},
-                "unit_amount": 1500,  # $15.00
+                "product_data": {"name": names[ticket_type]},
+                "unit_amount": prices[ticket_type],  # $15.00
             },
             "quantity": 1,
         }],
         mode="payment",
-        success_url=request.build_absolute_uri('/waldschanke-payment-success/') + f"?session_id={{CHECKOUT_SESSION_ID}}",
+        success_url=request.build_absolute_uri('/waldschanke-payment-success/') + f"?session_id={{CHECKOUT_SESSION_ID}}&ticket_type={ticket_type}",
         cancel_url=request.build_absolute_uri('/payment-cancel/'),
     )
 
@@ -1156,6 +1168,7 @@ def create_waldschanke_checkout_session(request):
 @login_required
 def waldschanke_payment_success(request):
     session_id = request.GET.get("session_id")
+    ticket_type = request.GET.get("ticket_type", "player")
     
     try:
         if session_id and not OneOffEvent.objects.filter(payment_id=session_id).exists():
@@ -1163,10 +1176,11 @@ def waldschanke_payment_success(request):
             if session.payment_status == "paid":
                 OneOffEvent.objects.create(
                     user=request.user,
-                    event_name='WALDSCHANKE BRUNCH BALL 3',
-                    event_date='2026-03-01',
+                    event_name='WALDSCHANKE BRUNCH BALL 4',
+                    event_date='2026-04-12',
+                    ticket_type=ticket_type,
                     payment_id=session_id,
-                    amount=15.00,
+                    amount=session.amount_total / 100,
                     status='Paid'
                 )
                 
