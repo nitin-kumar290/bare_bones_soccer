@@ -96,63 +96,40 @@
 //       return dates;
 //   }
 
-function generateMondaysFromApril21ToEndOfNov2025() {
-    const startDate = new Date(2025, 3, 28);  // 3 => April (0-based index)
-    const endDate = new Date(2026, 2, 21);   // 10 => November 30 (0-based index => 10=November)
-
+// Generate the next 8 upcoming Mondays rolling from today
+function getNext8Mondays() {
     const dates = [];
-    let current = new Date(startDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-    // Loop until current > endDate
-    while (current <= endDate) {
-        // If it's a Monday (getDay() === 1)
-        if (current.getDay() === 1) {
-            const display = current.toLocaleDateString("en-US", {
-                weekday: "long",
-                month: "long",
-                day: "numeric",
-                year: "numeric",
-            });
-            const yyyyMmDd = current.toISOString().split("T")[0];
-            dates.push({ date: yyyyMmDd, display });
-        }
-        // Move forward one day
-        current.setDate(current.getDate() + 1);
+    // Find the next Monday (or today if today is Monday)
+    let current = new Date(today);
+    const daysUntilMonday = (1 - current.getDay() + 7) % 7;
+    current.setDate(current.getDate() + (daysUntilMonday === 0 ? 0 : daysUntilMonday));
+
+    for (let i = 0; i < 8; i++) {
+        const display = current.toLocaleDateString("en-US", {
+            weekday: "long",
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+        });
+        const yyyyMmDd = current.toISOString().split("T")[0];
+        dates.push({ date: yyyyMmDd, display });
+        current.setDate(current.getDate() + 7);
     }
-
     return dates;
 }
 
-
-// 1) generate *all* the Mondays
-const allGameDates = generateMondaysFromApril21ToEndOfNov2025();
-
-// 2) build a "today" at midnight, so we treat all of today as not in the past
 const today = new Date();
 today.setHours(0, 0, 0, 0);
 
-// 3) filter out any date < today
-// const gameDates = allGameDates.filter(({ date }) => {
-// // date strings are "YYYY‑MM‑DD", so new Date(date) is midnight of that date
-// return new Date(date) >= today;
-// });
-
-// parse "YYYY-MM-DD" into a local-midnight Date
-function parseLocalDate(isoDate) {
-  const [year, month, day] = isoDate.split("-").map(Number);
-  return new Date(year, month - 1, day);
-}
-
-const gameDates = allGameDates.filter(({ date }) => {
-  const d = parseLocalDate(date);
-  return d >= today;
-});
+const gameDates = getNext8Mondays();
 
 // 4) now render only the upcoming (or today’s) games
 const gameList = document.getElementById("gameList");
-gameDates.forEach(({ date, display }, index) => {
-    const isPaid      = paidSet.has(date);
-    const isFirstGame = index === 0;
+gameDates.forEach(({ date, display }) => {
+    const isPaid = paidSet.has(date);
       const cardCol = document.createElement("div");
       cardCol.classList.add("col");
 

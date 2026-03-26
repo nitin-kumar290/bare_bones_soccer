@@ -8,12 +8,13 @@
 {% block content %}
 {% csrf_token %}
 
-<div class="container mt-5">
-    <h1 class="text-center text-uppercase">Reserve Your Spot Below for BARE BONES Brunch Ball - April 12th 11:00AM to 2:00PM</h1>
-    <p class="text-center text-muted text-uppercase" style="font-style: italic;">
-        NONSTOP PICKUP GAMES, BRUNCH MENU, FREE 5 OZ DRINK & PLAYER PRIZE ENTRY<br/>
-        
-    </p>
+<div class="container my-3 px-3 text-center">
+    <h2 class="wbs-event-title">BARE BONES BRUNCH BALL</h2>
+    <p class="wbs-event-meta">Sunday, April 12th, 2026 | 10:30AM – 1:30PM</p>
+    <p class="wbs-event-meta">Waldschänke Ciders</p>
+    <p class="wbs-event-meta">4100 Jason St, Denver, CO</p>
+    <p class="wbs-event-tagline"><em>NONSTOP pickup games, Brunch Menu, Prize Challenge & More!</em></p>
+</div>
 
 <div class="container my-4">
     <div class="row justify-content-center">
@@ -38,64 +39,59 @@
                         BUY NOW
                     </button>
                 {% else %}
-                    <a href="{% url 'login' %}?next={% url 'events' %}" class="purchase-btn">
+                    <a href="{% url 'login' %}?next={% url 'waldschanke' %}" class="purchase-btn">
                         BUY NOW
                     </a>
                 {% endif %}
-
             </div>
         {% else %}
             <!-- Two Ticket Options -->
             <div class="col-md-5 mb-3">
                 <div class="ticket-card">
-                    <h3 class="ticket-title">⚽ PLAYER TICKET</h3>
-                    <div class="price-section">
-                        <span class="price">$10</span>
-                    </div>
+                    <div class="ticket-price player-price">$10</div>
+                    <div class="ticket-type-label player-type">PLAY ONLY</div>
                     <ul class="ticket-features">
-                        <li>✓ Unlimited Pickup Games</li>
-                        <li>✓ Free 5oz Drink</li>
-                        <li>✓ Prize Entry</li>
+                        <li><span class="check">✓</span> Entry to Brunch Ball</li>
+                        <li><span class="check">✓</span> Pickup games + vibes</li>
+                        <li><span class="check">✓</span> Food & drinks available</li>
                     </ul>
                     {% if user.is_authenticated %}
                         <button class="purchase-btn" onclick="registerForEvent('player')">
-                            BUY NOW
+                            BUY $10 SPOT
                         </button>
                     {% else %}
-                        <a href="{% url 'login' %}?next={% url 'events' %}" class="purchase-btn">
-                            BUY NOW
+                        <a href="{% url 'login' %}?next={% url 'waldschanke' %}" class="purchase-btn">
+                            BUY $10 SPOT
                         </a>
                     {% endif %}
-
                 </div>
             </div>
-            
+
             <div class="col-md-5 mb-3">
-                <div class="ticket-card featured">
-                    <div class="badge">BEST VALUE</div>
-                    <h3 class="ticket-title">🍽️ PLAYER + BRUNCH</h3>
-                    <div class="price-section">
-                        <span class="price">$15</span>
-                    </div>
+                <div class="ticket-card">
+                    <div class="ticket-price player-price">$15</div>
+                    <div class="ticket-type-label drink-type">PLAY + DRINK 🍺</div>
                     <ul class="ticket-features">
-                        <li>✓ Unlimited Pickup Games</li>
-                        <li>✓ Free 5oz Drink</li>
-                        <li>✓ Prize Entry</li>
-                        <li>✓ Full Brunch Menu</li>
+                        <li><span class="check">✓</span> Entry to Brunch Ball</li>
+                        <li><span class="check">✓</span> Includes 1 drink</li>
                     </ul>
                     {% if user.is_authenticated %}
-                        <button class="purchase-btn" onclick="registerForEvent('player')">
-                            BUY NOW
+                        <button class="purchase-btn" onclick="registerForEvent('player_plus')">
+                            BUY $15 + DRINK
                         </button>
                     {% else %}
-                        <a href="{% url 'login' %}?next={% url 'events' %}" class="purchase-btn">
-                            BUY NOW
+                        <a href="{% url 'login' %}?next={% url 'waldschanke' %}" class="purchase-btn">
+                            BUY $15 + DRINK
                         </a>
                     {% endif %}
-
                 </div>
             </div>
         {% endif %}
+    </div>
+
+    <!-- Spots Counter -->
+    <div class="text-center mt-2 mb-3">
+        <span class="wbs-spots-info"><strong>{{ paid_players_count }} spots</strong> — first come, first play</span>
     </div>
 </div>
 
@@ -143,95 +139,187 @@ async function registerAsSpectator() {
 </script>
 
 <style>
+/* Event header */
+.wbs-next-label {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #dc3545;
+    margin-bottom: 0.25rem;
+}
+
+.wbs-event-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #111;
+    margin-bottom: 0.5rem;
+}
+
+.wbs-event-meta {
+    font-size: 0.95rem;
+    color: #333;
+    margin-bottom: 0.1rem;
+}
+
+.wbs-event-tagline {
+    font-size: 0.9rem;
+    color: #555;
+    margin-top: 0.5rem;
+}
+
+/* Ticket cards */
 .row {
     display: flex;
-    align-items: stretch; /* Makes all columns same height */
+    align-items: stretch;
 }
 
 .ticket-card {
     background: #fff;
-    border: 2px solid #e9ecef;
+    border: 1px solid #e5e5e5;
     border-radius: 16px;
-    padding: 2rem;
+    padding: 2rem 1.5rem;
     text-align: center;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
     transition: transform 0.3s, box-shadow 0.3s;
-    position: relative;
-    height: 100%; /* Makes card fill the column height */
+    height: 100%;
     display: flex;
     flex-direction: column;
 }
 
-.ticket-card.featured {
-    border-color: #dc3545;
-    box-shadow: 0 8px 32px rgba(220, 53, 69, 0.2);
-}
-
 .ticket-card:hover {
     transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
 }
 
-.badge {
-    position: absolute;
-    top: -12px;
-    right: 20px;
-    background: #dc3545;
-    color: white;
-    padding: 0.25rem 1rem;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 700;
-}
-
-.ticket-title {
+.ticket-price {
     font-family: 'Oswald', sans-serif;
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-}
-
-.price-section {
-    margin-bottom: 1rem;
-}
-
-.price {
-    font-size: 3rem;
+    font-size: 3.5rem;
     font-weight: 800;
+    line-height: 1;
+    margin-bottom: 0.25rem;
+}
+
+.player-price {
     color: #dc3545;
+}
+
+.ticket-type-label {
     font-family: 'Oswald', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 1.25rem;
+}
+
+.player-type {
+    color: #dc3545;
+}
+
+.drink-type {
+    color: #28a745;
 }
 
 .ticket-features {
     list-style: none;
     padding: 0;
-    margin: 1.5rem 0;
+    margin: 0 0 1.5rem 0;
     text-align: left;
-    flex-grow: 1; /* Pushes button to bottom */
+    flex-grow: 1;
 }
 
 .ticket-features li {
-    padding: 0.5rem 0;
-    font-size: 1rem;
+    padding: 0.4rem 0;
+    font-size: 0.95rem;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.check {
+    color: #28a745;
+    font-weight: 700;
 }
 
 .purchase-btn {
     background: #dc3545;
     border: none;
     border-radius: 50px;
-    padding: 1rem 2rem;
-    font-size: 1rem;
+    padding: 0.85rem 2rem;
+    font-size: 0.95rem;
     font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
     color: white;
     cursor: pointer;
     width: 100%;
     transition: all 0.3s;
-    margin-top: auto; /* Keeps button at bottom */
-}
-
-.featured-btn {
-    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    margin-top: auto;
+    display: block;
+    text-decoration: none;
+    text-align: center;
 }
 
 .purchase-btn:hover {
-    transform: scale(1.05);
+    background: #c82333;
+    transform: scale(1.03);
+    color: white;
+}
+
+/* Spots counter */
+.wbs-spots-info {
+    font-size: 0.9rem;
+    color: #444;
+}
+
+/* Alert states */
+.success-alert {
+    background: #d4edda;
+    border: 1px solid #c3e6cb;
+    border-radius: 12px;
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.capacity-alert {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    border: 1px solid #ffeaa7;
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.alert-icon {
+    font-size: 1.2rem;
+}
+
+.alert-text {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #856404;
+    letter-spacing: 1px;
+}
+
+.spectator-btn {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    margin-bottom: 0.75rem;
+}
+
+.spectator-btn:hover {
+    background: linear-gradient(135deg, #20c997 0%, #17a2b8 100%);
 }
 </style>
 
