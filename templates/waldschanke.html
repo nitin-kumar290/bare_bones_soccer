@@ -51,17 +51,16 @@
                     <div class="ticket-price player-price">$10</div>
                     <div class="ticket-type-label player-type">PLAY ONLY</div>
                     <ul class="ticket-features">
-                        <li><span class="check">✓</span> Entry to Brunch Ball</li>
-                        <li><span class="check">✓</span> Pickup games + vibes</li>
-                        <li><span class="check">✓</span> Food & drinks available</li>
+                        <li><span class="check">✓</span> Entry to Play</li>
+                        <li><span class="check">✓</span> Food & Drinks available</li>
                     </ul>
                     {% if user.is_authenticated %}
                         <button class="purchase-btn" onclick="registerForEvent('player')">
-                            BUY $10 SPOT
+                            BUY PLAYER TICKET
                         </button>
                     {% else %}
                         <a href="{% url 'login' %}?next={% url 'waldschanke' %}" class="purchase-btn">
-                            BUY $10 SPOT
+                            BUY PLAYER TICKET
                         </a>
                     {% endif %}
                 </div>
@@ -72,16 +71,17 @@
                     <div class="ticket-price player-price">$15</div>
                     <div class="ticket-type-label drink-type">PLAY + DRINK 🍺</div>
                     <ul class="ticket-features">
-                        <li><span class="check">✓</span> Entry to Brunch Ball</li>
-                        <li><span class="check">✓</span> Includes 1 drink</li>
+                        <li><span class="check">✓</span> Entry to Play</li>
+                        <li><span class="check">✓</span> Includes 1 FREE drink</li>
+                        <li><span class="check">✓</span> Food & Drinks available</li>
                     </ul>
                     {% if user.is_authenticated %}
                         <button class="purchase-btn" onclick="registerForEvent('player_plus')">
-                            BUY $15 + DRINK
+                            BUY Player + DRINK Ticket
                         </button>
                     {% else %}
                         <a href="{% url 'login' %}?next={% url 'waldschanke' %}" class="purchase-btn">
-                            BUY $15 + DRINK
+                            BUY Player + DRINK Ticket
                         </a>
                     {% endif %}
                 </div>
@@ -91,7 +91,7 @@
 
     <!-- Spots Counter -->
     <div class="text-center mt-2 mb-3">
-        <span class="wbs-spots-info"><strong>{{ paid_players_count }} spots</strong> — first come, first play</span>
+        <span class="wbs-spots-info"><strong>32 Player Spots</strong> — First come, First play</span>
     </div>
 </div>
 

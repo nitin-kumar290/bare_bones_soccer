@@ -615,7 +615,7 @@ def payment_success(request):
                     <ul style='list-style-type: none; padding-left: 10px;'>
                     {date_list_str}
                     </ul>
-                    <p>🕠 6:00 PM - 8:00 PM
+                    <p>🕠 6:15 PM - 8:15 PM
                     <br>
                     📍 Blue Sport Stable - 1 Superior Drive, Superior
                     <br>
@@ -1062,7 +1062,7 @@ def register_free_spectator(request):
               <!-- Header -->
               <tr>
                 <td style="font-size:22px; line-height:30px; text-align:center; font-weight:bold;">
-                  🏟️⚽ 3/01 EVENT CONFIRMATION!
+                  🏟️⚽ 4/12 EVENT CONFIRMATION!
                 </td>
               </tr>
               
@@ -1072,15 +1072,15 @@ def register_free_spectator(request):
               <tr>
                 <td style="font-size:16px; line-height:24px; text-align:center;">
                     
-                    You're all set! Your spot for Bare Bones Brunch Ball at Wäldschanke is confirmed 🙌  </td>
+                    You're all set! Your spot for Bare Bones Brunch Ball at Waldschänke is confirmed 🙌  </td>
               </tr>        
               <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
               
               <!-- Details bullets -->
               <tr>
                 <td style="font-size:16px; line-height:26px;">
-                    📅 <b> March 1st, 2026</b><br>
-                    ⏰ <b>11:00AM - 2:00PM</b><br>
+                    📅 <b> April 12th, 2026</b><br>
+                    ⏰ <b>10:30AM - 1:30PM</b><br>
                     📍 <b>Waldschänke Ciders & Coffee — Sunnyside, Denver</b><br>
                 
                   🍔 Food + Drinks | 🎶 Music<br>
@@ -1139,13 +1139,13 @@ def create_waldschanke_checkout_session(request):
 
     # Set price based on ticket type
     prices = {
-        'player': 1500,  # $15
-        'player_plus': 2500,  # $25
+        'player': 1000,  # $10
+        'player_plus': 1500,  # $15
     }
 
     names = {
-        'player': 'Player Ticket - Bare Bones Brunch Ball 3',
-        'player_plus': 'Player + Brunch Ticket - Bare Bones Brunch Ball 3',
+        'player': 'Player Ticket - Bare Bones Brunch Ball 4',
+        'player_plus': 'Player + Drink Ticket - Bare Bones Brunch Ball 4',
     }
     session = stripe.checkout.Session.create(
         payment_method_types=["card"],
@@ -1203,7 +1203,7 @@ def waldschanke_payment_success(request):
               <!-- Header -->
               <tr>
                 <td style="font-size:22px; line-height:30px; text-align:center; font-weight:bold;">
-                  🏟️⚽ 3/01 EVENT CONFIRMATION!
+                  🏟️⚽ 4/12 EVENT CONFIRMATION!
                 </td>
               </tr>
               
@@ -1219,8 +1219,8 @@ def waldschanke_payment_success(request):
               <!-- Details bullets -->
               <tr>
                 <td style="font-size:16px; line-height:26px;">
-                    📅 <b>Sunday, March 1st, 2026</b><br>
-                    ⏰ <b>11:00AM - 2:00PM</b><br>
+                    📅 <b>Sunday, April 12th, 2026</b><br>
+                    ⏰ <b>10:30AM - 1:30PM</b><br>
                     📍 <b>Waldschänke Ciders & Coffee — Sunnyside, Denver</b><br>
                 
                   🍔 Food + Drinks | 🎶 Music<br>
