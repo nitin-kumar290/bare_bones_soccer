@@ -6,8 +6,8 @@ import logging
 import stripe
 from datetime import datetime, timedelta
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import PersonForm, UserRegistrationForm, UserLoginForm, PlayerProfileForm, UnsubscribeForm, EventRSVPForm
-from .models import Person, Pickup, Event, EventImage, AttendancePayment, EmailUnsubscribe, EventRSVP, OneOffEvent
+from .forms import PersonForm, UserRegistrationForm, UserLoginForm, PlayerProfileForm, UnsubscribeForm, EventRSVPForm, SponsorInquiryForm
+from .models import Person, Pickup, Event, EventImage, AttendancePayment, EmailUnsubscribe, EventRSVP, OneOffEvent, Partner
 from django.core.mail import send_mail, EmailMessage
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -16,6 +16,7 @@ from django.http import JsonResponse
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth.views import PasswordResetView
 from django.utils.encoding import force_bytes
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
@@ -28,20 +29,55 @@ from .forms import ForgotUsernameForm
 
 
 logger = logging.getLogger(__name__)
+
+
+class CustomPasswordResetView(PasswordResetView):
+    def form_valid(self, form):
+        email = form.cleaned_data.get('email')
+        inactive_user = User.objects.filter(email__iexact=email, is_active=False).first()
+        if inactive_user:
+            site = get_current_site(self.request)
+            uid = urlsafe_base64_encode(force_bytes(inactive_user.pk))
+            token = default_token_generator.make_token(inactive_user)
+            activation_link = f"https://{site.domain}/activate/{uid}/{token}/"
+            html = render_to_string('account_activation_email.html', {
+                'user': inactive_user,
+                'activation_link': activation_link,
+            })
+            email_msg = EmailMessage('Activate your Bare Bones Soccer account', html, settings.EMAIL_HOST_USER, [inactive_user.email])
+            email_msg.content_subtype = 'html'
+            try:
+                email_msg.send()
+            except Exception:
+                pass
+            messages.warning(self.request, "Hey! Looks like this account was never activated. We just resent your activation email — check your inbox (and spam folder) to activate before signing in.")
+            return redirect('login')
+        return super().form_valid(form)
 stripe.api_key = settings.STRIPE_SECRET_KEY
+
+
+def unsubscribe_footer(request):
+    url = request.build_absolute_uri('/unsubscribe/')
+    return f'<p style="font-size:11px;color:#777;border-top:1px solid #eee;padding-top:10px;margin-top:16px;text-align:center;">You are receiving this email as a Bare Bones Soccer member. If you have received this email in error and/or no longer wish to receive email reminders, <a href="{url}" style="color:#777;">Unsubscribe</a>.</p>'
 
 SES = boto3.client("ses", region_name="us-east-2")
 FROM = "Bare Bones Soccer <no-reply@barebonessoccer.com>"
 # db_client.py
 
 
-def send_email_ses(to, subject, body_html):
+def send_email_ses(to, subject, body_html, body_text=None):
+    if EmailUnsubscribe.objects.filter(email__iexact=to).exists():
+        logger.info(f"Skipping email to unsubscribed address: {to}")
+        return
+    body = {"Html": {"Data": body_html}}
+    if body_text:
+        body["Text"] = {"Data": body_text}
     SES.send_email(
         Source=FROM,
         Destination={"ToAddresses":[to]},
         Message={
           "Subject": {"Data": subject},
-          "Body":    {"Html": {"Data": body_html}}
+          "Body":    body
         }
     )
 
@@ -56,6 +92,27 @@ def home(request):
 
 def about(request):
     return render(request, 'about.html')
+
+
+def sponsors_partners(request):
+    partners = Partner.objects.filter(active=True)
+    form = SponsorInquiryForm()
+    if request.method == 'POST':
+        form = SponsorInquiryForm(request.POST)
+        if form.is_valid():
+            form.save()
+            subject = "New Sponsor/Partner Inquiry"
+            body = f"""
+            <p>New sponsor/partner inquiry received:</p>
+            <p><strong>Name:</strong> {form.cleaned_data['name']}</p>
+            <p><strong>Business:</strong> {form.cleaned_data.get('business') or '—'}</p>
+            <p><strong>Email:</strong> {form.cleaned_data['email']}</p>
+            <p><strong>Message:</strong> {form.cleaned_data['message']}</p>
+            """
+            send_email_ses('soccerbarebones@gmail.com', subject, body)
+            messages.success(request, "Thanks! We'll be in touch soon.")
+            return redirect('sponsors_partners')
+    return render(request, 'partners.html', {'partners': partners, 'form': form})
 
 
 # def contact(request):
@@ -137,17 +194,21 @@ def register(request):
             profile.save()
 
             # Send activation email
-            current_site = get_current_site(request)
-            mail_subject = 'Activate your Bare Bones Soccer account'
-            message = render_to_string('account_activation_email.html', {
-                'user': user,
-                'domain': current_site.domain,
-                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                'token': default_token_generator.make_token(user),
-            })
-            email = EmailMessage(mail_subject, message, to=[user.email])
-            email.send()
-            
+            try:
+                current_site = get_current_site(request)
+                mail_subject = 'Activate your Bare Bones Soccer account'
+                message = render_to_string('account_activation_email.html', {
+                    'user': user,
+                    'domain': current_site.domain,
+                    'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                    'token': default_token_generator.make_token(user),
+                })
+                email = EmailMessage(mail_subject, message, to=[user.email])
+                email.content_subtype = 'html'
+                email.send()
+            except Exception:
+                pass
+
             return redirect('activation_sent')
             
         else:
@@ -234,12 +295,11 @@ def activate(request, uidb64, token):
                             <!-- Details -->
                             <tr>
                                 <td style="font-size:16px; padding:0 24px; text-align:center; line-height:26px;">
-                                ⚽ FREE Saturday pickup at Broomfield Commons Sports Fields (9:30 AM)<br><br>
                                 
-                                💬 Join our WhatsApp group for last-minute runs, updates, and community chatter:<br>
+                                💬 Join our WhatsApp community for weekly pickup chats, event news, community chatter & more!:<br>
                                 👉 <a href="https://chat.whatsapp.com/IzHQHb1UODABuoABqXotvm" target="_blank" style="color:#0066cc;">Join WhatsApp Group</a><br><br>
                                 
-                                We post weekly updates and event info on Instagram Stories, so keep an eye out there too.<br><br>
+                                Follow us on Instagram <a href="https://www.instagram.com/barebonessoccer/" target="_blank" style="color:#0066cc;">here</a> where we also post event & pickup info plus more footy content<br><br>
                                 
                                 Whether you're here to play hard, play casual, or just be part of something social — you're in the right place.
                                 </td>
@@ -262,7 +322,7 @@ def activate(request, uidb64, token):
                                 By soccer people, For soccer people
                                 </td>
                             </tr>
-                            
+
                             </table>
                         </td>
                         </tr>
@@ -270,9 +330,9 @@ def activate(request, uidb64, token):
                     </td>
                 </tr>
                 </table>
-
+                {unsubscribe_footer(request)}
                 </body>
-                </html>          
+                </html>
                 """
 
         recipient_list = [user.email]  # user_form.email also works
@@ -337,7 +397,22 @@ def user_login(request):
                 
                 return redirect(next_url)
             else:
-                messages.error(request, "Invalid username or password")
+                try:
+                    inactive_user = User.objects.get(username=username, is_active=False)
+                    current_site = get_current_site(request)
+                    mail_subject = 'Activate your Bare Bones Soccer account'
+                    activation_message = render_to_string('account_activation_email.html', {
+                        'user': inactive_user,
+                        'domain': current_site.domain,
+                        'uid': urlsafe_base64_encode(force_bytes(inactive_user.pk)),
+                        'token': default_token_generator.make_token(inactive_user),
+                    })
+                    activation_email = EmailMessage(mail_subject, activation_message, to=[inactive_user.email])
+                    activation_email.content_subtype = 'html'
+                    activation_email.send()
+                    messages.warning(request, "Hey! Looks like this account was never activated. We just resent your activation link — check your email (and spam folder) and click the link to get in!")
+                except User.DoesNotExist:
+                    messages.error(request, "Invalid username or password")
     else:
         form = UserLoginForm()
     return render(request, 'login.html', {'form': form})
@@ -364,31 +439,183 @@ def get_events(request):
 def events(request):
     events = Event.objects.all()
 
-    has_registered = False
+    seen_urls = set()
+    carousel_images = []
+    for event in events:
+        for url, label in [(event.image.url, event.title)] + [(img.image.url, '') for img in event.images.all()]:
+            if url not in seen_urls:
+                seen_urls.add(url)
+                carousel_images.append({'url': url, 'label': label})
+
+    has_rsvpd = False
     if request.user.is_authenticated:
-        has_registered = OneOffEvent.objects.filter(
-            user=request.user, 
-            event_name='WALDSCHANKE BRUNCH BALL 3'
+        has_rsvpd = OneOffEvent.objects.filter(
+            user=request.user,
+            event_name='world_cup_final'
         ).exists()
-    
-    paid_players_count = OneOffEvent.objects.filter(
-        event_name='WALDSCHANKE BRUNCH BALL 3',
-        status='Paid'
+
+    rsvp_count = OneOffEvent.objects.filter(
+        event_name='world_cup_final',
+        status='Free RSVP'
     ).count()
-    
-    spectator_count = OneOffEvent.objects.filter(
-        event_name='WALDSCHANKE BRUNCH BALL 3',
-        status='Free Spectator'
-    ).count()
-    
-    player_cap_reached = paid_players_count >= 34
-    
+
+    rsvp_full = rsvp_count >= 40
+    spots_remaining = max(0, 40 - rsvp_count)
+
     return render(request, 'events.html', {
         'events': events,
-        'has_registered': has_registered,
-        'paid_players_count': paid_players_count,
-        'spectator_count': spectator_count,
-        'player_cap_reached': player_cap_reached
+        'carousel_images': carousel_images,
+        'has_rsvpd': has_rsvpd,
+        'rsvp_count': rsvp_count,
+        'rsvp_full': rsvp_full,
+        'spots_remaining': spots_remaining,
+    })
+
+
+@login_required
+def register_wcf_rsvp(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+    user = request.user
+
+    if OneOffEvent.objects.filter(user=user, event_name='world_cup_final').exists():
+        return JsonResponse({'error': 'Already registered'}, status=400)
+
+    rsvp_count = OneOffEvent.objects.filter(event_name='world_cup_final', status='Free RSVP').count()
+    if rsvp_count >= 40:
+        return JsonResponse({'error': 'Spots full'}, status=400)
+
+    OneOffEvent.objects.create(
+        user=user,
+        event_name='world_cup_final',
+        event_date='2026-07-19',
+        ticket_type='player',
+        payment_id='FREE',
+        amount=0.00,
+        status='Free RSVP'
+    )
+
+    # Send confirmation email via SES
+    subject = "You're In — World Cup Final Party RSVP Confirmed!"
+    message = f"""
+<!DOCTYPE html>
+<html>
+<body>
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#ffffff; margin:0; padding:0;">
+  <tr>
+    <td align="center" style="padding:0;">
+      <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="width:100%; max-width:600px; margin:0 auto;">
+        <tr>
+          <td align="center" style="padding:24px;">
+            <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width:600px; width:100%; font-family:Arial, Helvetica, sans-serif; color:#111;">
+
+              <!-- Header -->
+              <tr>
+                <td style="font-size:22px; line-height:30px; text-align:center; font-weight:bold;">
+                  ⚽🏆 WORLD CUP FINAL PARTY — RSVP CONFIRMED!
+                </td>
+              </tr>
+
+              <tr><td style="height:8px; line-height:8px;">&nbsp;</td></tr>
+
+              <!-- Hook -->
+              <tr>
+                <td style="font-size:16px; line-height:24px; text-align:center;">
+                  You're all set, {user.first_name or user.username}! Your player spot for the 7/19 World Cup Final Party is confirmed!
+                </td>
+              </tr>
+
+              <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
+
+              <!-- Details -->
+              <tr>
+                <td style="font-size:16px; line-height:28px;">
+                  ⏰ <b>Pickup Soccer: 11 AM – 3 PM</b><br>
+                  📺 <b>World Cup Final Watch Party: 1 PM</b><br>
+                  📍 <b>Waldschänke Ciders — 4100 Jason St, Denver, CO</b><br><br>
+                  💰 Pickup is donation based - donate below 👇<br>
+                  📺 Watch party is <b>free and open to all</b> — no ticket needed<br>
+                  🍺 Food &amp; drinks available all day<br><br>
+                  <i>*Proper shoes required to play — flats or grippy sneakers*</i>
+                </td>
+              </tr>
+
+              <tr><td style="height:24px; line-height:24px;">&nbsp;</td></tr>
+
+              <!-- Donate section -->
+              <tr>
+                <td style="text-align:center; background:#f8f8f8; border-radius:10px; padding:20px 16px;">
+                  <p style="font-size:18px; font-weight:bold; margin:0 0 4px 0; letter-spacing:1px;">Support the Community — Donate What You Want</p>
+                  <p style="font-size:13px; color:#777; margin:0 0 18px 0;"></p>
+
+                  <!-- Venmo -->
+                  <p style="font-size:15px; font-weight:bold; color:#3D95CE; margin:0 0 8px 0; letter-spacing:1px;">VENMO</p>
+                  <img src="https://bare-bones-soccer.s3.amazonaws.com/images/bbs_venmo.jpeg" alt="Venmo QR Code" width="220" height="220" style="display:block; margin:0 auto 8px; border-radius:8px;">
+                  <p style="font-size:15px; font-weight:bold; color:#3D95CE; margin:0 0 20px 0;">@barebonessoccer</p>
+
+                  <!-- Divider -->
+                  <table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr><td style="height:1px; background:#ddd; font-size:0; line-height:0;">&nbsp;</td></tr></table>
+
+                  <!-- Zelle -->
+                  <p style="font-size:15px; font-weight:bold; color:#9b59f5; margin:16px 0 4px 0; letter-spacing:1px;">ZELLE</p>
+                  <p style="font-size:14px; color:#444; margin:0;">soccerbarebones@gmail.com</p>
+                </td>
+              </tr>
+
+              <tr><td style="height:24px; line-height:24px;">&nbsp;</td></tr>
+
+              <tr>
+                <td style="font-size:16px; line-height:24px; text-align:center;">
+                  See you at Waldschänke Ciders!<br>
+                  The Bare Bones Crew
+                </td>
+              </tr>
+
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+</body>
+</html>
+"""
+    email_status = "not attempted"
+    ses_error = None
+    smtp_error = None
+
+    try:
+        send_email_ses(user.email, subject, message)
+        email_status = "ses_ok"
+    except Exception as e:
+        ses_error = str(e)
+        try:
+            fallback = EmailMessage(subject, message, settings.EMAIL_HOST_USER, [user.email])
+            fallback.content_subtype = "html"
+            fallback.send()
+            email_status = "smtp_ok"
+        except Exception as e2:
+            smtp_error = str(e2)
+            email_status = "both_failed"
+
+    # Admin notification (mirrors other event flows)
+    try:
+        admin_subject = f"New WCF RSVP — {user.first_name or user.username} ({user.email})"
+        admin_body = f"<p><strong>{user.first_name or user.username}</strong> ({user.email}) just RSVPd for the World Cup Final Party.</p><p>Total RSVPs: {rsvp_count + 1} / 40</p>"
+        send_email_ses('soccerbarebones@gmail.com', admin_subject, admin_body)
+    except Exception:
+        pass
+
+    return JsonResponse({
+        'success': True,
+        'email_debug': {
+            'to': user.email,
+            'status': email_status,
+            'ses_error': ses_error,
+            'smtp_error': smtp_error,
+        }
     })
 
 
@@ -654,7 +881,7 @@ def payment_success(request):
             <ul style='list-style-type: none; padding-left: 10px;'>
             {date_list_str}
             </ul>
-            <p>🕠 6:00 PM - 8:00 PM
+            <p>🕠 6:15 PM - 8:15 PM
             <br>
             📍 Blue Sport Stable - 1 Superior Drive, Superior
             <br>
@@ -805,16 +1032,16 @@ def waldschanke(request):
     event_date = datetime(2026, 4, 12).date()
     has_registered = OneOffEvent.objects.filter(
         user=request.user, 
-        event_name='WALDSCHANKE BRUNCH BALL 4'
+        event_name='WALDSCHANKE BRUNCH BALL 5'
     ).exists()
     
     # Count paid players (excluding free spectators)
     paid_players_count = OneOffEvent.objects.filter(
-        event_name='WALDSCHANKE BRUNCH BALL 4',
+        event_name='WALDSCHANKE BRUNCH BALL 5',
         status='Paid'
     ).count()
     
-    player_cap_reached = paid_players_count >= 36
+    player_cap_reached = paid_players_count >= 32
     
     return render(request, 'waldschanke.html', {
         'event_date': event_date,
@@ -1031,12 +1258,12 @@ def register_free_spectator(request):
         user = request.user
         
         # Check if already registered
-        if OneOffEvent.objects.filter(user=user, event_name='WALDSCHANKE BRUNCH BALL 4').exists():
+        if OneOffEvent.objects.filter(user=user, event_name='WALDSCHANKE BRUNCH BALL 5').exists():
             return JsonResponse({'error': 'Already registered'}, status=400)
         
         OneOffEvent.objects.create(
             user=user,
-            event_name='WALDSCHANKE BRUNCH BALL 4',
+            event_name='WALDSCHANKE BRUNCH BALL 5',
             event_date='2026-04-12',
             payment_id='FREE_SPECTATOR',
             amount=0.00,
@@ -1062,7 +1289,7 @@ def register_free_spectator(request):
               <!-- Header -->
               <tr>
                 <td style="font-size:22px; line-height:30px; text-align:center; font-weight:bold;">
-                  🏟️⚽ 4/12 EVENT CONFIRMATION!
+                  🏟️⚽ 5/17 EVENT CONFIRMATION!
                 </td>
               </tr>
               
@@ -1079,7 +1306,7 @@ def register_free_spectator(request):
               <!-- Details bullets -->
               <tr>
                 <td style="font-size:16px; line-height:26px;">
-                    📅 <b> April 12th, 2026</b><br>
+                    📅 <b> May 17th, 2026</b><br>
                     ⏰ <b>10:30AM - 1:30PM</b><br>
                     📍 <b>Waldschänke Ciders & Coffee — Sunnyside, Denver</b><br>
                 
@@ -1124,6 +1351,7 @@ def register_free_spectator(request):
 
 
 @login_required
+@login_required
 def create_waldschanke_checkout_session(request):
     stripe.api_key = settings.STRIPE_SECRET_KEY 
     if request.method != 'POST':
@@ -1134,7 +1362,7 @@ def create_waldschanke_checkout_session(request):
     user = request.user
     
     # Check if already registered
-    if OneOffEvent.objects.filter(user=user, event_name='WALDSCHANKE BRUNCH BALL 4').exists():
+    if OneOffEvent.objects.filter(user=user, event_name='WALDSCHANKE BRUNCH BALL 5').exists():
         return JsonResponse({'error': 'Already registered'}, status=400)
 
     # Set price based on ticket type
@@ -1144,8 +1372,8 @@ def create_waldschanke_checkout_session(request):
     }
 
     names = {
-        'player': 'Player Ticket - Bare Bones Brunch Ball 4',
-        'player_plus': 'Player + Drink Ticket - Bare Bones Brunch Ball 4',
+        'player': 'Player Ticket - Bare Bones Brunch Ball 5',
+        'player_plus': 'Player + Drink Ticket - Bare Bones Brunch Ball 5',
     }
     session = stripe.checkout.Session.create(
         payment_method_types=["card"],
@@ -1176,8 +1404,8 @@ def waldschanke_payment_success(request):
             if session.payment_status == "paid":
                 OneOffEvent.objects.create(
                     user=request.user,
-                    event_name='WALDSCHANKE BRUNCH BALL 4',
-                    event_date='2026-04-12',
+                    event_name='WALDSCHANKE BRUNCH BALL 5',
+                    event_date='2026-05-17',
                     ticket_type=ticket_type,
                     payment_id=session_id,
                     amount=session.amount_total / 100,
@@ -1203,7 +1431,7 @@ def waldschanke_payment_success(request):
               <!-- Header -->
               <tr>
                 <td style="font-size:22px; line-height:30px; text-align:center; font-weight:bold;">
-                  🏟️⚽ 4/12 EVENT CONFIRMATION!
+                  🏟️⚽ 5/17 EVENT CONFIRMATION!
                 </td>
               </tr>
               
@@ -1219,7 +1447,7 @@ def waldschanke_payment_success(request):
               <!-- Details bullets -->
               <tr>
                 <td style="font-size:16px; line-height:26px;">
-                    📅 <b>Sunday, April 12th, 2026</b><br>
+                    📅 <b>Sunday, May 17th, 2026</b><br>
                     ⏰ <b>10:30AM - 1:30PM</b><br>
                     📍 <b>Waldschänke Ciders & Coffee — Sunnyside, Denver</b><br>
                 
@@ -1271,6 +1499,157 @@ def waldschanke_payment_success(request):
 
 def spectator_registration_success(request):
     return render(request, 'spectator_registration_success.html')
+
+
+def waldschanke_redirect(request):
+    return redirect('world_cup_block_party')
+
+
+def world_cup_block_party(request):
+    return redirect('events')
+
+
+@login_required
+def create_wcbp_checkout_session(request):
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Only POST allowed'}, status=405)
+    data = json.loads(request.body)
+    session_num = data.get('session_num', '1')
+    user = request.user
+    if session_num == 'both':
+        if OneOffEvent.objects.filter(user=user, event_name__in=['WCBP_S1_2026', 'WCBP_S2_2026', 'WCBP_BOTH_2026']).exists():
+            return JsonResponse({'error': 'Already registered for a session'}, status=400)
+        label = 'Both Sessions (10AM–12:30PM & 1:30PM–4:00PM)'
+        unit_amount = 2000
+    else:
+        event_name = f'WCBP_S{session_num}_2026'
+        if OneOffEvent.objects.filter(user=user, event_name=event_name).exists():
+            return JsonResponse({'error': 'Already registered'}, status=400)
+        label = 'Session 1 (10AM–12:30PM)' if session_num == '1' else 'Session 2 (1:30PM–4:00PM)'
+        unit_amount = 1500
+    session = stripe.checkout.Session.create(
+        payment_method_types=['card'],
+        line_items=[{
+            'price_data': {
+                'currency': 'usd',
+                'product_data': {'name': f'World Cup Block Party — {label}'},
+                'unit_amount': unit_amount,
+            },
+            'quantity': 1,
+        }],
+        mode='payment',
+        success_url=request.build_absolute_uri('/wcbp-payment-success/') + f'?session_id={{CHECKOUT_SESSION_ID}}&session_num={session_num}',
+        cancel_url=request.build_absolute_uri('/world-cup-block-party/'),
+    )
+    return JsonResponse({'id': session.id})
+
+
+@login_required
+def wcbp_payment_success(request):
+    session_id = request.GET.get('session_id')
+    session_num = request.GET.get('session_num', '1')
+    try:
+        if session_id and not OneOffEvent.objects.filter(payment_id=session_id).exists():
+            session = stripe.checkout.Session.retrieve(session_id)
+            if session.payment_status == 'paid':
+                if session_num == 'both':
+                    OneOffEvent.objects.create(user=request.user, event_name='WCBP_BOTH_2026', event_date='2026-06-13', payment_id=session_id, amount=20.00, status='Paid')
+                    session_label = 'Both Sessions: 10:00AM–12:30PM & 1:30PM–4:00PM'
+                else:
+                    OneOffEvent.objects.create(
+                        user=request.user,
+                        event_name=f'WCBP_S{session_num}_2026',
+                        event_date='2026-06-13',
+                        payment_id=session_id,
+                        amount=15.00,
+                        status='Paid'
+                    )
+                    session_label = '10:00AM – 12:30PM' if session_num == '1' else '1:30PM – 4:00PM'
+                try:
+                    first_name = request.user.playerprofile.full_name.split()[0]
+                except Exception:
+                    first_name = request.user.username
+                subject = "You're registered — World Cup Block Party, June 13"
+                message_html = f"""
+                <!DOCTYPE html>
+                <html>
+                <body style="margin:0; padding:0; background:#0d1928;">
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#0d1928; margin:0; padding:0;">
+                <tr><td align="center" style="padding:40px 16px;">
+                <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="width:100%; max-width:560px; margin:0 auto; background:linear-gradient(160deg,#0d1540 0%,#1a2060 50%,#0d1928 100%); border-radius:16px; border:1px solid rgba(255,255,255,0.1);">
+                <tr><td align="center" style="padding:40px 32px;">
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="font-family:Arial, Helvetica, sans-serif; color:#fff;">
+                <tr><td style="font-size:13px; line-height:20px; text-align:center; letter-spacing:3px; text-transform:uppercase; color:#FFD700; font-weight:bold; padding-bottom:12px;">
+                Bare Bones Soccer
+                </td></tr>
+                <tr><td style="font-size:24px; line-height:30px; text-align:center; font-weight:bold; color:#fff; padding-bottom:6px;">
+                World Cup Block Party — June 13
+                </td></tr>
+                <tr><td style="height:16px;">&nbsp;</td></tr>
+                <tr><td style="font-size:16px; line-height:24px; text-align:center; color:rgba(255,255,255,0.85);">
+                Hey {first_name}, you're confirmed!
+                </td></tr>
+                <tr><td style="height:24px;">&nbsp;</td></tr>
+                <tr><td style="background:rgba(255,255,255,0.06); border-radius:10px; border:1px solid rgba(255,255,255,0.1); padding:20px 24px; font-size:15px; line-height:28px; color:rgba(255,255,255,0.85);">
+                <b style="color:#fff;">Date:</b> Saturday, June 13th, 2026<br>
+                <b style="color:#FFD700;">Session:</b> {session_label}<br>
+                <b style="color:#fff;">Location:</b> Waldschänke Ciders — 4100 Jason St, Denver, CO
+                </td></tr>
+                <tr><td style="height:24px;">&nbsp;</td></tr>
+                <tr><td style="font-size:15px; line-height:26px; text-align:center; color:rgba(255,255,255,0.7);">
+                Nonstop pickup games, World Cup watch party, food and drinks. ⚽<br><br>
+                Bring flat footwear and good vibes. 🎉
+                </td></tr>
+                <tr><td style="height:32px;">&nbsp;</td></tr>
+                <tr><td style="font-size:15px; line-height:24px; text-align:center; color:#fff;">
+                See you on the pitch!<br>The Bare Bones Crew
+                </td></tr>
+                <tr><td style="height:20px;">&nbsp;</td></tr>
+                <tr><td style="font-size:13px; line-height:20px; text-align:center; font-style:italic; color:rgba(255,255,255,0.4);">
+                By soccer people, for soccer people
+                </td></tr>
+                </table>
+                </td></tr>
+                </table>
+                </td></tr>
+                </table>
+                </body>
+                </html>
+                """
+                message_text = f"""World Cup Block Party — June 13
+
+Hey {first_name}, you're confirmed!
+
+Date: Saturday, June 13th, 2026
+Session: {session_label}
+Location: Waldschänke Ciders — 4100 Jason St, Denver, CO
+
+Nonstop pickup games, World Cup watch party, food and drinks.
+Bring flat footwear and good vibes.
+
+See you on the pitch!
+The Bare Bones Crew
+
+By soccer people, for soccer people
+"""
+                try:
+                    email = EmailMessage(subject, message_html, to=[request.user.email])
+                    email.content_subtype = "html"
+                    email.send()
+                except Exception as e:
+                    logger.error(f"WCBP confirmation email failed for {request.user.email}: {e}")
+                messages.success(request, 'Registration successful!')
+                return render(request, 'wcbp_payment_success.html', {'session_label': session_label})
+            else:
+                messages.error(request, 'Payment was not completed.')
+                return redirect('world_cup_block_party')
+        else:
+            messages.error(request, 'Invalid session or already processed.')
+            return redirect('world_cup_block_party')
+    except stripe.error.StripeError as e:
+        messages.error(request, f'Error verifying payment: {e}')
+        return redirect('world_cup_block_party')
 
 
 def promo_video(request):
