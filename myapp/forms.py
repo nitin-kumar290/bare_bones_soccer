@@ -229,7 +229,24 @@ class EventRSVPForm(forms.ModelForm):
         fields = ['email']
         widgets = {
             'email': forms.EmailInput(attrs={
-                'class': 'form-control', 
+                'class': 'form-control',
                 'placeholder': 'Enter your email'
             }),
+        }
+
+
+class SponsorInquiryForm(forms.ModelForm):
+    business = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Business / Organization (optional)'})
+    )
+
+    class Meta:
+        from .models import Person
+        model = Person
+        fields = ['name', 'business', 'email', 'message']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Your Name'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Your Email'}),
+            'message': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Tell us about your interest in partnering with Bare Bones Soccer', 'rows': 4}),
         }

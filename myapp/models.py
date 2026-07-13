@@ -13,11 +13,36 @@ class Person(models.Model):
     name = models.CharField(max_length=100)
     email = models.EmailField()
     message = models.TextField()
+    business = models.CharField(max_length=150, blank=True, null=True)
     submitted_at = models.DateTimeField(auto_now_add=True)
 
-    
+
     def __str__(self):
         return f"{self.name} {self.email}"
+
+
+class Partner(models.Model):
+    CATEGORY_CHOICES = [
+        ('venue', 'Venue'),
+        ('community', 'Community'),
+        ('brand', 'Brand'),
+        ('legal', 'Legal & Professional'),
+        ('other', 'Other'),
+    ]
+    name = models.CharField(max_length=100)
+    logo = models.ImageField(upload_to='partners/', blank=True, null=True)
+    website = models.URLField(blank=True, null=True)
+    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, default='other')
+    description = models.CharField(max_length=200, blank=True, null=True)
+    featured = models.BooleanField(default=False)
+    display_order = models.IntegerField(default=0)
+    active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['display_order', 'name']
+
+    def __str__(self):
+        return self.name
 
 
 class Pickup(models.Model):
