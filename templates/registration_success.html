@@ -1,38 +1,37 @@
 {% extends "base.html" %}
-{% block title %}Registration Successful{% endblock %}
+{% load static %}
+{% block title %}Welcome to Bare Bones Soccer{% endblock %}
+{% block hero_background %}{% static 'images/banner_small.png' %}{% endblock %}
 
 {% block content %}
-{% if messages %}
-{% for message in messages %}
-    <div class="alert alert-info fade-in text-center fw-bold">{{ message }}</div>
-{% endfor %}
-{% endif %}
-<div class="container text-center my-5">
-    <h2 class="text-success text-uppercase py-5">Thanks for making an account with Bare Bones Soccer Collective!</h2>
-    <!-- <p class="lead">Thank you for your payment. You've been registered for the selected week. See you on the pitch!</p> -->
+<div class="container my-5" style="max-width:580px;">
+    <div style="background:#fff; border:1.5px solid rgba(0,0,0,0.1); border-radius:18px; box-shadow:0 4px 20px rgba(0,0,0,0.07); padding:40px 36px; text-align:center;">
 
-        <div class="alert alert-info">
-            <!-- <h4>Payment Successful!</h4> -->
-            <h4 class="fw-bold py-2">Thank you for registering account with us! Sign up for our Social Series Games. FIRST SESSION IS FREE!</h4>
+        <h2 style="font-family:'Oswald',sans-serif; font-weight:700; letter-spacing:1px; text-transform:uppercase; margin-bottom:8px;">You're In! ⚽</h2>
+        <p style="color:#555; font-family:'Barlow Semi Condensed',sans-serif; font-size:1rem; margin-bottom:28px;">Welcome to Bare Bones Soccer. Your account is active and you're signed in.</p>
+
+        <div style="background:#f0f6ff; border:1px solid #c8ddf5; border-radius:12px; padding:18px 22px; margin-bottom:24px; text-align:left;">
+            <p style="margin:0; font-family:'Barlow Semi Condensed',sans-serif; font-size:1rem; color:#0a1628; line-height:1.65;">
+                You're signed in on this device for the long haul. If you ever use a new device, just sign in at <a href="/login/" style="color:#65A2FC; font-weight:600;">barebonessoccer.com/login</a>.
+            </p>
         </div>
-    <a href="{% url 'login' %}" class="btn btn-outline-primary mt-4">Log In</a>
-    <p class="card-text">You will be redirected to the login page in <span id="countdown">20</span> seconds...</p>
+
+        <a href="{% url 'series_catalog' %}" class="btn btn-primary w-100 fw-bold text-uppercase" style="letter-spacing:1px;">Get Your Block Party Ticket</a>
+        <p style="font-size:0.8rem; color:#aaa; margin-top:16px; margin-bottom:0;">Redirecting in <span id="countdown">20</span> seconds...</p>
+
+    </div>
 </div>
 
 <script>
-    // Countdown timer
-    let timeLeft = 20;
-    const countdownElement = document.getElementById('countdown');
-    
-    const timer = setInterval(() => {
-        timeLeft--;
-        countdownElement.textContent = timeLeft;
-        
-        if (timeLeft <= 0) {
-            clearInterval(timer);
-            window.location.href = "{% url 'login' %}";
-        }
-    }, 1000);
+let timeLeft = 20;
+const countdownElement = document.getElementById('countdown');
+const timer = setInterval(() => {
+    timeLeft--;
+    countdownElement.textContent = timeLeft;
+    if (timeLeft <= 0) {
+        clearInterval(timer);
+        window.location.href = "{% url 'series_catalog' %}";
+    }
+}, 1000);
 </script>
-
 {% endblock %}

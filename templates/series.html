@@ -2,6 +2,7 @@
 {% load static %}
 
 {% block title %}Bare Bones Soccer Soccer Series | Denver Colorado Soccer | futbol | football | Pickup Soccer{% endblock %}
+{% block meta_description %}Weekly pickup soccer in Denver, CO. Small-sided coed 4v4 games at Sport Stable in Superior. No team needed — just show up and play.{% endblock %}
 {% block hero_background %}{% static 'images/BareBones1.jpg' %}{% endblock %}
 
 {% block content %}
@@ -173,78 +174,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     
-    <!-- La Familia Card -->
-    <div class="series-card">
-        <div class="container my-3">
-            <div class="video-container">
-                <video 
-                    id="customVideo2"
-                    width="100%" 
-                    loop 
-                    autoplay
-                    muted
-                    playsinline
-                    preload="metadata"
-                    class="promo-video">
-                    <source src="{% static 'videos/la_fam_series.mp4' %}" type="video/mp4">
-                    Your browser does not support the video tag.
-                </video>
-            </div>
-            </div>
-
-            <style>
-            .video-container {
-                max-width: 650px;
-                max-height: 400px;
-                margin: 0 auto;
-                line-height: 0;
-                overflow: hidden;
-            }
-
-            .promo-video {
-                width: 100%;
-                height: 100%;
-                max-height: 400px;
-                display: block;
-                object-fit: cover;
-                margin: 0;
-                padding: 0;
-            }
-
-            @media (max-width: 768px) {
-                .video-container {
-                    max-width: 100%;
-                    max-height: 300px;
-                    margin: 0 15px;
-                }
-                
-                .promo-video {
-                    max-height: 300px;
-                }
-            }
-            </style>
-
-            <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const video = document.getElementById('customVideo2');
-                
-                video.play().catch(function(error) {
-                    console.log('Autoplay failed:', error);
-                });
-            });
-            </script>
-
-        <div class="series-content">
-            <h2>Scheitler Pickup</h2>
-            <p class="series-subtitle">Weekly Thursday night soccer. <em>Scheitler Rec Center. Denver, CO.</em></p>
-            <p class="series-description">
-                Community-first, coed 4v4 pickup. Limited series run, partnering with Denver Parks & Rec to add more!
-            </p>
-            <a href="https://anc.apm.activecommunities.com/denver/activity/search?locale=en-US&activity_select_param=2&activity_keyword=CWS%3A%20Bare%20Bones%20Indoor&viewMode=list" target="_blank">
-                <button class="play-btn">LET'S PLAY!</button>
-            </a>
-        </div>
-    </div>
 </div>
 
 {% endblock %}

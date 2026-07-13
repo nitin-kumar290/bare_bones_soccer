@@ -1,10 +1,14 @@
 {% extends "base.html" %}
-{% block title %}Series Catalog{% endblock %}
+{% block title %}Denver Soccer Games & Events | Bare Bones Soccer{% endblock %}
+{% block meta_description %}Weekly pickup soccer and special events in Denver, CO. Sport Stable and unique soccer events across the Denver metro. Pick your game and show up.{% endblock %}
 
 
 {% load static %}
 
-{% block hero_background %}{% static 'images/catalog_banner.jpeg' %}{% endblock %}
+{% block hero_background %}https://bare-bones-soccer.s3.amazonaws.com/images/waldy_brunch-ball2-1.jpg{% endblock %}
+
+{% block navbar_bg %}style="background: rgba(0,0,0,0.18) !important;"{% endblock %}
+{% block hero_video %}{% endblock %}
 
 {% block content %}
 {% csrf_token %}
@@ -15,58 +19,28 @@
 {% endfor %}
 {% endif %}
 
-<div class="container py-5">
-    <!-- Header Section -->
-    <div class="text-center mb-5">
-        <h1 class="display-4 fw-bold">Available Series</h1>
-        <p class="lead text-muted">Select a series to view schedule and register for games</p>
-        <!-- <p class="text-center text-uppercase fw-bold"><em>FREE First Game April 28th!</em></p> -->
-
+<div class="catalog-header-bg py-5">
+    <div class="container">
+        <div class="text-center" style="position:relative;">
+            <div class="catalog-ball-bg" aria-hidden="true">⚽</div>
+            <h1 class="display-4 fw-bold text-uppercase catalog-title" style="position:relative; z-index:1;">Denver Soccer Games & Events</h1>
+            <div class="catalog-title-rule" style="position:relative; z-index:1;"></div>
+            <p class="catalog-subtitle" style="position:relative; z-index:1;">Weekly soccer games &amp; special events across Denver &mdash; pick your game and show up.</p>
+        </div>
     </div>
+</div>
+<div class="catalog-shape-divider" aria-hidden="true">
+    <svg viewBox="0 0 1440 54" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="0,54 1440,0 1440,54" fill="#fff"/>
+    </svg>
+</div>
 
-    <!-- Series Cards Container -->
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-        <!-- Sports Stable Card -->
-        <div class="col">
-            <a href="{% url 'schedule' %}" class="text-decoration-none">
-                <div class="card h-100 shadow-sm hover-card">
-                    <div class="card-body text-center">
-                        <div class="mb-4">
-                            <i class="fas fa-futbol fa-3x text-primary mb-3"></i>
-                            <h3 class="card-title text-dark">Sport Stable</h3>
-                            <p class="card-text text-muted">Social Series</p>
-                        </div>
-                        <ul class="list-unstyled mb-4 text-dark">
-                            <li><i class="fas fa-map-marker-alt me-2"></i>Superior, CO</li>
-                            <li><i class="fas fa-calendar me-2"></i>Monday Nights</li>
-                            <li><i class="fas fa-clock me-2"></i>6:15 PM - 8:15 PM</li>
-                        </ul>
-                        <div class="btn btn-primary btn-lg w-100">View Schedule</div>
-                    </div>
-                </div>
-            </a>
-        </div>
+<div class="catalog-cards-bg">
+    <div class="container py-4">
+    <!-- Eyebrow label -->
+    <p class="catalog-eyebrow">PICK YOUR GAME</p>
 
-        <!-- Waldshanke Card -->
-        <div class="col">
-            <a href="{% url 'waldschanke' %}" class="text-decoration-none">
-                <div class="card h-100 shadow-sm hover-card">
-                    <div class="card-body text-center">
-                        <div class="mb-4">
-                            <i class="fas fa-futbol fa-3x text-primary mb-3"></i>
-                            <h3 class="card-title text-dark">Waldschänke Ciders</h3>
-                            <h5 class="card-text text-muted">Bare Bones Brunch Ball</h5>
-                        </div>
-                        <ul class="list-unstyled mb-4 text-dark">
-                            <li><i class="fas fa-map-marker-alt me-2"></i>Sunnyside, Denver</li>
-                            <li><i class="fas fa-calendar me-2"></i>Sunday, April 12th, 2026</li>
-                            <li><i class="fas fa-clock me-2"></i>10:30AM - 1:30PM</li>
-                        </ul>
-                        <div class="btn btn-primary btn-lg w-100">View Event</div>
-                    </div>
-                </div>
-            </a>
-        </div>
+        <div class="row row-cols-1 row-cols-md-3 g-4 align-items-center justify-content-center">
 
         <!-- <div class="col">
             <a href="{% url 'brighton' %}" class="text-decoration-none">
@@ -88,62 +62,217 @@
         </div> -->
 
 
+        <!-- World Cup Events Card -->
         <div class="col">
-            <a href="https://anc.apm.activecommunities.com/denver/activity/search?locale=en-US&activity_select_param=2&activity_keyword=CWS%3A%20Bare%20Bones%20Indoor&viewMode=list" target="_blank" class="text-decoration-none">
-                <div class="card h-100 shadow-sm hover-card">
-                    <div class="card-body text-center">
+            <a href="{% url 'events' %}" class="text-decoration-none">
+                <div class="card video-bg-card hover-card">
+                    <img src="https://bare-bones-soccer.s3.amazonaws.com/images/waldyevents.jpeg" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; object-position:center 20%; z-index:0;" alt="World Cup Events at Waldschänke">
+
+                </div>
+            </a>
+        </div>
+
+        <!-- Sports Stable Card -->
+        <div class="col">
+            <a href="{% url 'schedule' %}" class="text-decoration-none">
+                <div class="card video-bg-card hover-card">
+                    <video autoplay muted loop playsinline preload="metadata" class="card-bg-video">
+                        <source src="{% static 'videos/sport_stable_series.mp4' %}" type="video/mp4">
+                    </video>
+                    <div class="card-bg-overlay"></div>
+                    <div class="card-body text-center" style="position:relative; z-index:2; display:flex; flex-direction:column;">
                         <div class="mb-4">
-                            <i class="fas fa-futbol fa-3x text-primary mb-3"></i>
-                            <h3 class="card-title text-dark">Scheitler Rec Center</h3>
-                            <h5 class="card-title text-dark">Limited Time Social Series 🚨</h5>
+                            <h3 class="card-title" style="color:#fff;">Sport Stable</h3>
                         </div>
-                        <ul class="list-unstyled mb-4 text-dark">
-                            <li><i class="fas fa-map-marker-alt me-2"></i>Denver, CO</li>
-                            <li><i class="fas fa-calendar me-2"></i>Thursday Nights</li>
-                            <li><i class="fas fa-clock me-2"></i>6:15PM - 8:15PM</li>
+                        <ul class="list-unstyled mb-4" style="color:rgba(255,255,255,0.85);">
+                            <li><i class="fas fa-map-marker-alt me-2"></i>Superior, CO</li>
+                            <li><i class="fas fa-calendar me-2"></i>Monday Nights</li>
+                            <li><i class="fas fa-clock me-2"></i>6:15 PM - 8:15 PM</li>
                         </ul>
-                        <div class="btn btn-primary btn-lg w-100">View Event</div>
+                        <div class="btn btn-light btn-lg w-100 fw-bold" style="margin-top:auto;">View Schedule</div>
                     </div>
                 </div>
             </a>
         </div>
 
-        <!-- Placeholder for future series (optional) -->
-        <div class="col">
-            <div class="card h-100 shadow-sm bg-light border-dashed">
-                <div class="card-body text-center d-flex align-items-center justify-content-center">
-                    <div>
-                        <i class="fas fa-plus-circle fa-3x text-muted mb-3"></i>
-                        <h3 class="card-title text-muted">More Series Coming Soon</h3>
-                    </div>
-                </div>
-            </div>
         </div>
-
     </div>
 </div>
 
-<!-- Add this CSS to your stylesheet or in a style tag -->
 <style>
-    .hover-card {
-        transition: transform 0.2s ease-in-out;
+    .hero-section { height: 78vh !important; background-position: center 40% !important; }
+
+    /* ── Dark header section ── */
+    .catalog-header-bg {
+        background: linear-gradient(135deg, #0a1628 0%, #102040 100%);
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 0;
+        padding-bottom: 52px !important;
+        padding-top: 52px !important;
+    }
+    .catalog-ball-bg {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 13rem;
+        opacity: 0.10;
+        pointer-events: none;
+        line-height: 1;
+    }
+    .catalog-title {
+        font-family: 'Oswald', sans-serif;
+        color: #fff;
+        letter-spacing: 4px;
+    }
+    .catalog-title-rule {
+        width: 60px;
+        height: 3px;
+        background: #dc3545;
+        margin: 12px auto 14px;
+        border-radius: 2px;
+    }
+    .catalog-subtitle {
+        font-family: 'Barlow Semi Condensed', sans-serif;
+        font-style: italic;
+        font-size: 1.15rem;
+        font-weight: 500;
+        color: rgba(255,255,255,0.72);
+        letter-spacing: 0.3px;
+        margin-top: 0;
+        max-width: 480px;
+        margin-left: auto;
+        margin-right: auto;
+        line-height: 1.6;
     }
 
+    /* ── Angled SVG divider ── */
+    .catalog-shape-divider {
+        display: block;
+        line-height: 0;
+        margin-bottom: -2px;
+        background: #0a1628;
+    }
+    .catalog-shape-divider svg {
+        width: 100%;
+        height: 54px;
+        display: block;
+    }
+
+    /* ── Cards section — white/clean ── */
+    .catalog-cards-bg {
+        background: #fff;
+        padding-bottom: 64px;
+    }
+
+    .catalog-eyebrow {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.1rem;
+        font-weight: 700;
+        letter-spacing: 5px;
+        text-transform: uppercase;
+        color: #dc3545;
+        text-align: center;
+        margin-bottom: 28px;
+        padding-top: 4px;
+    }
+
+    /* ── Card detail copy ── */
+    .card-body li, .card-body p {
+        font-family: 'Barlow Semi Condensed', sans-serif;
+        font-size: 1.05rem;
+        font-weight: 600;
+        letter-spacing: 0.4px;
+        line-height: 1.7;
+    }
+    .card-body li { margin-bottom: 4px; }
+
+    /* ── Video bg cards ── */
+    .video-bg-card {
+        position: relative;
+        overflow: hidden;
+        border: none;
+        min-height: 280px;
+    }
+    .card-bg-video {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        object-fit: cover;
+        z-index: 0;
+    }
+    .card-bg-overlay {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0,0,0,0.52);
+        z-index: 1;
+    }
+
+    .hover-card {
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
     .hover-card:hover {
         transform: translateY(-5px);
+        box-shadow: 0 12px 32px rgba(0,0,0,0.3);
         cursor: pointer;
     }
 
-    .border-dashed {
-        border-style: dashed !important;
-        opacity: 0.7;
+    /* ── Featured event card ── */
+    .featured-event-card {
+        background: linear-gradient(160deg, #0d1540 0%, #1a2060 50%, #0d1928 100%);
+        border: 1.5px solid rgba(155,89,245,0.5);
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(155,89,245,0.25), 0 0 0 1px rgba(59,130,246,0.1);
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        position: relative;
+        overflow: hidden;
+    }
+    .featured-event-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 16px 48px rgba(155,89,245,0.4), 0 0 0 1px rgba(59,130,246,0.2);
+        cursor: pointer;
+    }
+    .featured-badge {
+        background: linear-gradient(135deg, #3b82f6 0%, #9b59f5 100%);
+        color: #fff;
+        font-family: 'Oswald', sans-serif;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        text-align: center;
+        padding: 6px 0;
+    }
+    .featured-btn {
+        background: linear-gradient(135deg, #9b59f5 0%, #6b35d4 100%);
+        color: #fff;
+        font-family: 'Oswald', sans-serif;
+        font-size: 1rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        border-radius: 50px;
+        padding: 12px 0;
+        width: 100%;
+        transition: background 0.2s;
+        box-shadow: 0 4px 14px rgba(155,89,245,0.4);
+    }
+    .featured-event-card:hover .featured-btn {
+        background: linear-gradient(135deg, #b36eff 0%, #8b45f4 100%);
+        box-shadow: 0 6px 24px rgba(155,89,245,0.55);
     }
 
-    /* Optional gradient background for the page */
-    body {
-        background: linear-gradient(to bottom, #f8f9fa, #ffffff);
-        min-height: 100vh;
-    }
+    body { background: #fff; }
 </style>
-
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var nav = document.querySelector('.custom-navbar');
+    if (nav) {
+        nav.style.setProperty('background', 'rgba(0,0,0,0.18)', 'important');
+        nav.style.setProperty('backdrop-filter', 'none', 'important');
+    }
+});
+</script>
 {% endblock %}

@@ -1,19 +1,22 @@
 {% extends "base.html" %}
-{% block title %}Schdule Sport Stable{% endblock %}
+{% block title %}Schedule Sport Stable{% endblock %}
 
 
 {% load static %}
 
-{% block hero_background %}{% static 'images/walds.jpeg' %}{% endblock %}
+{% block hero_background %}https://bare-bones-soccer.s3.amazonaws.com/images/sportstablebirthday.jpeg{% endblock %}
 
 {% block content %}
+<style>.hero-section { height: 89vh !important; }</style>
 {% csrf_token %}
 
 <div class="container mt-5">
-    <h1 class="text-center text-uppercase">Reserve Your spot for the Sport Stable Series</h1>
-    <p class="text-center text-muted text-uppercase">
-        Select one or multiple games.<br/>
-        First Session is <strong>FREE</strong>! <br/>
+    <h1 class="text-center text-uppercase" style="font-size:clamp(1rem,3vw,2rem); white-space:nowrap;">Grab a Sport Stable Game Below 👇</h1>
+    <p class="text-center" style="font-family:'Oswald',sans-serif; font-size:1rem; font-weight:500; letter-spacing:2px; text-transform:uppercase; color:#555;">
+        Select one or multiple games
+    </p>
+    <p class="text-center" style="font-family:'Oswald',sans-serif; font-size:1.3rem; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:#dc3545;">
+        🎉 First Session is FREE!
     </p>
 
     <!-- Where the date cards go -->
@@ -96,18 +99,19 @@
 //       return dates;
 //   }
 
-// Generate the next 8 upcoming Mondays rolling from today
-function getNext8Mondays() {
+// Generate all Mondays from today through November 30, 2026
+function getMondaysThroughNov2026() {
     const dates = [];
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // Find the next Monday (or today if today is Monday)
+    const endDate = new Date('2026-11-30');
+
     let current = new Date(today);
     const daysUntilMonday = (1 - current.getDay() + 7) % 7;
     current.setDate(current.getDate() + (daysUntilMonday === 0 ? 0 : daysUntilMonday));
 
-    for (let i = 0; i < 8; i++) {
+    while (current <= endDate) {
         const display = current.toLocaleDateString("en-US", {
             weekday: "long",
             month: "long",
@@ -124,7 +128,7 @@ function getNext8Mondays() {
 const today = new Date();
 today.setHours(0, 0, 0, 0);
 
-const gameDates = getNext8Mondays();
+const gameDates = getMondaysThroughNov2026();
 
 // 4) now render only the upcoming (or today’s) games
 const gameList = document.getElementById("gameList");
@@ -146,7 +150,7 @@ gameDates.forEach(({ date, display }) => {
                     <h5 class="card-title text-center"><strong>${display}</strong></h5>
                     <p class="card-text text-center">Blue Sport Stable</p>
                     <p class="card-text text-center">1 Superior Dr, Superior, CO 80027</p>
-                    <p class="card-text text-center">6:00 pm - 8:00 pm</p>
+                    <p class="card-text text-center">6:15 pm - 8:15 pm</p>
                     <p class="card-text text-center">$5 Per Session</p>
                 </div>
                 <div class="mt-2 text-center">
@@ -340,13 +344,24 @@ async function handleSelectedCheckout() {
       color: #004085;
   }
   .not-selected-card {
-      background-color: #ffffff;
-      border: 1px solid #ccc;
-      color: #333;
+      background-color: #65A2FC;
+      border: 1px solid #4a8fe8;
+      color: #fff;
       cursor: pointer;
   }
+  .not-selected-card:hover {
+      background-color: #a8c8fd;
+      border-color: #a8c8fd;
+      color: #fff;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+      transform: translateY(-3px);
+      transition: all 0.2s ease;
+  }
+  .game-card {
+      transition: all 0.2s ease;
+  }
   .game-card:hover {
-      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
   }
   .free-game-card {
     background-color: #d4edda; /* Light yellow for free game */

@@ -64,21 +64,56 @@
 
 </head>
 <body>
-    
+
+    {% block announcement_bar %}
+    {% comment %}WCBP announcement bar removed — event passed June 13 2026{% endcomment %}
+    {% endblock announcement_bar %}
+
     <!-- <header class="hero-section" style="background: url('{% static 'images/bb_banner.jpg' %}') no-repeat center center/cover;"> -->
     <!-- In base.html -->
-    <header class="hero-section" style="background: url('{% block hero_background %}{% static 'images/banner_small.png' %}{% endblock %}') no-repeat center center/cover;">
-    <!-- <header class="hero-section">
-            <img src="{% static 'images/banner_small.png' %}" alt="Hero Image" class="hero-image" /> -->
-            <!-- Any text or overlay here -->
+    <header class="hero-section" style="position:relative; background: url('{% block hero_background %}{% static 'images/banner_small.png' %}{% endblock %}') no-repeat center center/cover;">
 
-        <nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
-            <div class="container">
+        <nav class="navbar navbar-expand-lg navbar-dark custom-navbar" {% block navbar_bg %}{% endblock %}>
+            <div class="container-fluid">
                 <!-- Logo -->
-                <a class="navbar-brand bg-light bg-opacity-10" href="{% url 'home' %}">
-                     <img src="{% static 'images/logo_blue.png' %}" alt="Logo" class="logo">
+                <a class="navbar-brand" href="{% url 'home' %}" style="transition: opacity 0.2s ease, transform 0.2s ease; display:inline-block;">
+                     {% block navbar_logo %}<img src="{% static 'images/logo_blue.png' %}" alt="Logo" class="logo" style="height:62px; width:auto; mix-blend-mode: screen; filter: brightness(1.2); transition: transform 0.2s ease, filter 0.2s ease;">{% endblock %}
                 </a>
-        
+                <style>
+                    .navbar-brand:hover { opacity: 0.85; transform: scale(1.06); }
+                    @keyframes pickup-glow {
+                        0%, 100% { text-shadow: none; }
+                        50% { text-shadow: 0 0 8px rgba(155,89,245,1), 0 0 16px rgba(155,89,245,0.7); }
+                    }
+                    .pickup-glow { animation: pickup-glow 2.2s ease-in-out infinite; }
+                    .pickup-glow:hover { animation: none; }
+                    @keyframes sign-in-pulse {
+                        0%, 100% { box-shadow: 0 0 0 0 rgba(155,89,245,0.5); }
+                        50% { box-shadow: 0 0 0 6px rgba(155,89,245,0); }
+                    }
+                    .sign-in-link { display: inline-block; color: #9b59f5 !important; background: rgba(155,89,245,0.15) !important; animation: sign-in-pulse 2s ease-in-out infinite; transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease; }
+                    .custom-navbar .navbar-nav .nav-link.sign-in-link:hover { transform: scale(1.04); background: #9b59f5 !important; color: #fff !important; animation: none; }
+                    .navbar-brand:hover img { filter: brightness(1.2); }
+                    .custom-navbar .container { padding-left: 0 !important; margin-left: 8px !important; padding-right: 0 !important; }
+                    .custom-navbar .navbar-collapse { padding-right: 8px; }
+                    .custom-navbar { background: rgba(0,0,0,0.18) !important; }
+                    .hero-section { overflow: hidden; }
+                    @media (max-width: 991px) {
+                        .hero-section { overflow: visible; }
+                        .navbar-brand:active { opacity: 0.85; transform: scale(1.06); }
+                    }
+                    {% block navbar_style %}{% endblock %}
+                    .custom-navbar .navbar-nav .nav-link { color: #65A2FC !important; }
+                    .custom-navbar .navbar-nav .nav-link:hover { color: #9b59f5 !important; }
+                    .navbar-nav .nav-link::after { display: none !important; }
+                    .navbar-nav .nav-link:hover::after { display: none !important; }
+                    .custom-navbar { overflow: visible !important; }
+                    .dropdown-menu { z-index: 9999 !important; position: absolute !important; }
+                    .dropdown-item { transition: color 0.2s, border-left 0.2s, padding-left 0.2s; border-left: 2px solid transparent; }
+                    .dropdown-item:hover { background: transparent !important; color: #fff !important; border-left: 2px solid #65A2FC; padding-left: 24px !important; }
+                    .dropdown-divider { border-color: rgba(101,162,252,0.15); margin: 4px 12px; }
+                </style>
+
                 <!-- Mobile Toggle Button -->
                 <nav class="navbar navbar-expand-lg">
                     <button class="navbar-toggler bg-light bg-opacity-10 border border-light rounded-3 p-2 ms-auto" 
@@ -99,11 +134,16 @@
                 <!-- Navbar Links -->
                 <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                     <ul class="navbar-nav" style="font-family: 'Oswald', sans-serif;">
-                        <li class="nav-item fs-5"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
-                        <li class="nav-item fs-5"><a class="nav-link special-link" href="{% url 'series' %}">Series</a></li>
+                        <!-- <li class="nav-item fs-5"><a class="nav-link" href="{% url 'home' %}">Home</a></li> -->
+                        <li class="nav-item fs-5 d-block d-lg-none"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+                        <li class="nav-item fs-5"><a class="nav-link special-link" href="{% url 'series' %}">Pickup</a></li>
                         <li class="nav-item fs-5"><a class="nav-link" href="{% url 'events' %}">Events</a></li>
                         <!-- <li class="nav-item fs-5"><a class="nav-link" href="{% url 'pickup' %}">Pick Up</a></li> -->
-                        <li class="nav-item fs-5"><a class="nav-link" href="{% url 'about' %}">About</a></li>
+                                                    <ul class="dropdown-menu" style="background:#0d1928; border:1px solid rgba(101,162,252,0.2); border-radius:10px; min-width:200px; padding:10px 0; left:50%; transform:translateX(-50%);">
+                                <li><a class="dropdown-item" href="{% url 'about' %}" style="font-family:'Oswald',sans-serif; color:#65A2FC; letter-spacing:1.5px; text-transform:uppercase; text-align:center; padding:12px 20px; font-size:0.85rem;">About Us</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'sponsors_partners' %}" style="font-family:'Oswald',sans-serif; color:#65A2FC; letter-spacing:1.5px; text-transform:uppercase; text-align:center; padding:12px 20px; font-size:0.85rem;">Sponsors &amp; Partners</a></li>
+                            </ul>
                         <li class="nav-item fs-5"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
                     </ul>
         
@@ -117,7 +157,7 @@
                         </li>
                         {% else %}
                         <li class="nav-item fs-5">
-                            <a class="nav-link" href="{% url 'login' %}">Sign In to Play!</a>
+                            <a class="nav-link sign-in-link" href="{% url 'login' %}" style="font-weight:700; letter-spacing:0.5px; border:2px solid #9b59f5; border-radius:20px; padding:3px 10px !important;">Sign In to Play!</a>
                         </li>
                         <!-- <li class="nav-item fs-6">
                             <a class="nav-link" href="{% url 'register' %}">Register</a>

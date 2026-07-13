@@ -2,15 +2,27 @@
 {% load static %}
 
 
-{% block title %}Register{% endblock %}
-{% block hero_background %}{% static 'images/jpeg-optimizer_good1.jpg' %}{% endblock %}
+{% block title %}Join Bare Bones Soccer | Denver Metro Soccer Community{% endblock %}
+{% block meta_description %}Create your free Bare Bones Soccer account to register for weekly pickup games and special events across the Denver metro. No team registration — come with a friend or show up solo.{% endblock %}
+{% block hero_background %}{% endblock %}
+{% block hero_video %}
+<style>
+    .hero-section { height: 78vh !important; }
+    @media (max-width: 768px) {
+        .hero-section { height: 40vw !important; }
+        .register-hero-video { object-position: center center !important; }
+    }
+</style>
+<video autoplay muted loop playsinline preload="metadata" class="register-hero-video" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;object-position:center 33%;z-index:0;"><source src="https://bare-bones-soccer.s3.amazonaws.com/images/ScheitlerPickup.mp4" type="video/mp4"></video>
+<div style="position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.45);z-index:1;"></div>
+{% endblock %}
 
 {% block content %}
 <div class="registration-container">
     <div class="registration-header">
     <strong>
-        <h2>Register an Account with Bare Bones Soccer Collective</h2>
-        <p class="subtitle">Join us for exciting soccer games and events. Join our community!</p>
+        <h2>Join Bare Bones Soccer — Denver's Premier Soccer Community</h2>
+        <p class="subtitle">Register for weekly pickup soccer, special events and community updates. Small-sided coed games, unique soccer happenings and a community built around the beautiful game.</p>
     </strong>
         <div class="text-center mt-3">
             <p class="mb-0">
@@ -60,6 +72,7 @@
             <div class="form-group">
                 {{ user_form.email.label }}
                 {{ user_form.email }}
+                <small style="color:#888; font-size:0.78rem;">Use a real email — you'll need it to activate your account.</small>
 
                 {% if user_form.email.errors %}
                     <div class="invalid-feedback d-block">
@@ -206,12 +219,6 @@
                     <span class="agreement-text">By checking here, you are consenting to the use of your electronic signature in lieu of an original signature on paper. You have the right to request that you sign a paper copy instead. By checking here, you are waiving that right. After consent, you may, upon written request to us, obtain a paper copy of an electronic record. No fee will be charged for such copy and no special hardware or software is required to view it. Your agreement to use an electronic signature with us for any documents will continue until such time as you notify us in writing that you no longer wish to use an electronic signature. There is no penalty for withdrawing your consent. You should always make sure that we have a current email address in order to contact you regarding any changes, if necessary.</span>
                 </label>
             </div>
-            <div class="form-group waiver-agreement">
-                <label class="form-check">
-                    {{ profile_form.marketing_opt_in }}
-                    <span class="agreement-text">Opt in for Bare Bones Soccer news and updates on all games, events and more!</span>
-                </label>
-            </div>
         </div>
   
         <div class="form-section signature-section">
@@ -225,8 +232,8 @@
                         {{ profile_form.electronic_signature.errors }}
                     </div>
                 {% endif %}
-
-                <p class="signature-hint">Type your full legal name to sign</p>
+                 Type your full legal name to sign.
+                <p class="signature-hint"></p>
             </div>
         </div>
   
@@ -241,6 +248,8 @@ class="btn btn-primary submit-btn"
             <h2></h2>
             <p class="subtitle"> Once you finish account registration you will recieve an email confirmation. If you don't see the email please check your spam folder.</p>
         </strong>
+
+        <p style="font-size:0.95rem; color:#333; text-align:center; margin-top:0.75rem;"><em>*By signing up, you agree to receive updates and communications from Bare Bones Soccer.</em></p>
     </form>
 
   </div>
@@ -262,7 +271,8 @@ class="btn btn-primary submit-btn"
   
     .registration-header h2 {
         color: #2c3e50;
-        font-size: 2.2rem;
+        font-size: clamp(1rem, 3vw, 1.7rem);
+        white-space: nowrap;
         margin-bottom: 0.5rem;
     }
   
@@ -439,13 +449,24 @@ class="btn btn-primary submit-btn"
             padding: 1rem;
             margin: 1rem;
         }
-  
+
         .form-section {
             padding: 1rem;
+        }
+
+        .registration-header h2 {
+            white-space: normal;
+            font-size: 3.8vw !important;
         }
     }
   </style>
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+    if (window.innerWidth <= 768) {
+        var h2 = document.querySelector('.registration-header h2');
+        if (h2) h2.textContent = "Join Bare Bones Soccer — Denver's Soccer Community";
+    }
+});
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.querySelector('.registration-form');
     const btn = document.getElementById('registerSubmit');

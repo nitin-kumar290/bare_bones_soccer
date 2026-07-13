@@ -3,14 +3,13 @@ from . import views
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
-from .maintenance import maintenance_view
 
 BASE_PATH = settings.FORCE_SCRIPT_NAME or ""
 
 urlpatterns = [
-    re_path(r'^.*$', maintenance_view, name='maintenance'),
     path('', views.home, name='home'),
     path('about/', views.about, name = 'about'),
+    path('sponsors-partners/', views.sponsors_partners, name='sponsors_partners'),
     path('contact/', views.contact, name = 'contact'),
     path('pickup/', views.pickup, name='pickup'),
     path('pickup-temp/', views.pickup_temp, name='pickup-temp'),
@@ -57,6 +56,7 @@ urlpatterns = [
     path('activation-sent/', views.activation_sent, name='activation_sent'),
     path('rsvp/', views.event_rsvp, name='event_rsvp'),
     path('rsvp/success/', views.rsvp_success, name='rsvp_success'),
+    path('api/register-wcf-rsvp/', views.register_wcf_rsvp, name='register_wcf_rsvp'),
     path('promo-video/', views.promo_video, name='promo_video'),
     path('waldschanke/', views.waldschanke, name='waldschanke'),
     path('api/create-waldschanke-checkout-session', views.create_waldschanke_checkout_session),
