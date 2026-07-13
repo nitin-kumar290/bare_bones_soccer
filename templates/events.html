@@ -8,6 +8,418 @@
     <div class="alert alert-info fade-in text-center fw-bold">{{ message }}</div>
 {% endfor %}
 {% endif %}
+
+<!-- ========== WORLD CUP FINAL SECTION ========== -->
+<style>
+.wcf-confirmed-bar {
+    background: linear-gradient(90deg, #1a5c2e, #228b45);
+    color: #fff;
+    text-align: center;
+    font-family: 'Oswald', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 14px 20px;
+}
+.wcf-post-rsvp-donate {
+    background: #0d0d0d;
+    padding: 24px 20px;
+    text-align: center;
+}
+.wcf-post-rsvp-label {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 16px;
+}
+.wcf-post-rsvp-handle {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #3D95CE;
+    letter-spacing: 2px;
+    margin: 8px 0 12px;
+}
+.wcf-post-rsvp-zelle {
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-size: 0.95rem;
+    color: rgba(255,255,255,0.75);
+    margin: 0;
+}
+
+/* Main event card */
+.wcf-wrap {
+    background: linear-gradient(135deg, #1a1040 0%, #2d1b5e 35%, #2a5aaa 70%, #00b8e8 100%);
+    position: relative;
+    overflow: hidden;
+    font-family: 'Oswald', sans-serif;
+    padding: 20px 20px 48px;
+}
+.wcf-wrap::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        repeating-linear-gradient(0deg, transparent, transparent 59px, rgba(255,255,255,0.03) 60px),
+        repeating-linear-gradient(90deg, transparent, transparent 59px, rgba(255,255,255,0.03) 60px);
+    pointer-events: none;
+}
+.wcf-flags { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.wcf-flags span { position: absolute; display: block; line-height: 1; animation: wcf-float 5s ease-in-out infinite; }
+@keyframes wcf-float { 0%, 100% { translate: 0 0; rotate: 0deg; } 50% { translate: 0 -18px; rotate: 3deg; } }
+.wcf-inner { position: relative; z-index: 2; max-width: 780px; margin: 0 auto; }
+.wcf-eyebrow {
+    text-align: center;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 6px;
+}
+.wcf-title {
+    text-align: center;
+    font-size: clamp(1.8rem, 5vw, 3.8rem);
+    font-weight: 700;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: #fff;
+    line-height: 0.95;
+    margin: 0 0 8px;
+}
+.wcf-title span { color: #FFD700; }
+.wcf-date {
+    text-align: center;
+    font-size: clamp(0.9rem, 2.5vw, 1.2rem);
+    font-weight: 700;
+    letter-spacing: 6px;
+    color: #FFD700;
+    margin: 4px 0;
+    text-shadow: 0 0 30px rgba(255,215,0,0.4);
+}
+.wcf-meta-row {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+}
+.wcf-meta-item {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.8);
+}
+.wcf-divider {
+    width: 50px; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    margin: 12px auto;
+}
+.wcf-features {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+.wcf-feature {
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.65);
+    padding: 6px 14px;
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 4px;
+}
+.wcf-rsvp-btn {
+    display: block;
+    max-width: 340px;
+    margin: 0 auto;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, #FFD700 0%, #f0b400 100%);
+    border: none;
+    border-radius: 50px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #0d1928;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 16px rgba(255,215,0,0.35);
+    text-align: center;
+    text-decoration: none;
+}
+.wcf-rsvp-btn:hover {
+    background: linear-gradient(135deg, #ffe033 0%, #FFD700 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(255,215,0,0.55);
+    color: #0d1928;
+}
+.wcf-spots {
+    text-align: center;
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.5);
+    margin-top: 10px;
+    letter-spacing: 1px;
+}
+.wcf-full-badge {
+    display: block;
+    max-width: 340px;
+    margin: 0 auto;
+    padding: 14px 24px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 50px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    text-align: center;
+}
+.wcf-login-note {
+    text-align: center;
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.45);
+    margin-top: 10px;
+}
+.wcf-login-note a { color: #00b8e8; }
+
+/* Timeline */
+.wcf-timeline {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    flex-wrap: wrap;
+    margin-top: 28px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 20px;
+}
+.wcf-tl-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 20px;
+    border-right: 1px solid rgba(255,255,255,0.1);
+    min-width: 120px;
+}
+.wcf-tl-item:last-child { border-right: none; }
+.wcf-tl-time {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #FFD700;
+    letter-spacing: 1px;
+}
+.wcf-tl-label {
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+    margin-top: 4px;
+    text-align: center;
+}
+
+/* Post-event donate section */
+.wcf-donate-section {
+    background: #0d0d0d;
+    padding: 30px 20px;
+    text-align: center;
+}
+.wcf-donate-heading {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #fff;
+    margin-bottom: 6px;
+}
+.wcf-donate-sub {
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.55);
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+.wcf-donate-row {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 32px;
+    flex-wrap: wrap;
+}
+.wcf-donate-option { display: flex; flex-direction: column; align-items: center; }
+.wcf-donate-name {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+.wcf-donate-name.venmo { color: #3D95CE; }
+.wcf-donate-name.zelle { color: #9b59f5; }
+.wcf-donate-divider {
+    width: 1px;
+    height: 80px;
+    background: rgba(255,255,255,0.12);
+    align-self: center;
+}
+.wcf-donate-handle {
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.8);
+    margin-top: 8px;
+}
+.wcf-donate-email {
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.6);
+    margin-top: 4px;
+}
+
+@media (max-width: 600px) {
+    .wcf-wrap { padding: 20px 16px 40px; }
+    .wcf-timeline { flex-direction: column; align-items: center; gap: 16px; }
+    .wcf-tl-item { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 16px; width: 100%; }
+    .wcf-tl-item:last-child { border-bottom: none; }
+}
+</style>
+
+{% if has_rsvpd %}
+<div class="wcf-confirmed-bar">✓ YOU'RE IN — SEE YOU AT WALDSCHÄNKE CIDERS</div>
+<div class="wcf-post-rsvp-donate">
+    <p class="wcf-post-rsvp-label">Support the community — donate what you want</p>
+    <div style="display:flex; justify-content:center; margin-bottom:8px;">
+        <div style="background:#fff; border-radius:8px; padding:7px; line-height:0;">
+            <img src="https://bare-bones-soccer.s3.amazonaws.com/images/bbs_venmo.jpeg" alt="Venmo QR" width="220" height="220" style="display:block; border-radius:4px;">
+        </div>
+    </div>
+    <p class="wcf-post-rsvp-handle">@barebonessoccer</p>
+    <p class="wcf-post-rsvp-zelle"><span style="color:#9b59f5; font-weight:700;">Zelle</span> &nbsp;·&nbsp; soccerbarebones@gmail.com</p>
+</div>
+{% endif %}
+
+<div class="wcf-wrap">
+    <div class="wcf-flags" aria-hidden="true">
+        <span style="top:3%;  left:1%;  font-size:2.2rem; opacity:0.38; rotate:-12deg; animation-delay:0s;">🇧🇷</span>
+        <span style="top:12%; left:2%;  font-size:1.8rem; opacity:0.3;  rotate:8deg;   animation-delay:0.6s;">🇦🇷</span>
+        <span style="top:3%;  left:88%; font-size:2.2rem; opacity:0.35; rotate:-6deg;  animation-delay:0.9s;">🇪🇸</span>
+        <span style="top:12%; left:92%; font-size:1.8rem; opacity:0.3;  rotate:10deg;  animation-delay:0.3s;">🇵🇹</span>
+        <span style="top:2%;  left:22%; font-size:2.5rem; opacity:0.32; rotate:-5deg;  animation-delay:1.1s;">🇫🇷</span>
+        <span style="top:2%;  left:60%; font-size:2rem;   opacity:0.3;  rotate:14deg;  animation-delay:1.6s;">🇩🇪</span>
+        <span style="top:4%;  left:44%; font-size:1.8rem; opacity:0.28; rotate:-3deg;  animation-delay:2s;">🇺🇸</span>
+        <span style="top:42%; left:6%;  font-size:1.7rem; opacity:0.28; rotate:-15deg; animation-delay:1.3s;">🇲🇽</span>
+        <span style="top:38%; left:91%; font-size:1.9rem; opacity:0.28; rotate:6deg;   animation-delay:0.7s;">🏴󠁧󠁢󠁥󠁮󠁧󠁿</span>
+        <span style="top:60%; left:48%; font-size:1.8rem; opacity:0.27; rotate:-4deg;  animation-delay:1.5s;">🇨🇴</span>
+    </div>
+    <div class="wcf-inner">
+        <p class="wcf-eyebrow">Bare Bones Soccer Presents</p>
+        <h1 class="wcf-title">WORLD CUP <span>FINAL PARTY</span></h1>
+        <p class="wcf-date">SUNDAY · JULY 19 · 11AM – 3PM</p>
+        <div class="wcf-meta-row">
+            <span class="wcf-meta-item">📍 WALDSCHÄNKE CIDERS · 4100 JASON ST · DENVER</span>
+        </div>
+        <div class="wcf-divider"></div>
+        <div class="wcf-features">
+            <span class="wcf-feature">⚽ PICKUP SOCCER 11AM–3PM</span>
+            <span class="wcf-feature">📺 WATCH PARTY 1PM</span>
+            <span class="wcf-feature">🍺 FOOD & DRINKS ALL DAY</span>
+            <span class="wcf-feature">🆓 FREE WATCH PARTY ENTRY</span>
+        </div>
+
+        {% if has_rsvpd %}
+            <div class="wcf-full-badge">✓ YOU'RE REGISTERED</div>
+        {% elif rsvp_full %}
+            <div class="wcf-full-badge">⚽ PLAYER SPOTS FULL</div>
+            <p class="wcf-spots">Watch party is free — no ticket needed</p>
+        {% else %}
+            {% if user.is_authenticated %}
+                <button class="wcf-rsvp-btn" onclick="rsvpWCF()">FREE RSVP — CLAIM YOUR SPOT →</button>
+            {% else %}
+                <a href="{% url 'login' %}?next={% url 'events' %}" class="wcf-rsvp-btn">LOG IN TO RSVP →</a>
+            {% endif %}
+            <p class="wcf-spots">{{ spots_remaining }} spots remaining · 40 max players</p>
+            {% if not user.is_authenticated %}
+            <p class="wcf-login-note">No account? <a href="{% url 'register' %}">Register here</a></p>
+            {% endif %}
+        {% endif %}
+
+        <div class="wcf-timeline">
+            <div class="wcf-tl-item">
+                <div class="wcf-tl-time">11 AM</div>
+                <div class="wcf-tl-label">Pickup Soccer<br>Starts</div>
+            </div>
+            <div class="wcf-tl-item">
+                <div class="wcf-tl-time">1 PM</div>
+                <div class="wcf-tl-label">World Cup<br>Final Kickoff</div>
+            </div>
+            <div class="wcf-tl-item">
+                <div class="wcf-tl-time">3 PM</div>
+                <div class="wcf-tl-label">Last Pickup<br>Games</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if not has_rsvpd %}
+<div class="wcf-donate-section">
+    <p class="wcf-donate-heading">Donate to Play!</p>
+    <p class="wcf-donate-sub">Pay what you want — watch party is free</p>
+    <div class="wcf-donate-row">
+        <div class="wcf-donate-option">
+            <span class="wcf-donate-name venmo">Venmo</span>
+            <div style="background:#fff; border-radius:8px; padding:7px; line-height:0;">
+                <img src="https://bare-bones-soccer.s3.amazonaws.com/images/bbs_venmo.jpeg" alt="Venmo QR" width="200" height="200" style="display:block; border-radius:4px;">
+            </div>
+            <p class="wcf-donate-handle">@barebonessoccer</p>
+        </div>
+        <div class="wcf-donate-divider"></div>
+        <div class="wcf-donate-option">
+            <span class="wcf-donate-name zelle">Zelle</span>
+            <img src="https://bare-bones-soccer.s3.amazonaws.com/images/zelle_logo.png" alt="Zelle" width="90" style="display:block;">
+            <p class="wcf-donate-email">soccerbarebones@gmail.com</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<script>
+async function rsvpWCF() {
+    const btn = document.querySelector('.wcf-rsvp-btn');
+    if (btn) { btn.textContent = 'REGISTERING...'; btn.disabled = true; }
+    try {
+        const res = await fetch("{% url 'register_wcf_rsvp' %}", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' }
+        });
+        const data = await res.json();
+        if (data.success) {
+            window.location.reload();
+        } else {
+            alert(data.error || 'Something went wrong. Please try again.');
+            if (btn) { btn.textContent = 'FREE RSVP — CLAIM YOUR SPOT →'; btn.disabled = false; }
+        }
+    } catch(e) {
+        alert('Error. Please try again.');
+        if (btn) { btn.textContent = 'FREE RSVP — CLAIM YOUR SPOT →'; btn.disabled = false; }
+    }
+}
+</script>
+
+<!-- ========== END WCF SECTION ========== -->
+
 <!-- <div class="container my-3">
 <div class="video-container">
     <video 

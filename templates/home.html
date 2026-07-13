@@ -169,6 +169,164 @@
     
 
 
+<!-- WCF Homepage Card -->
+<style>
+.hc-wcf-card {
+    background: linear-gradient(135deg, #1a1040 0%, #2d1b5e 35%, #2a5aaa 70%, #00b8e8 100%);
+    position: relative;
+    overflow: hidden;
+    font-family: 'Oswald', sans-serif;
+    padding: 32px 20px 36px;
+    border-radius: 16px 16px 0 0;
+}
+.hc-wcf-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        repeating-linear-gradient(0deg, transparent, transparent 59px, rgba(255,255,255,0.03) 60px),
+        repeating-linear-gradient(90deg, transparent, transparent 59px, rgba(255,255,255,0.03) 60px);
+    pointer-events: none;
+}
+.hc-wcf-flags { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.hc-wcf-flags span { position: absolute; display: block; line-height: 1; animation: hcwcf-float 5s ease-in-out infinite; }
+@keyframes hcwcf-float { 0%, 100% { translate: 0 0; rotate: 0deg; } 50% { translate: 0 -16px; rotate: 3deg; } }
+.hc-wcf-inner { position: relative; z-index: 2; text-align: center; }
+.hc-wcf-eyebrow {
+    font-size: 10px; font-weight: 700; letter-spacing: 5px;
+    text-transform: uppercase; color: rgba(255,255,255,0.65); margin-bottom: 8px;
+}
+.hc-wcf-title {
+    font-size: clamp(1.6rem, 4.5vw, 3.2rem);
+    font-weight: 700; letter-spacing: 4px;
+    text-transform: uppercase; color: #fff;
+    line-height: 0.95; margin: 0 0 10px;
+}
+.hc-wcf-title span { color: #FFD700; }
+.hc-wcf-date {
+    font-size: clamp(0.85rem, 2vw, 1.1rem); font-weight: 700;
+    letter-spacing: 6px; color: #FFD700; margin: 6px 0;
+    text-shadow: 0 0 24px rgba(255,215,0,0.4);
+}
+.hc-wcf-features {
+    display: flex; justify-content: center; gap: 8px;
+    flex-wrap: wrap; margin: 14px 0 20px;
+}
+.hc-wcf-feature {
+    font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase;
+    color: rgba(255,255,255,0.6); padding: 5px 12px;
+    border: 1px solid rgba(255,255,255,0.18); border-radius: 4px;
+}
+.hc-wcf-cta-btn {
+    display: inline-block;
+    padding: 12px 32px;
+    background: linear-gradient(135deg, #FFD700 0%, #f0b400 100%);
+    border-radius: 50px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.9rem; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: #0d1928;
+    text-decoration: none;
+    box-shadow: 0 4px 16px rgba(255,215,0,0.35);
+    transition: all 0.3s;
+}
+.hc-wcf-cta-btn:hover {
+    background: linear-gradient(135deg, #ffe033 0%, #FFD700 100%);
+    transform: translateY(-2px); box-shadow: 0 6px 24px rgba(255,215,0,0.55);
+    color: #0d1928;
+}
+.hc-wcf-donate-strip {
+    background: #0d0d0d;
+    padding: 24px 20px;
+    text-align: center;
+    border-radius: 0 0 16px 16px;
+}
+.hc-wcf-donate-heading {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.2rem; font-weight: 700; letter-spacing: 3px;
+    text-transform: uppercase; color: #fff; margin-bottom: 16px;
+}
+.hc-wcf-donate-row {
+    display: flex; justify-content: center; align-items: flex-end; gap: 28px; flex-wrap: wrap;
+}
+.hc-wcf-donate-option { display: flex; flex-direction: column; align-items: center; }
+.hc-wcf-donate-label {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.8rem; font-weight: 700; letter-spacing: 3px;
+    text-transform: uppercase; margin-bottom: 8px;
+}
+.hc-wcf-donate-label.venmo { color: #3D95CE; }
+.hc-wcf-donate-label.zelle { color: #9b59f5; }
+.hc-wcf-donate-divider {
+    width: 1px; height: 80px;
+    background: rgba(255,255,255,0.12); align-self: center;
+}
+.hc-wcf-donate-handle {
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-size: 0.95rem; font-weight: 700;
+    color: rgba(255,255,255,0.8); margin-top: 6px;
+}
+.hc-wcf-donate-email {
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-size: 0.8rem; color: rgba(255,255,255,0.6); margin-top: 4px;
+}
+.hc-wcf-donate-sub {
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-size: 0.85rem; font-weight: 700;
+    color: rgba(255,255,255,0.45); margin-top: 16px; margin-bottom: 0;
+}
+@media (max-width: 600px) {
+    .hc-wcf-card { padding: 24px 12px 28px; }
+    .hc-wcf-donate-strip { padding: 20px 12px; }
+}
+</style>
+
+<div class="container my-4" style="max-width:780px;">
+    <a href="{% url 'events' %}" class="text-decoration-none d-block">
+        <div class="hc-wcf-card">
+            <div class="hc-wcf-flags" aria-hidden="true">
+                <span style="top:4%;  left:2%;  font-size:2rem;   opacity:0.35; rotate:-12deg; animation-delay:0s;">🇧🇷</span>
+                <span style="top:3%;  left:85%; font-size:2rem;   opacity:0.32; rotate:-6deg;  animation-delay:0.9s;">🇪🇸</span>
+                <span style="top:3%;  left:20%; font-size:2.2rem; opacity:0.28; rotate:-5deg;  animation-delay:1.1s;">🇫🇷</span>
+                <span style="top:3%;  left:62%; font-size:1.8rem; opacity:0.28; rotate:14deg;  animation-delay:1.6s;">🇩🇪</span>
+                <span style="top:55%; left:5%;  font-size:1.6rem; opacity:0.25; rotate:-8deg;  animation-delay:1.9s;">🇦🇷</span>
+                <span style="top:55%; left:90%; font-size:1.6rem; opacity:0.25; rotate:9deg;   animation-delay:0.7s;">🇵🇹</span>
+            </div>
+            <div class="hc-wcf-inner">
+                <p class="hc-wcf-eyebrow">Bare Bones Soccer Presents</p>
+                <h2 class="hc-wcf-title">WORLD CUP <span>FINAL PARTY</span></h2>
+                <p class="hc-wcf-date">SUNDAY · JULY 19 · 11AM – 3PM</p>
+                <div class="hc-wcf-features">
+                    <span class="hc-wcf-feature">⚽ PICKUP SOCCER</span>
+                    <span class="hc-wcf-feature">📺 WATCH PARTY 1PM</span>
+                    <span class="hc-wcf-feature">🍺 FOOD & DRINKS</span>
+                    <span class="hc-wcf-feature">🆓 FREE ENTRY</span>
+                </div>
+                <span class="hc-wcf-cta-btn">RSVP FREE →</span>
+            </div>
+        </div>
+    </a>
+    <div class="hc-wcf-donate-strip">
+        <p class="hc-wcf-donate-heading">Donate to Play!</p>
+        <div class="hc-wcf-donate-row">
+            <div class="hc-wcf-donate-option">
+                <span class="hc-wcf-donate-label venmo">Venmo</span>
+                <div style="background:#fff; border-radius:8px; padding:6px; line-height:0;">
+                    <img src="https://bare-bones-soccer.s3.amazonaws.com/images/bbs_venmo.jpeg" alt="Venmo QR" width="200" height="200" style="display:block; border-radius:4px;">
+                </div>
+                <p class="hc-wcf-donate-handle">@barebonessoccer</p>
+            </div>
+            <div class="hc-wcf-donate-divider"></div>
+            <div class="hc-wcf-donate-option">
+                <span class="hc-wcf-donate-label zelle">Zelle</span>
+                <img src="https://bare-bones-soccer.s3.amazonaws.com/images/zelle_logo.png" alt="Zelle" width="90" style="display:block;">
+                <p class="hc-wcf-donate-email">soccerbarebones@gmail.com</p>
+            </div>
+        </div>
+        <p class="hc-wcf-donate-sub">Pay what you want — watch party is free</p>
+    </div>
+</div>
+<!-- End WCF Card -->
+
 <div class="container my-5 text-center bg-light">
     <div class="row align-items-center min-vh-75">
 
