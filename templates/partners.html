@@ -1,0 +1,418 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Sponsors & Partners | Bare Bones Soccer Denver{% endblock %}
+{% block meta_description %}Bare Bones Soccer partners and sponsors in Denver, Colorado. Community-first soccer powered by brands who believe in culture, connection and the beautiful game.{% endblock %}
+
+{% block hero_video %}
+<style>.custom-navbar { background: rgba(0,0,0,0.18) !important; }</style>
+<video class="hero-video" autoplay muted loop playsinline preload="metadata">
+    <source src="https://bare-bones-soccer.s3.amazonaws.com/videos/waldyjo.mp4" type="video/mp4">
+</video>
+{% endblock %}
+
+{% block hero_overlay %}
+<div class="hero-overlay text-center" style="left:50%; transform:translateX(-50%); width:90%; max-width:700px;">
+    <h1 class="hero-overlay-title" style="font-size:clamp(1.8rem,5vw,3.2rem); text-transform:uppercase;">Building Denver's Soccer Community Through Sponsorship, Collabs and Activations</h1>
+    <a href="#partner-form" class="btn mt-3 text-uppercase fw-bold px-5 py-2" style="background:#00b8e8; color:#fff; border:2px solid #fff; border-radius:50px; font-family:'Oswald',sans-serif; letter-spacing:2px; font-size:0.95rem;">Partner With Us</a>
+</div>
+{% endblock %}
+
+{% block content %}
+<style>
+.hero-section { height: 85vh !important; background: #000 !important; position: relative; overflow: hidden; }
+.hero-video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; opacity: 0.88; }
+.hero-section .navbar { position: relative; z-index: 10; }
+
+/* Partners grid */
+.partners-section { background: #fff; padding: 60px 0 40px; }
+.partners-section-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 8px;
+    color: #111;
+}
+.partners-section-sub {
+    text-align: center;
+    color: #555;
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-size: 1rem;
+    margin-bottom: 40px;
+    letter-spacing: 0.5px;
+}
+
+.partner-card {
+    background: linear-gradient(160deg, #0d1540 0%, #1a2060 50%, #0d1928 100%);
+    border: 1.5px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    padding: 24px 16px;
+    text-align: center;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: transform 0.3s, border-color 0.3s;
+    text-decoration: none;
+}
+.partner-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(101,162,252,0.5);
+}
+.partner-card img {
+    max-height: 70px;
+    max-width: 140px;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+    opacity: 0.9;
+}
+.partner-card-name {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #fff;
+}
+.partner-card-desc {
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.6);
+    margin: 0;
+}
+.partner-empty {
+    text-align: center;
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    color: #888;
+    font-size: 1rem;
+    padding: 40px 0;
+}
+
+/* Divider */
+.sp-divider { border: none; border-top: 2px solid rgba(0,0,0,0.08); margin: 0; }
+
+/* Inquiry form section */
+.inquiry-section {
+    background: linear-gradient(160deg, #0d1540 0%, #1a2060 60%, #0d1928 100%);
+    padding: 64px 20px 72px;
+}
+.inquiry-section-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #fff;
+    text-align: center;
+    margin-bottom: 8px;
+}
+.inquiry-section-sub {
+    text-align: center;
+    color: rgba(255,255,255,0.65);
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-size: 1rem;
+    margin-bottom: 36px;
+    letter-spacing: 0.5px;
+}
+.inquiry-form-wrap {
+    max-width: 560px;
+    margin: 0 auto;
+}
+.inquiry-form-wrap .form-control {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.18);
+    color: #fff;
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-size: 0.95rem;
+}
+.inquiry-form-wrap .form-control::placeholder { color: rgba(255,255,255,0.4); }
+.inquiry-form-wrap .form-control:focus {
+    background: rgba(255,255,255,0.11);
+    border-color: #00b8e8;
+    color: #fff;
+    box-shadow: none;
+    outline: none;
+}
+.inquiry-form-wrap label {
+    color: rgba(255,255,255,0.75);
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+.inquiry-submit-btn {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    border: none;
+    border-radius: 50px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 8px;
+    box-shadow: 0 4px 16px rgba(59,130,246,0.35);
+}
+.inquiry-submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(59,130,246,0.55);
+}
+.inquiry-success {
+    background: rgba(40,167,69,0.15);
+    border: 1px solid rgba(40,167,69,0.35);
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #5cb85c;
+    margin-bottom: 20px;
+}
+
+/* Gallery placeholder */
+.gallery-placeholder {
+    background: #f8f9fa;
+    padding: 48px 20px;
+    text-align: center;
+    color: #aaa;
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-size: 0.95rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border-top: 1.5px solid rgba(0,0,0,0.06);
+}
+</style>
+
+<!-- Partners & Sponsors Section -->
+<section style="background:#f8f9fa; padding:64px 0 72px;">
+    <div class="container">
+
+        <style>
+        .sp-section-label {
+            font-family: 'Barlow Semi Condensed', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: #00b8e8;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .sp-section-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: clamp(1.8rem, 4vw, 2.6rem);
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-align: center;
+            color: #111;
+            margin-bottom: 8px;
+        }
+        .sp-section-sub {
+            font-family: 'Barlow Semi Condensed', sans-serif;
+            font-size: 1rem;
+            color: #666;
+            text-align: center;
+            margin-bottom: 52px;
+            max-width: 520px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .sp-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px 32px;
+            align-items: center;
+        }
+        @media (max-width: 991px) { .sp-grid { grid-template-columns: repeat(3, 1fr); gap: 36px 24px; } }
+        @media (max-width: 576px)  { .sp-grid { grid-template-columns: repeat(2, 1fr); gap: 32px 20px; } }
+        .sp-logo-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
+            opacity: 1;
+            transition: opacity 0.25s ease, transform 0.25s ease;
+        }
+        .sp-logo-link:hover {
+            transform: scale(1.06);
+        }
+        .sp-logo-link img {
+            height: 80px;
+            max-width: 180px;
+            width: 100%;
+            object-fit: contain;
+            display: block;
+            filter: brightness(0.75) contrast(1.2) saturate(1.1);
+            transition: filter 0.25s ease;
+        }
+        .sp-logo-link:hover img {
+            filter: brightness(1) contrast(1) saturate(1);
+        }
+        .sp-logo-name {
+            font-family: 'Barlow Semi Condensed', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: #999;
+            text-align: center;
+        }
+        .sp-text-logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #222;
+            text-align: center;
+            line-height: 1.2;
+        }
+        </style>
+
+        <p class="sp-section-label">Community &amp; Commerce</p>
+        <h2 class="sp-section-title">Our Partners &amp; Sponsors</h2>
+        <p class="sp-section-sub">The brands &amp; organizations who help build Denver's soccer community:</p>
+
+        <div class="sp-grid">
+
+            <a href="https://www.coloradorapids.com/" target="_blank" rel="noopener" class="sp-logo-link">
+                <img src="https://images.mlssoccer.com/image/upload/v1595583232/assets/logos/COL.svg" alt="Colorado Rapids">
+                <span class="sp-logo-name">Colorado Rapids</span>
+            </a>
+
+            <a href="https://www.denvercitywidesports.org/" target="_blank" rel="noopener" class="sp-logo-link">
+                <img src="https://irp.cdn-website.com/35e91b9d/dms3rep/multi/Public+Badge+v1.png" alt="Citywide Sports">
+                <span class="sp-logo-name">Citywide Sports</span>
+            </a>
+
+            <a href="https://waldschankeciders.com/" target="_blank" rel="noopener" class="sp-logo-link">
+                <span style="background:#0a1628; border-radius:8px; padding:10px 16px; display:flex; align-items:center; justify-content:center;">
+                    <img src="https://img1.wsimg.com/isteam/ip/269bea5a-fb64-488a-b3a7-6e3f3a220fb0/Waldschanke-ciders_text-logo.png" alt="Waldschänke Ciders" style="max-height:50px;">
+                </span>
+                <span class="sp-logo-name">Waldschänke Ciders</span>
+            </a>
+
+            <a href="https://www.instagram.com/robin.gerlach/" target="_blank" rel="noopener" class="sp-logo-link">
+                <span style="display:block; overflow:hidden; width:180px; height:120px;">
+                    <img src="https://bare-bones-soccer.s3.amazonaws.com/images/Robin%20Gerlach_Stacked.png" alt="Robin Gerlach Residential Real Estate" style="height:100%; width:100%; object-fit:cover; transform:scale(2.8); transform-origin:center center;">
+                </span>
+                <span class="sp-logo-name">Robin Gerlach</span>
+            </a>
+
+            <a href="https://coloradopersonalinjuryhelp.com/" target="_blank" rel="noopener" class="sp-logo-link">
+                <img src="https://coloradopersonalinjuryhelp.com/wp-content/uploads/2025/11/bowman-logo-1.png" alt="Bowman Law">
+                <span class="sp-logo-name">Bowman Law</span>
+            </a>
+
+            <a href="https://www.eatbirdcall.com/" target="_blank" rel="noopener" class="sp-logo-link">
+                <img src="https://images.getbento.com/accounts/646376798fd240c627e6ea44259c8ac1/media/images/64020Birdcall_Logo_Horizontal_FullColor_RGB.png" alt="Birdcall">
+                <span class="sp-logo-name">Birdcall</span>
+            </a>
+
+            <div class="sp-logo-link">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQPECsCln1zcfGM119zBLpiyUmNStiJaQUF2A&s" alt="Raíces Brewing">
+                <span class="sp-logo-name">Raíces Brewing</span>
+            </div>
+
+            <a href="https://www.osomeals.com/" target="_blank" rel="noopener" class="sp-logo-link">
+                <img src="https://static.wixstatic.com/media/6a28fe_4829c93b44034e4995e9ab485d239c8f~mv2.jpg/v1/fill/w_300,h_300,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/Oso-Color_edited.jpg" alt="Oso Meals">
+                <span class="sp-logo-name">Oso Meals</span>
+            </a>
+
+            <a href="https://greenbellyfoods.com/" target="_blank" rel="noopener" class="sp-logo-link">
+                <img src="https://greenbellyfoods.com/wp-content/uploads/2020/06/cropped-gb-footer-1-1.png" alt="Green Belly Foods">
+                <span class="sp-logo-name">Green Belly Foods</span>
+            </a>
+
+            <a href="https://drinkfrescos.com/" target="_blank" rel="noopener" class="sp-logo-link">
+                <img src="https://drinkfrescos.com/wp-content/uploads/2021/06/Frescos-Naturales-Logo-01-150x150.png" alt="Fresco Naturales">
+                <span class="sp-logo-name">Fresco Naturales</span>
+            </a>
+
+            <a href="https://theraice.com/" target="_blank" rel="noopener" class="sp-logo-link">
+                <img src="https://theraice.com/cdn/shop/files/TI_LOGO_LOWER_UPPER.jpg_1600X400_b5f7f410-8e87-4171-a509-426c543853c3.jpg?v=1671854283&width=400" alt="TheraICE">
+                <span class="sp-logo-name">TheraICE</span>
+            </a>
+
+            <a href="https://saltathletic.com/" target="_blank" rel="noopener" class="sp-logo-link">
+                <img src="https://saltathletic.com/cdn/shop/files/salt-logo.png?v=1614298841&width=600" alt="Salt Athletic">
+                <span class="sp-logo-name">Salt Athletic</span>
+            </a>
+
+        </div>
+    </div>
+</section>
+
+<hr class="sp-divider">
+
+<!-- Gallery placeholder — media coming soon -->
+<div class="gallery-placeholder">
+    <span>Community Gallery — Coming Soon</span>
+</div>
+
+<hr class="sp-divider">
+
+<!-- Inquiry Form -->
+<section class="inquiry-section" id="partner-form">
+    <h2 class="inquiry-section-title">Let's Build Something Together</h2>
+    <p class="inquiry-section-sub">Interested in partnering with Bare Bones Soccer? Drop us a note.</p>
+
+    <div class="inquiry-form-wrap">
+        {% if messages %}
+        {% for message in messages %}
+        <div class="inquiry-success">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
+
+        <form method="POST" action="#partner-form">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="id_name">Name</label>
+                {{ form.name }}
+            </div>
+            <div class="mb-3">
+                <label for="id_business">Business / Organization <span style="opacity:0.5; font-size:0.75rem;">(optional)</span></label>
+                {{ form.business }}
+            </div>
+            <div class="mb-3">
+                <label for="id_email">Email</label>
+                {{ form.email }}
+            </div>
+            <div class="mb-3">
+                <label for="id_message">Message</label>
+                {{ form.message }}
+            </div>
+            <button type="submit" class="inquiry-submit-btn">Send Inquiry</button>
+        </form>
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var nav = document.querySelector('.custom-navbar');
+    if (nav) {
+        nav.style.setProperty('background', 'rgba(0,0,0,0.18)', 'important');
+        nav.style.setProperty('backdrop-filter', 'none', 'important');
+    }
+});
+</script>
+
+{% endblock %}

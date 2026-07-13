@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}You're In! World Cup Block Party | Bare Bones Soccer{% endblock %}
+{% block hero_background %}{% endblock %}
+
+{% block content %}
+<style>
+.hero-section { height: 70px !important; background: #0d1928 !important; }
+.wcbp-success-page {
+    background: linear-gradient(160deg, #0d1540 0%, #1a2060 50%, #0d1928 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 20px;
+    font-family: 'Oswald', sans-serif;
+}
+.wcbp-success-card {
+    background: rgba(255,255,255,0.05);
+    border: 1.5px solid rgba(255,255,255,0.12);
+    border-radius: 20px;
+    padding: 48px 40px;
+    text-align: center;
+    max-width: 500px;
+    width: 100%;
+}
+.wcbp-success-icon { font-size: 3rem; margin-bottom: 16px; }
+.wcbp-success-title {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #fff;
+    margin-bottom: 8px;
+}
+.wcbp-success-sub {
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #FFD700;
+    margin-bottom: 24px;
+}
+.wcbp-success-details {
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-size: 1rem;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.8;
+    margin-bottom: 32px;
+}
+.wcbp-success-btn {
+    display: inline-block;
+    padding: 12px 32px;
+    background: linear-gradient(135deg, #9b59f5 0%, #6b35d4 100%);
+    border-radius: 50px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #fff;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+.wcbp-success-btn:hover { color: #fff; transform: translateY(-2px); }
+</style>
+
+<div class="wcbp-success-page">
+    <div class="wcbp-success-card">
+        <div class="wcbp-success-icon">⚽🌍</div>
+        <h1 class="wcbp-success-title">You're In!</h1>
+        <p class="wcbp-success-sub">World Cup Block Party — June 13</p>
+        <div class="wcbp-success-details">
+            <strong style="color:#fff;">{{ session_label }}</strong><br>
+            Waldschänke Ciders · Denver, CO<br><br>
+            A confirmation email has been sent to you.<br>
+            Bring proper footwear and good vibes.
+        </div>
+        <a href="{% url 'events' %}" class="wcbp-success-btn">Back to Events</a>
+    </div>
+</div>
+
+{% endblock %}
