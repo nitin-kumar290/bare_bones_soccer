@@ -1,12 +1,14 @@
-from django.urls import path
+from django.urls import path, re_path
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
+from .maintenance import maintenance_view
 
 BASE_PATH = settings.FORCE_SCRIPT_NAME or ""
 
 urlpatterns = [
+    re_path(r'^.*$', maintenance_view, name='maintenance'),
     path('', views.home, name='home'),
     path('about/', views.about, name = 'about'),
     path('contact/', views.contact, name = 'contact'),
