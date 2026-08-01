@@ -5,15 +5,15 @@
 {% block meta_description %}Bare Bones Soccer partners and sponsors in Denver, Colorado. Community-first soccer powered by brands who believe in culture, connection and the beautiful game.{% endblock %}
 
 {% block hero_video %}
-<style>.custom-navbar { background: rgba(0,0,0,0.18) !important; }</style>
+<style>.custom-navbar { background: rgba(255,255,255,0.18) !important; }</style>
 <video class="hero-video" autoplay muted loop playsinline preload="metadata">
     <source src="https://bare-bones-soccer.s3.amazonaws.com/videos/waldyjo.mp4" type="video/mp4">
 </video>
 {% endblock %}
 
 {% block hero_overlay %}
-<div class="hero-overlay text-center" style="left:50%; transform:translateX(-50%); width:90%; max-width:700px;">
-    <h1 class="hero-overlay-title" style="font-size:clamp(1.8rem,5vw,3.2rem); text-transform:uppercase;">Building Denver's Soccer Community Through Sponsorship, Collabs and Activations</h1>
+<div class="hero-overlay text-center" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:90%; max-width:700px;">
+    <h1 class="hero-overlay-title" style="font-size:clamp(1.8rem,5vw,3.2rem); text-transform:uppercase; color:#fff;">Building Denver's Soccer Community Through Sponsorship, Collabs and Activations</h1>
     <a href="#partner-form" class="btn mt-3 text-uppercase fw-bold px-5 py-2" style="background:#00b8e8; color:#fff; border:2px solid #fff; border-radius:50px; font-family:'Oswald',sans-serif; letter-spacing:2px; font-size:0.95rem;">Partner With Us</a>
 </div>
 {% endblock %}
@@ -25,7 +25,7 @@
 .hero-section .navbar { position: relative; z-index: 10; }
 
 /* Partners grid */
-.partners-section { background: #fff; padding: 60px 0 40px; }
+.partners-section { background: #fdf5ed; padding: 60px 0 40px; }
 .partners-section-title {
     font-family: 'Oswald', sans-serif;
     font-size: 2rem;
@@ -95,6 +95,9 @@
 
 /* Divider */
 .sp-divider { border: none; border-top: 2px solid rgba(0,0,0,0.08); margin: 0; }
+
+/* Small break between the inquiry section and the footer */
+.partners-footer-break { background: #fdf5ed; height: 32px; }
 
 /* Inquiry form section */
 .inquiry-section {
@@ -184,23 +187,10 @@
     color: #5cb85c;
     margin-bottom: 20px;
 }
-
-/* Gallery placeholder */
-.gallery-placeholder {
-    background: #f8f9fa;
-    padding: 48px 20px;
-    text-align: center;
-    color: #aaa;
-    font-family: 'Barlow Semi Condensed', sans-serif;
-    font-size: 0.95rem;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    border-top: 1.5px solid rgba(0,0,0,0.06);
-}
 </style>
 
 <!-- Partners & Sponsors Section -->
-<section style="background:#f8f9fa; padding:64px 0 72px;">
+<section style="background:#fdf5ed; padding:64px 0 72px;">
     <div class="container">
 
         <style>
@@ -233,7 +223,9 @@
             max-width: 520px;
             margin-left: auto;
             margin-right: auto;
+            white-space: nowrap;
         }
+        @media (max-width: 576px) { .sp-section-sub { white-space: normal; } }
         .sp-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -296,6 +288,11 @@
             <a href="https://www.coloradorapids.com/" target="_blank" rel="noopener" class="sp-logo-link">
                 <img src="https://images.mlssoccer.com/image/upload/v1595583232/assets/logos/COL.svg" alt="Colorado Rapids">
                 <span class="sp-logo-name">Colorado Rapids</span>
+            </a>
+
+            <a href="https://kizeconcepts.com/?srsltid=AfmBOooiMQ7312ZZrdEJfe_6pQbpgknD6mjsRD5gbLqFfTVaI5xQZy6f" target="_blank" rel="noopener" class="sp-logo-link">
+                <img src="https://kizeconcepts.com/cdn/shop/files/new-logo.png?v=1693410943&width=260" alt="Kize Concepts">
+                <span class="sp-logo-name">Kize Concepts</span>
             </a>
 
             <a href="https://www.denvercitywidesports.org/" target="_blank" rel="noopener" class="sp-logo-link">
@@ -363,13 +360,6 @@
 
 <hr class="sp-divider">
 
-<!-- Gallery placeholder — media coming soon -->
-<div class="gallery-placeholder">
-    <span>Community Gallery — Coming Soon</span>
-</div>
-
-<hr class="sp-divider">
-
 <!-- Inquiry Form -->
 <section class="inquiry-section" id="partner-form">
     <h2 class="inquiry-section-title">Let's Build Something Together</h2>
@@ -405,11 +395,13 @@
     </div>
 </section>
 
+<div class="partners-footer-break"></div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     var nav = document.querySelector('.custom-navbar');
     if (nav) {
-        nav.style.setProperty('background', 'rgba(0,0,0,0.18)', 'important');
+        nav.style.setProperty('background', 'rgba(255,255,255,0.18)', 'important');
         nav.style.setProperty('backdrop-filter', 'none', 'important');
     }
 });

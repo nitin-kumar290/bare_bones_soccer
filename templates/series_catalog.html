@@ -7,7 +7,7 @@
 
 {% block hero_background %}https://bare-bones-soccer.s3.amazonaws.com/images/waldy_brunch-ball2-1.jpg{% endblock %}
 
-{% block navbar_bg %}style="background: rgba(0,0,0,0.18) !important;"{% endblock %}
+{% block navbar_bg %}style="background: rgba(255,255,255,0.18) !important;"{% endblock %}
 {% block hero_video %}{% endblock %}
 
 {% block content %}
@@ -18,6 +18,8 @@
     <div class="alert alert-info fade-in text-center fw-bold">{{ message }}</div>
 {% endfor %}
 {% endif %}
+
+<div class="catalog-hero-break"></div>
 
 <div class="catalog-header-bg py-5">
     <div class="container">
@@ -31,7 +33,7 @@
 </div>
 <div class="catalog-shape-divider" aria-hidden="true">
     <svg viewBox="0 0 1440 54" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <polygon points="0,54 1440,0 1440,54" fill="#fff"/>
+        <polygon points="0,54 1440,0 1440,54" fill="#fdf5ed"/>
     </svg>
 </div>
 
@@ -40,7 +42,7 @@
     <!-- Eyebrow label -->
     <p class="catalog-eyebrow">PICK YOUR GAME</p>
 
-        <div class="row row-cols-1 row-cols-md-3 g-4 align-items-center justify-content-center">
+        <div class="row row-cols-1 row-cols-md-3 g-4 align-items-stretch justify-content-center">
 
         <!-- <div class="col">
             <a href="{% url 'brighton' %}" class="text-decoration-none">
@@ -62,29 +64,36 @@
         </div> -->
 
 
-        <!-- World Cup Events Card -->
+        <!-- Stay in the Loop — Placeholder Card (no event currently scheduled) -->
         <div class="col">
-            <a href="{% url 'events' %}" class="text-decoration-none">
-                <div class="card video-bg-card hover-card">
-                    <img src="https://bare-bones-soccer.s3.amazonaws.com/images/waldyevents.jpeg" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; object-position:center 20%; z-index:0;" alt="World Cup Events at Waldschänke">
-
+            <div class="card h-100 loop-card">
+                <div class="card-body text-center" style="display:flex; flex-direction:column;">
+                    <div class="mb-3">
+                        <span style="font-size:2.8rem;">📣</span>
+                        <h3 class="card-title mt-2" style="font-family:'Oswald',sans-serif; font-size:1.6rem; font-weight:700; color:#fdf5ed; letter-spacing:1px;">Stay In The Loop</h3>
+                        <p style="font-size:0.85rem; color:rgba(253,245,237,0.75); margin:10px 0 0; font-family:'Barlow Semi Condensed', sans-serif;">No event on the books right now — follow along so you're first to know when the next one drops.</p>
+                    </div>
+                    <div style="margin-top:auto; display:flex; flex-direction:column; gap:10px;">
+                        <a href="https://www.instagram.com/barebonessoccer" target="_blank" rel="noopener" class="loop-btn loop-btn-primary">FOLLOW ON INSTAGRAM</a>
+                        <a href="https://chat.whatsapp.com/IzHQHb1UODABuoABqXotvm" target="_blank" rel="noopener" class="loop-btn loop-btn-secondary">JOIN THE WHATSAPP GROUP</a>
+                    </div>
                 </div>
-            </a>
+            </div>
         </div>
 
         <!-- Sports Stable Card -->
         <div class="col">
             <a href="{% url 'schedule' %}" class="text-decoration-none">
-                <div class="card video-bg-card hover-card">
+                <div class="card h-100 video-bg-card hover-card">
                     <video autoplay muted loop playsinline preload="metadata" class="card-bg-video">
                         <source src="{% static 'videos/sport_stable_series.mp4' %}" type="video/mp4">
                     </video>
                     <div class="card-bg-overlay"></div>
                     <div class="card-body text-center" style="position:relative; z-index:2; display:flex; flex-direction:column;">
                         <div class="mb-4">
-                            <h3 class="card-title" style="color:#fff;">Sport Stable</h3>
+                            <h3 class="card-title" style="color:#fdf5ed;">Sport Stable</h3>
                         </div>
-                        <ul class="list-unstyled mb-4" style="color:rgba(255,255,255,0.85);">
+                        <ul class="list-unstyled mb-4" style="color:rgba(253,245,237,0.85);">
                             <li><i class="fas fa-map-marker-alt me-2"></i>Superior, CO</li>
                             <li><i class="fas fa-calendar me-2"></i>Monday Nights</li>
                             <li><i class="fas fa-clock me-2"></i>6:15 PM - 8:15 PM</li>
@@ -100,16 +109,20 @@
 </div>
 
 <style>
-    .hero-section { height: 78vh !important; background-position: center 40% !important; }
+    /* ── Brand palette: Royal Purple #290a44 · Charcoal #08070b · Off White #fdf5ed · Light Blue #00b8e8 ── */
+    .hero-section { height: 65vh !important; background-position: center 22% !important; }
+
+    /* Small break between the hero and the dark header section, same treatment as the partners page */
+    .catalog-hero-break { background: #fdf5ed; height: 32px; }
 
     /* ── Dark header section ── */
     .catalog-header-bg {
-        background: linear-gradient(135deg, #0a1628 0%, #102040 100%);
+        background: linear-gradient(135deg, #08070b 0%, #290a44 100%);
         position: relative;
         overflow: hidden;
         margin-bottom: 0;
         padding-bottom: 52px !important;
-        padding-top: 52px !important;
+        padding-top: 32px !important;
     }
     .catalog-ball-bg {
         position: absolute;
@@ -123,13 +136,13 @@
     }
     .catalog-title {
         font-family: 'Oswald', sans-serif;
-        color: #fff;
+        color: #fdf5ed;
         letter-spacing: 4px;
     }
     .catalog-title-rule {
         width: 60px;
         height: 3px;
-        background: #dc3545;
+        background: #00b8e8;
         margin: 12px auto 14px;
         border-radius: 2px;
     }
@@ -138,7 +151,7 @@
         font-style: italic;
         font-size: 1.15rem;
         font-weight: 500;
-        color: rgba(255,255,255,0.72);
+        color: rgba(253,245,237,0.72);
         letter-spacing: 0.3px;
         margin-top: 0;
         max-width: 480px;
@@ -152,7 +165,7 @@
         display: block;
         line-height: 0;
         margin-bottom: -2px;
-        background: #0a1628;
+        background: #08070b;
     }
     .catalog-shape-divider svg {
         width: 100%;
@@ -160,9 +173,9 @@
         display: block;
     }
 
-    /* ── Cards section — white/clean ── */
+    /* ── Cards section — off-white/clean ── */
     .catalog-cards-bg {
-        background: #fff;
+        background: #fdf5ed;
         padding-bottom: 64px;
     }
 
@@ -172,7 +185,7 @@
         font-weight: 700;
         letter-spacing: 5px;
         text-transform: uppercase;
-        color: #dc3545;
+        color: #00b8e8;
         text-align: center;
         margin-bottom: 28px;
         padding-top: 4px;
@@ -221,22 +234,25 @@
 
     /* ── Featured event card ── */
     .featured-event-card {
-        background: linear-gradient(160deg, #0d1540 0%, #1a2060 50%, #0d1928 100%);
-        border: 1.5px solid rgba(155,89,245,0.5);
+        background: linear-gradient(160deg, #08070b 0%, #290a44 60%, #08070b 100%);
+        border: 1.5px solid rgba(0,184,232,0.5);
         border-radius: 12px;
-        box-shadow: 0 8px 32px rgba(155,89,245,0.25), 0 0 0 1px rgba(59,130,246,0.1);
+        box-shadow: 0 8px 32px rgba(0,184,232,0.25), 0 0 0 1px rgba(41,10,68,0.2);
         transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
         position: relative;
         overflow: hidden;
+        min-height: 280px;
+        display: flex;
+        flex-direction: column;
     }
     .featured-event-card:hover {
         transform: translateY(-6px);
-        box-shadow: 0 16px 48px rgba(155,89,245,0.4), 0 0 0 1px rgba(59,130,246,0.2);
+        box-shadow: 0 16px 48px rgba(0,184,232,0.4), 0 0 0 1px rgba(41,10,68,0.3);
         cursor: pointer;
     }
     .featured-badge {
-        background: linear-gradient(135deg, #3b82f6 0%, #9b59f5 100%);
-        color: #fff;
+        background: linear-gradient(135deg, #00b8e8 0%, #290a44 100%);
+        color: #fdf5ed;
         font-family: 'Oswald', sans-serif;
         font-size: 0.7rem;
         font-weight: 700;
@@ -246,8 +262,8 @@
         padding: 6px 0;
     }
     .featured-btn {
-        background: linear-gradient(135deg, #9b59f5 0%, #6b35d4 100%);
-        color: #fff;
+        background: linear-gradient(135deg, #00b8e8 0%, #290a44 100%);
+        color: #fdf5ed;
         font-family: 'Oswald', sans-serif;
         font-size: 1rem;
         font-weight: 700;
@@ -257,20 +273,62 @@
         padding: 12px 0;
         width: 100%;
         transition: background 0.2s;
-        box-shadow: 0 4px 14px rgba(155,89,245,0.4);
+        box-shadow: 0 4px 14px rgba(0,184,232,0.4);
     }
     .featured-event-card:hover .featured-btn {
-        background: linear-gradient(135deg, #b36eff 0%, #8b45f4 100%);
-        box-shadow: 0 6px 24px rgba(155,89,245,0.55);
+        background: linear-gradient(135deg, #29d1ff 0%, #3a1060 100%);
+        box-shadow: 0 6px 24px rgba(0,184,232,0.55);
     }
 
-    body { background: #fff; }
+    /* ── Stay in the loop placeholder card ── */
+    .loop-card {
+        background: linear-gradient(160deg, #08070b 0%, #290a44 55%, #08070b 100%);
+        border: 1.5px solid rgba(0,184,232,0.4);
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(41,10,68,0.3), 0 0 0 1px rgba(0,184,232,0.1);
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        position: relative;
+        overflow: hidden;
+        min-height: 280px;
+        display: flex;
+        flex-direction: column;
+    }
+    .loop-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 16px 48px rgba(41,10,68,0.45), 0 0 0 1px rgba(0,184,232,0.2);
+    }
+    .loop-btn {
+        font-family: 'Oswald', sans-serif;
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        border-radius: 50px;
+        padding: 11px 0;
+        width: 100%;
+        text-align: center;
+        text-decoration: none;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .loop-btn:hover { transform: translateY(-2px); }
+    .loop-btn-primary {
+        background: #fdf5ed;
+        color: #290a44;
+        box-shadow: 0 4px 14px rgba(0,184,232,0.35);
+    }
+    .loop-btn-secondary {
+        background: rgba(253,245,237,0.08);
+        color: #fdf5ed;
+        border: 1.5px solid rgba(253,245,237,0.25);
+    }
+
+    body { background: #fdf5ed; }
 </style>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     var nav = document.querySelector('.custom-navbar');
     if (nav) {
-        nav.style.setProperty('background', 'rgba(0,0,0,0.18)', 'important');
+        nav.style.setProperty('background', 'rgba(255,255,255,0.18)', 'important');
         nav.style.setProperty('backdrop-filter', 'none', 'important');
     }
 });

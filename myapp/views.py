@@ -531,12 +531,9 @@ def register_wcf_rsvp(request):
               <!-- Details -->
               <tr>
                 <td style="font-size:16px; line-height:28px;">
-                  ⏰ <b>Pickup Soccer: 11 AM – 3 PM</b><br>
-                  📺 <b>World Cup Final Watch Party: 1 PM</b><br>
                   📍 <b>Waldschänke Ciders — 4100 Jason St, Denver, CO</b><br><br>
                   💰 Pickup is donation based - donate below 👇<br>
-                  📺 Watch party is <b>free and open to all</b> — no ticket needed<br>
-                  🍺 Food &amp; drinks available all day<br><br>
+                  📺 Watch party is <b>free and open to all</b> — no ticket needed<br><br>
                   <i>*Proper shoes required to play — flats or grippy sneakers*</i>
                 </td>
               </tr>
@@ -582,41 +579,12 @@ def register_wcf_rsvp(request):
 </body>
 </html>
 """
-    email_status = "not attempted"
-    ses_error = None
-    smtp_error = None
+    # send_email_ses(user.email, subject, message)
+    email = EmailMessage(subject, message, to=[user.email])
+    email.content_subtype = "html"
+    email.send()
 
-    try:
-        send_email_ses(user.email, subject, message)
-        email_status = "ses_ok"
-    except Exception as e:
-        ses_error = str(e)
-        try:
-            fallback = EmailMessage(subject, message, settings.EMAIL_HOST_USER, [user.email])
-            fallback.content_subtype = "html"
-            fallback.send()
-            email_status = "smtp_ok"
-        except Exception as e2:
-            smtp_error = str(e2)
-            email_status = "both_failed"
-
-    # Admin notification (mirrors other event flows)
-    try:
-        admin_subject = f"New WCF RSVP — {user.first_name or user.username} ({user.email})"
-        admin_body = f"<p><strong>{user.first_name or user.username}</strong> ({user.email}) just RSVPd for the World Cup Final Party.</p><p>Total RSVPs: {rsvp_count + 1} / 40</p>"
-        send_email_ses('soccerbarebones@gmail.com', admin_subject, admin_body)
-    except Exception:
-        pass
-
-    return JsonResponse({
-        'success': True,
-        'email_debug': {
-            'to': user.email,
-            'status': email_status,
-            'ses_error': ses_error,
-            'smtp_error': smtp_error,
-        }
-    })
+    return JsonResponse({'success': True})
 
 
 

@@ -119,7 +119,7 @@ class PlayerProfileForm(forms.ModelForm):
     )
     # Override the fields with specific widgets and validation
     phone = forms.CharField(
-        widget=forms.TextInput(attrs={'placeholder': '(123) 456-7890','required': 'required', 'class': 'form-control'}),
+        widget=forms.TextInput(attrs={'required': 'required', 'class': 'form-control'}),
         max_length=15,
         required=True,
         label='Phone'
@@ -137,7 +137,7 @@ class PlayerProfileForm(forms.ModelForm):
     emergency_contact_name = forms.CharField(required=True)
 
     emergency_contact_phone = forms.CharField(
-        widget=forms.TextInput(attrs={'placeholder': '(123) 456-7890','required': 'required', 'class': 'form-control'}),
+        widget=forms.TextInput(attrs={'required': 'required', 'class': 'form-control'}),
         max_length=15,
         required=True,
         label='Emergency Contact Phone'

@@ -8,6 +8,7 @@
 {% block content %}
 
 <style>
+    .hero-section { height: 80vh !important; }
     .series-container {
         max-width: 900px;
         margin: 0 auto;
@@ -74,7 +75,33 @@
     .play-btn:hover {
         background: #000;
     }
-    
+
+    .wa-card {
+        border: 2px solid #25D366;
+    }
+    .wa-badge {
+        display: inline-block;
+        background: #25D366;
+        color: #fff;
+        font-family: 'Oswald', sans-serif;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        padding: 6px 16px;
+        border-radius: 50px;
+        margin-bottom: 14px;
+    }
+    .wa-btn {
+        background: #25D366 !important;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .wa-btn:hover {
+        background: #1ebe5b !important;
+    }
+
     @media (max-width: 768px) {
         .series-title {
             font-size: 1.8rem;
@@ -96,7 +123,7 @@
 </style>
 
 <div class="series-container">
-    <h1 class="series-title">Bare Bones Soccer Series</h1>
+    <h1 class="series-title">Bare Bones Pickup Soccer</h1>
     
     <!-- Sport Stable Card -->
     <div class="series-card">
@@ -172,8 +199,21 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </div>
 
+    <!-- Broomfield/Westminster Pickup - WhatsApp only -->
+    <div class="series-card wa-card">
+        <div class="series-content">
+            <span class="wa-badge">💬 Our Longest Running Pickup</span>
+            <h2>Broomfield / Westminster Pickup</h2>
+            <p class="series-subtitle">Free to all. <em>Community-run — WhatsApp only.</em></p>
+            <p class="series-description">
+                Join our WhatsApp community to see our Broomfield/Westminster Saturday pickup session — no registration, just come.
+            </p>
+            <a href="https://chat.whatsapp.com/CowcKxo2hlrGO8qDAQ4TWZ?s=cl&p=i&mlu=0&ilr=0&amv=1" target="_blank" rel="noopener">
+                <button class="play-btn wa-btn">JOIN BARE BONES WHATSAPP</button>
+            </a>
+        </div>
+    </div>
 
-    
 </div>
 
 {% endblock %}

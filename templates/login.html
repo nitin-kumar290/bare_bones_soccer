@@ -4,41 +4,236 @@
 {% block hero_background %}{% static 'images/login_banner.jpeg' %}{% endblock %}
 
 {% block content %}
-<div id="login-form-section" class="container mt-3 mb-5">
-    <h1 class="text-center text-uppercase">sign in</h1>
-    <p class="text-center" style="font-family:'Barlow Semi Condensed',sans-serif; font-size:1.1rem; color:#c0392b; font-weight:800; text-transform:uppercase; letter-spacing:0.5px;">*A free account is required for games &amp; events. No account? Quick register below.</p>
+<div class="login-page-bg py-5">
+    <div class="login-ball-bg" aria-hidden="true">⚽</div>
+    <div class="container" style="position:relative; z-index:1;">
 
-    <form method="POST" class="mt-4">
-        {% csrf_token %}
-        {% if request.GET.next %}
-            <input type="hidden" name="next" value="{{ request.GET.next }}">
+        {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-info fade-in text-center fw-bold">{{ message }}</div>
+        {% endfor %}
         {% endif %}
-        {{ form.as_p }}
-        <button type="submit" id="submitBtn" class="btn btn-primary w-100">
-            <span id="submitLabel">Login</span>
-            <span id="submitSpinner" class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
-        </button>
-        <div class="text-center mt-3">
-            <p class="text-center mt-2">
-                <a href="{% url 'username_reset' %}" class="text-decoration-none">Forgot your username?</a>
-            </p>
-            <p class="mb-0"><strong>
-                <a href="{% url 'password_reset' %}" class="text-decoration-none">Forgot your password?</a>
-            </strong></p>
+
+        <div class="login-logo-badge">
+            <img src="https://bare-bones-soccer.s3.amazonaws.com/images/Primary%20Logo%20BK.png" alt="Bare Bones Soccer Collective" class="login-logo">
         </div>
-        <div class="text-center mt-3">
-            <p class="mb-0"><strong>
-                Don't have an account?
-                <a href="{% url 'register' %}" class="text-decoration-none register-today-btn">REGISTER TODAY!</a>
-            </strong></p>
+        <h1 class="login-eyebrow">Player Login</h1>
+        <div class="login-title-rule"></div>
+        <p class="login-subtitle">Your spot in this week's games is one login away.</p>
+
+        <div class="login-card">
+            <p class="login-notice">*A free account is required for games &amp; events. No account? Quick register below.</p>
+
+            <form method="POST" class="mt-3">
+                {% csrf_token %}
+                {% if request.GET.next %}
+                    <input type="hidden" name="next" value="{{ request.GET.next }}">
+                {% endif %}
+                {{ form.as_p }}
+                <button type="submit" id="submitBtn" class="btn w-100 login-submit-btn">
+                    <span id="submitLabel">Login</span>
+                    <span id="submitSpinner" class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
+                </button>
+                <div class="text-center mt-3">
+                    <p class="text-center mt-2">
+                        <a href="{% url 'username_reset' %}" class="text-decoration-none login-link">Forgot your username?</a>
+                    </p>
+                    <p class="mb-0">
+                        <a href="{% url 'password_reset' %}" class="text-decoration-none login-link fw-bold">Forgot your password?</a>
+                    </p>
+                </div>
+                <div class="text-center mt-4">
+                    <p class="mb-2 login-link">Don't have an account?</p>
+                    <a href="{% url 'register' %}" class="register-today-btn">Register Today</a>
+                </div>
+            </form>
         </div>
-        <style>
-            @keyframes register-pulse {
-                0%, 100% { box-shadow: 0 0 0 0 rgba(101,162,252,0.6); }
-                50% { box-shadow: 0 0 0 7px rgba(101,162,252,0); }
-            }
-            .register-today-btn { animation: register-pulse 2s ease-in-out infinite; display: inline-block; }
-        </style>
-    </form>
+    </div>
 </div>
+
+<style>
+    /* ── Brand palette: Royal Purple #290a44 · Charcoal #08070b · Off White #fdf5ed · Light Blue #00b8e8 ── */
+
+    body { background: #fdf5ed; }
+
+    /* ── Dark stadium section (all sizing below scaled to 80% per Ian's request) ── */
+    .login-page-bg {
+        background: linear-gradient(135deg, #08070b 0%, #290a44 100%);
+        position: relative;
+        overflow: hidden;
+        margin: 32px auto 40px;
+        max-width: 1140px;
+        border-radius: 20px;
+        padding: 38px 0;
+    }
+    @media (max-width: 767px) {
+        .login-page-bg { margin: 20px 16px 28px; border-radius: 14px; }
+    }
+    .login-ball-bg {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 10.4rem;
+        opacity: 0.08;
+        pointer-events: none;
+        line-height: 1;
+    }
+    .login-logo-badge {
+        width: 136px;
+        height: 136px;
+        margin: 0 auto 11px;
+        border-radius: 50%;
+        background: #fdf5ed;
+        box-shadow: 0 6px 20px rgba(0,184,232,0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        padding: 0;
+    }
+    .login-logo {
+        display: block;
+        width: 112%;
+        height: 112%;
+        object-fit: contain;
+    }
+    .login-eyebrow {
+        font-family: 'Oswald', sans-serif;
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: #00b8e8;
+        text-align: center;
+        margin-bottom: 3px;
+    }
+    .login-title-rule {
+        width: 48px;
+        height: 2px;
+        background: #00b8e8;
+        margin: 11px auto 11px;
+        border-radius: 2px;
+    }
+    .login-subtitle {
+        font-family: 'Barlow Semi Condensed', sans-serif;
+        font-style: italic;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: rgba(253,245,237,0.72);
+        text-align: center;
+        max-width: 336px;
+        margin: 0 auto 6px;
+        line-height: 1.5;
+    }
+
+    /* ── Glowing glass card ── */
+    .login-card {
+        max-width: 384px;
+        margin: 22px auto 0;
+        background: rgba(8,7,11,0.7);
+        backdrop-filter: blur(10px);
+        border: 1.5px solid rgba(0,184,232,0.4);
+        border-radius: 14px;
+        box-shadow: 0 8px 32px rgba(0,184,232,0.18), 0 0 0 1px rgba(41,10,68,0.4);
+        padding: 26px 29px 29px;
+        position: relative;
+    }
+    .login-notice {
+        text-align: center;
+        font-family: 'Barlow Semi Condensed', sans-serif;
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: #00b8e8;
+        background: rgba(0,184,232,0.1);
+        border: 1px solid rgba(0,184,232,0.3);
+        border-radius: 8px;
+        padding: 8px 13px;
+        margin: 0 0 5px;
+        line-height: 1.5;
+    }
+    .login-card p { margin-bottom: 11px; }
+    .login-card label {
+        display: block;
+        font-family: 'Oswald', sans-serif;
+        font-size: 0.6rem;
+        font-weight: 700;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+        color: rgba(253,245,237,0.55);
+        margin-bottom: 5px;
+    }
+    .login-card .form-control {
+        background: rgba(253,245,237,0.05);
+        border: 1.5px solid rgba(253,245,237,0.18);
+        border-radius: 8px;
+        padding: 9px 11px;
+        color: #fdf5ed;
+        font-family: 'Barlow Semi Condensed', sans-serif;
+        font-size: 0.8rem;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .login-card .form-control::placeholder { color: rgba(253,245,237,0.32); }
+    .login-card .form-control:focus {
+        background: rgba(253,245,237,0.08);
+        border-color: #00b8e8;
+        box-shadow: 0 0 0 3px rgba(0,184,232,0.25);
+        outline: none;
+        color: #fdf5ed;
+    }
+    .login-submit-btn {
+        background: linear-gradient(135deg, #00b8e8 0%, #290a44 100%);
+        color: #fdf5ed;
+        font-family: 'Oswald', sans-serif;
+        font-weight: 700;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+        border: none;
+        border-radius: 50px;
+        padding: 10px 0;
+        margin-top: 3px;
+        box-shadow: 0 4px 16px rgba(0,184,232,0.35);
+        transition: box-shadow 0.2s ease, transform 0.2s ease;
+    }
+    .login-submit-btn:hover {
+        box-shadow: 0 6px 22px rgba(0,184,232,0.55);
+        color: #fdf5ed;
+        transform: translateY(-1px);
+    }
+    .login-link {
+        font-family: 'Barlow Semi Condensed', sans-serif;
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: rgba(253,245,237,0.85);
+    }
+    a.login-link { color: #00b8e8; }
+    a.login-link:hover { color: #fdf5ed; }
+    @keyframes register-pulse {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(0,184,232,0.5); }
+        50% { box-shadow: 0 0 0 8px rgba(0,184,232,0); }
+    }
+    .register-today-btn {
+        animation: register-pulse 2s ease-in-out infinite;
+        display: inline-block;
+        background: #fdf5ed;
+        color: #290a44;
+        font-family: 'Oswald', sans-serif;
+        font-weight: 700;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        border-radius: 50px;
+        padding: 9px 22px;
+        text-decoration: none;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .register-today-btn:hover {
+        transform: translateY(-2px);
+        color: #290a44;
+    }
+    @media (max-width: 576px) {
+        .login-card { padding: 21px 18px 22px; margin: 20px 16px 0; }
+        .login-ball-bg { font-size: 7.2rem; }
+    }
+</style>
 {% endblock %}

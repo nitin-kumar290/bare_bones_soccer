@@ -72,7 +72,7 @@
             <div class="form-group">
                 {{ user_form.email.label }}
                 {{ user_form.email }}
-                <small style="color:#888; font-size:0.78rem;">Use a real email — you'll need it to activate your account.</small>
+                <small style="color:#888; font-size:0.78rem;"><strong>*Use a real email — you'll need it to activate your account.</strong></small>
 
                 {% if user_form.email.errors %}
                     <div class="invalid-feedback d-block">
@@ -122,14 +122,6 @@
                     {{ profile_form.phone.errors }}
                 </div>
             {% endif %}
-            <small class="form-text text-muted">Format: (123) 456-7890</small>
-
-                {% if profile_form.phone.errors %}
-                    <div class="invalid-feedback d-block">
-                        {{ profile_form.phone.errors }}
-                    </div>
-                {% endif %}
-                <small class="form-text text-muted">Format: (123) 456-7890</small>
             </div>
             <!-- <div class="form-row">
                 <div class="form-row">
@@ -246,7 +238,7 @@ class="btn btn-primary submit-btn"
 
         <strong>
             <h2></h2>
-            <p class="subtitle"> Once you finish account registration you will recieve an email confirmation. If you don't see the email please check your spam folder.</p>
+            <p class="subtitle"><span style="color:#00b8e8; font-weight:700;">*Once you register</span>, you'll receive a confirmation email. If you don't see the email please check your spam folder.</p>
         </strong>
 
         <p style="font-size:0.95rem; color:#333; text-align:center; margin-top:0.75rem;"><em>*By signing up, you agree to receive updates and communications from Bare Bones Soccer.</em></p>
