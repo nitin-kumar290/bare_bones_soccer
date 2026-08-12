@@ -4,6 +4,70 @@ A running log of site changes made through Claude Code, most recent first.
 
 ---
 
+## 2026-08-12
+
+Not yet deployed — local changes only. This entry covers the entire new Leagues product line, built and tested locally.
+
+### New: Leagues — a whole new product line, not just a page
+- **`/leagues/`** — new hub page (`leagues_hub.html`), added to the top nav between Pickup and Events. Shows one large featured card per league; currently just Waldy Street League, designed to shrink into a normal grid card once a second league exists rather than needing a rebuild.
+- **`/leagues/waldy-street-league/`** — the actual Waldy Street League landing page (`waldy_street_league.html`): concept section, format specs (4v4, coed with 1 female player required per team — highlighted with its own hover glow, roster 4-6, 18+, 6-8 teams, 15-min halves, Wednesdays 6:30-8:30 PM), season structure, rules summary, pricing, registration, FAQ.
+- **Sitewide announcement bar** (`{% block announcement_bar %}` in `base.html`, previously empty since the last Waldschänke promo was removed) now promotes the league on every page except the two league pages themselves (which override it empty to avoid promoting itself to someone already there).
+- Full research + customer-journey blueprint this was built from is a separate published artifact (competitor research: futsi.io vs. Volo Sports) — see that conversation for the reasoning behind the page structure.
+
+### Key decisions made along the way (documented here since they drove the build)
+- **Team registration only, no solo/free-agent signup.** Reversed an earlier hybrid recommendation after Ian pointed out "no team needed" is a pickup-specific promise that doesn't apply to a structured league. A documented (not built) fallback plan for adding solo registration later — a manual waitlist + hand-balanced teams — lives in project memory (`project_waldy_league_solo_backup.md`) in case team-only doesn't fill fast enough.
+- **Playoffs: full seeded bracket, every team included** (not just a top-4 cutoff) — Ian's call, and the better structure for this league: keeps the regular season meaningful (better record = better seed) without cutting anyone from the finale.
+- **Schedule math**: "8 weeks including playoffs" with "each team plays each other twice" didn't fit a single field running 1 game/team/week — a double round-robin for 8 teams needs 14 weeks alone. Resolved to a **single round-robin** (7 weeks) + **1 full-bracket playoff week** = 8 weeks, which fits exactly.
+- **Price: $45/player for the full season** — recalculated down from an initial $65 recommendation after learning Bare Bones isn't subsidizing the $5 pours (that had been baked into the original number). Registration fee's real job is covering real logistics costs and creating enough commitment to prevent no-shows — sponsors, not registration fees, are the intended profit driver.
+
+### New registration system — two payment paths, modeled directly on how Volo Sports actually runs team signups
+Explained in full to Ian in-conversation (worth re-reading there for the reasoning), summarized here:
+- **New models**: `LeagueTeam` (team name, captain, a unique auto-generated `invite_code`, payment mode) and `LeagueTeamPlayer` (one row per paid roster spot, linked to a team). Migration file `0020_leagueteam_leagueteamplayer.py` created — **not applied to any database yet**, local or Neon.
+- **Path 1 — Individual pay-in**: captain creates the team (just a name), pays for their own $45 spot, and receives a private invite link (`/leagues/waldy-street-league/join/<code>/`). Only people sent that link can join and pay for their own spot — there's no public list of teams with open slots to browse, no approval step needed. Possession of the link *is* the permission, same mechanism Volo uses. Roster auto-fills up to 6 paid players.
+- **Path 2 — Team prepay**: captain declares a roster size (4-6) and player names upfront, pays for the entire roster in one Stripe charge (`roster_size × $45`).
+- Full Stripe checkout wired for both paths (`create_league_checkout_session`, `create_league_join_checkout_session`, plus matching success handlers), following the exact same pattern as the existing Brighton event checkout.
+- **Real-money flag**: the local `.env` has a **live** Stripe secret key, not a test key — confirmed with Ian that intentionally testing this with real charges (and refunding/cleaning up Neon after) is fine, same as past testing on the Brighton/Brunch Ball flow. Not a test-mode setup.
+
+---
+
+## 2026-08-03
+
+Deployed live via `zappa update dev`.
+
+**⚠️ Action needed:** this deploy ships code for the new "You're In!" welcome page (below), which depends on a new `ReferralSource` database table. That table has only been created in a local test database so far — **`migrate` has never been run against Neon.** Until that's done, any real user who activates their account will hit a database error on that page. Run `migrate` against Neon when ready (same careful process used for local testing).
+
+### Bug fix: activation emails weren't real clickable links
+- `account_activation_email.html` was plain text with a bare URL sitting in the body — no `<a href>` tag at all. It was being sent with `content_subtype = 'html'`, so whether it rendered as a clickable link depended entirely on each email client's own auto-linkify behavior: Gmail rescues bare URLs like this, so those users likely never noticed a problem. Yahoo (confirmed by testing) does not, forcing recipients to copy-paste the raw activation URL by hand. This has been broken since the earliest tracked commit for this file (2025-11-18) — no way to know how many people quietly abandoned registration over it. Fixed with a real `<a href="...">Activate My Account</a>` link, with the raw URL kept below as a copy-paste fallback.
+- Also added error logging to the activation-email send (`myapp/views.py`) — it was wrapped in a bare `try/except: pass`, so any send failure (e.g. SMTP/SSL errors) was completely invisible. Now prints the actual error to the server log.
+
+### New: post-activation "You're In!" page (`welcome_next_steps`)
+- New `ReferralSource` model (`myapp/models.py`) — records which user, their answer to "how did you find us" (friend / Instagram / Google search / other + free text), and a timestamp. New form, view, URL (`/welcome/`), and template.
+- `activate()` (`myapp/views.py`) now redirects here instead of the old `registration_success` page after a user clicks their activation email link (auto-logged-in at that point). The old `registration_success.html` page still exists but is no longer linked from this flow.
+- Design: same dark Charcoal→Royal Purple "stadium" treatment as the login page — crest badge, "You're In!" heading, two buttons (Follow us on Instagram; Join the WhatsApp Community — same community group link used elsewhere), then the "how did you find us" survey. Submitting saves the answer and sends them to Game Catalog. The `source` field is required — no skip link (removed one that was added, then explicitly pulled per Ian's call: this question should not be easy to bypass). Normal site nav is still available to leave if someone really wants to.
+- Fixed a stale-message bug: the old code queued a "Account created! Please sign in." flash message that this new page never displays (no `{% if messages %}` block), so it sat in the queue and popped up — wrong and confusing, since they're already logged in — on whatever page they hit next that does show messages (Game Catalog). Removed the message entirely; the page's own "You're In!" heading already communicates success.
+- Hero image (the referee-from-behind photo used as the default site hero) was pushing this page's content below the fold at the default 90vh. Shrunk to 75vh with `background-position: center 45%` — calculated from the actual photo geometry (head starts ~18% down, the shirt's Bare Bones logo ends ~72% down) so both stay fully in frame instead of getting clipped.
+
+### Activation-sent page (`templates/activation_sent.html`)
+- Same fold/framing fix as above — hero shrunk from the default 90vh down to 75vh with the same `center 45%` crop, so "Verify Your Email" sits above the fold and the same photo's head + shirt logo both stay fully visible instead of being cropped.
+
+### Nav (`templates/base.html`)
+- Home link moved again — now lives inside the same nav-links row as Pickup/Events/About/Contact (first item), not as a separate element next to the logo. Works identically on mobile and desktop, inherits the same hover styling automatically.
+- Added a Light Blue glow (`text-shadow`) to the "Bare Bones Soccer" wordmark on hover, on top of the existing scale-up effect.
+- **Fonts are live**: self-hosted `Latienne Pro` (Medium weight) and `Forma DJR Micro` (Regular weight), provided by Ian via Dropbox, added as `@font-face` rules — Latienne Pro for nav links/wordmark, Forma DJR Micro for all other copy. Only one weight per family exists right now; bold/light variants would need additional files.
+- **New footer mascot**: the waving skeleton-on-a-soccer-ball graphic now sits bottom-right of the footer on every page, with a speech bubble ("New here?! Got questions?", forced to one line). Click it to reveal three links — Follow us on IG, Join our WhatsApp, Email us (routes to the contact page) — click elsewhere to close it.
+- Footer crest logo doubled in size per Ian's request, with the surrounding spacing tightened in a couple of follow-up passes to compensate.
+- Added a global override so Bootstrap's `.alert-info` boxes (used for messages like "You are now logged in!") render as a solid Off White box with a Light Blue border and bold Light Blue text — the original subtle transparent-tint version was nearly invisible against dark pages like login.
+
+### About page (`templates/about.html`)
+- Combined the separate "About Bare Bones Soccer" and "Who are we?" sections into one card, one heading, one paragraph (copy approved by Ian). The photo that used to sit side-by-side with the second section's text now sits full-width below the single paragraph instead.
+- That photo (`BareBones4.jpg`) was being force-cropped to a fixed height with `object-fit:cover`, cutting off parts of the image. Removed the forced crop so it displays at its natural aspect ratio (confirmed via the live site + the actual image dimensions, 4518×3614px) — zero cropping. Sized to match the paragraph's width (max 680px), centered, with a subtle border/shadow frame.
+
+### Local dev environment (not deployed — local-only safety tooling)
+- `barebones/settings.py`: added a `LOCAL_SQLITE` environment-variable switch — when set, the app uses a throwaway local SQLite file (`local_test.sqlite3`) instead of the live Neon database. Off by default (unset = Neon, unchanged from before). Prints a clear banner on every server start showing which database is active, specifically so it's never ambiguous which one a `migrate` run would hit.
+- Fixed a local-machine-only SSL certificate error (`CERTIFICATE_VERIFY_FAILED`) that was silently blocking activation emails from sending when testing locally — added `SSL_CERT_FILE` pointing at the project's existing `certifi` bundle. Confirmed via `zappa_settings.json` that neither this nor `LOCAL_SQLITE` exist in production's environment variables — purely local, zero effect on the deployed site.
+
+---
+
 ## 2026-07-30
 
 Deployed live via `zappa update dev`. This deploy ships everything below plus the full 2026-07-26 entry further down (that one was written before testing/deploy — see it for the brand palette, nav rebuild, login redesign, and Game Catalog color migration).

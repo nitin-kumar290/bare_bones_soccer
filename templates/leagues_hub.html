@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Leagues | Bare Bones Soccer{% endblock %}
+{% block meta_description %}Structured soccer leagues from Bare Bones Soccer — Denver metro's community-first soccer collective. Real seasons, real standings, same community energy.{% endblock %}
+{% block hero_background %}https://bare-bones-soccer.s3.amazonaws.com/images/waldy_brunch-ball2-1.jpg{% endblock %}
+{% block announcement_bar %}{% endblock %}
+
+{% block content %}
+<style>
+.hero-section { height: 60vh !important; background-position: center 30% !important; }
+
+.leagues-hero-break { background: #fdf5ed; height: 32px; }
+
+.leagues-header-bg {
+    background: linear-gradient(135deg, #08070b 0%, #290a44 100%);
+    position: relative; overflow: hidden; padding: 44px 20px 52px; text-align: center;
+}
+.leagues-ball-bg { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:11rem; opacity:0.08; pointer-events:none; }
+.leagues-eyebrow { font-family:'Oswald',sans-serif; font-size:0.8rem; font-weight:700; letter-spacing:4px; text-transform:uppercase; color:#00b8e8; position:relative; z-index:1; }
+.leagues-title { font-family:'Oswald',sans-serif; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:#fdf5ed; font-size:clamp(1.8rem,4vw,2.6rem); margin:8px 0 12px; position:relative; z-index:1; }
+.leagues-subtitle { font-family:'Barlow Semi Condensed',sans-serif; font-style:italic; color:rgba(253,245,237,0.72); max-width:520px; margin:0 auto; position:relative; z-index:1; }
+
+.leagues-grid-bg { background:#fdf5ed; padding: 56px 20px 72px; }
+.leagues-grid { max-width: 900px; margin: 0 auto; display:grid; grid-template-columns: 1fr; gap: 24px; }
+
+/* Featured single-league card — sized to scale down into a normal grid card once a 2nd league exists */
+.league-card-featured {
+    background: linear-gradient(160deg, #08070b 0%, #290a44 60%, #08070b 100%);
+    border: 1.5px solid rgba(0,184,232,0.5);
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(0,184,232,0.2), 0 0 0 1px rgba(41,10,68,0.2);
+    overflow: hidden;
+    text-decoration: none;
+    display: block;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.league-card-featured:hover { transform: translateY(-6px); box-shadow: 0 16px 48px rgba(0,184,232,0.35), 0 0 0 1px rgba(41,10,68,0.3); }
+.league-card-media { position:relative; height: 260px; overflow:hidden; }
+.league-card-media video { position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; }
+.league-card-media::after { content:''; position:absolute; inset:0; background:linear-gradient(180deg, rgba(8,7,11,0.1) 0%, rgba(8,7,11,0.85) 100%); }
+.league-card-badge {
+    position:absolute; top:18px; left:18px; z-index:2;
+    background: linear-gradient(135deg, #00b8e8 0%, #290a44 100%); color:#fdf5ed;
+    font-family:'Oswald',sans-serif; font-size:0.68rem; font-weight:700; letter-spacing:2px; text-transform:uppercase;
+    padding:6px 14px; border-radius:50px;
+}
+.league-card-body { padding: 28px 30px 32px; text-align: center; }
+.league-card-body h2 { font-family:'Oswald',sans-serif; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:#fdf5ed; font-size:1.6rem; margin-bottom:8px; }
+.league-card-body p { font-family:'Barlow Semi Condensed',sans-serif; color:rgba(253,245,237,0.75); margin-bottom:16px; max-width: 480px; margin-left:auto; margin-right:auto; }
+.league-card-meta { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-bottom:20px; }
+.league-card-meta span {
+    font-family:'Oswald',sans-serif; font-size:0.72rem; font-weight:600; letter-spacing:1px; text-transform:uppercase;
+    color:#00b8e8; background:rgba(0,184,232,0.1); border:1px solid rgba(0,184,232,0.3); border-radius:50px; padding:5px 12px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.league-card-meta span.coed {
+    color:#08070b; background:#00b8e8; border-color:#00b8e8;
+    box-shadow: 0 3px 12px rgba(0,184,232,0.35);
+}
+.league-card-meta span.coed:hover { transform: translateY(-2px); box-shadow: 0 5px 18px rgba(0,184,232,0.5); }
+.league-card-cta {
+    display:inline-block; background: linear-gradient(135deg, #00b8e8 0%, #290a44 100%); color:#fdf5ed;
+    font-family:'Oswald',sans-serif; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; font-size:0.85rem;
+    padding:12px 30px; border-radius:50px;
+}
+</style>
+
+<div class="leagues-hero-break"></div>
+
+<div class="leagues-header-bg">
+    <div class="leagues-ball-bg" aria-hidden="true">⚽</div>
+    <p class="leagues-eyebrow">Bare Bones Leagues</p>
+    <h1 class="leagues-title">Structured Seasons, Same Community</h1>
+    <p class="leagues-subtitle">Real standings, real playoffs — every league we run still feels like Bare Bones. Pick a league below.</p>
+</div>
+
+<div class="leagues-grid-bg">
+    <div class="leagues-grid">
+
+        <a href="{% url 'waldy_street_league' %}" class="league-card-featured">
+            <div class="league-card-media">
+                <span class="league-card-badge">New &middot; Now Registering</span>
+                <video autoplay muted loop playsinline preload="metadata">
+                    <source src="https://bare-bones-soccer.s3.amazonaws.com/images/Waldyjo.mp4" type="video/mp4">
+                </video>
+            </div>
+            <div class="league-card-body">
+                <h2>Waldy Street League at The Lot</h2>
+                <p>4v4 street soccer in Waldschänke's parking lot. 8-week season, full playoff bracket, drinks and patio games every week.</p>
+                <div class="league-card-meta">
+                    <span class="coed"><i class="fas fa-venus-mars"></i> Coed</span>
+                    <span><i class="fas fa-map-marker-alt"></i> Waldschänke &middot; The Lot</span>
+                    <span><i class="fas fa-calendar"></i> Wednesdays</span>
+                    <span><i class="fas fa-clock"></i> 6:30&ndash;8:30 PM</span>
+                </div>
+                <span class="league-card-cta">View The League</span>
+            </div>
+        </a>
+
+    </div>
+</div>
+{% endblock %}

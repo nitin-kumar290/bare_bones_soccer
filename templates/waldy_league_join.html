@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Join {{ team.team_name }} | Waldy Street League{% endblock %}
+{% block hero_background %}{% static 'images/banner_small.png' %}{% endblock %}
+{% block announcement_bar %}{% endblock %}
+
+{% block content %}
+<div class="wlr-page-bg py-5">
+    <div class="container text-center" style="position:relative; z-index:1; max-width:560px;">
+        <p class="wlr-eyebrow">You're Invited</p>
+        <h1 class="wlr-title">Join {{ team.team_name }}</h1>
+        <div class="wlr-rule"></div>
+        <p class="wlr-subtitle">{{ roster_count }} of 6 spots filled</p>
+
+        <div class="wlr-card">
+            {% if already_joined %}
+                <p style="font-family:'Barlow Semi Condensed',sans-serif; color:#fdf5ed;">You're already on this team. See you Wednesday nights at The Lot.</p>
+            {% elif is_full %}
+                <p style="font-family:'Barlow Semi Condensed',sans-serif; color:#fdf5ed;">This team's roster is full.</p>
+            {% else %}
+                <p style="font-family:'Barlow Semi Condensed',sans-serif; color:rgba(253,245,237,0.75);">Pay for your own spot on this roster &mdash; full 8-week season.</p>
+                <div style="font-family:'Oswald',sans-serif; font-weight:700; font-size:2.4rem; color:#fdf5ed; margin:14px 0;">$45</div>
+                <button id="joinBtn" class="btn w-100 wlr-submit-btn">Pay & Join Team</button>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+const stripe = Stripe("pk_live_51Qe6VrKKPDelkA7OgycGGoqfOS3cfz4k6KQ53R2LvHJann8fxkRLFX2XF7CwBxqLOc8WfXpv3lLurLmh0og9TUlX00VSXk1ZM7");
+const joinBtn = document.getElementById('joinBtn');
+if (joinBtn) {
+    joinBtn.addEventListener('click', async function() {
+        joinBtn.disabled = true;
+        joinBtn.textContent = 'Redirecting to payment...';
+        try {
+            const res = await fetch("{% url 'create_league_join_checkout_session' team.invite_code %}", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "X-CSRFToken": "{{ csrf_token }}" }
+            });
+            const session = await res.json();
+            if (!session.id) throw new Error(session.error || "No session ID returned.");
+            await stripe.redirectToCheckout({ sessionId: session.id });
+        } catch (err) {
+            console.error(err);
+            alert("Error starting checkout. Please try again.");
+            joinBtn.disabled = false;
+            joinBtn.textContent = 'Pay & Join Team';
+        }
+    });
+}
+</script>
+
+<style>
+    body { background: #fdf5ed; }
+    .wlr-page-bg {
+        background: linear-gradient(135deg, #08070b 0%, #290a44 100%);
+        position: relative; overflow: hidden;
+        margin: 32px auto 40px; max-width: 1140px; border-radius: 20px;
+    }
+    @media (max-width: 767px) { .wlr-page-bg { margin: 20px 16px 28px; border-radius: 14px; } }
+    .wlr-eyebrow { font-family:'Oswald',sans-serif; font-size:0.85rem; font-weight:700; letter-spacing:4px; text-transform:uppercase; color:#00b8e8; margin-bottom:4px; }
+    .wlr-title { color:#fdf5ed; font-family:'Oswald',sans-serif; font-weight:700; letter-spacing:1px; text-transform:uppercase; margin-bottom:0; }
+    .wlr-rule { width:60px; height:3px; background:#00b8e8; margin:14px auto; border-radius:2px; }
+    .wlr-subtitle { font-family:'Barlow Semi Condensed',sans-serif; font-style:italic; color:rgba(253,245,237,0.72); margin:0 0 8px; }
+    .wlr-card {
+        max-width: 460px; margin: 24px auto 0;
+        background: rgba(8,7,11,0.7); backdrop-filter: blur(10px);
+        border: 1.5px solid rgba(0,184,232,0.4); border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0,184,232,0.18), 0 0 0 1px rgba(41,10,68,0.4);
+        padding: 28px 30px 32px;
+    }
+    .wlr-submit-btn {
+        background: linear-gradient(135deg, #00b8e8 0%, #290a44 100%); color:#fdf5ed;
+        font-family:'Oswald',sans-serif; font-weight:700; letter-spacing:1.5px; text-transform:uppercase;
+        border:none; border-radius:50px; padding:12px 0; margin-top:8px;
+        box-shadow: 0 4px 16px rgba(0,184,232,0.35); transition: box-shadow 0.2s ease, transform 0.2s ease;
+    }
+    .wlr-submit-btn:hover { box-shadow: 0 6px 22px rgba(0,184,232,0.55); transform: translateY(-1px); color:#fdf5ed; }
+</style>
+{% endblock %}

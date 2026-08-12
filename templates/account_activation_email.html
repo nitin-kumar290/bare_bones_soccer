@@ -1,12 +1,15 @@
 {% autoescape off %}
-Hi {{ user.username }},
+<p>Hi {{ user.username }},</p>
 
-Please click on the link below to confirm your registration:
+<p>Please click the link below to confirm your registration:</p>
 
-http://{{ domain }}{% url 'activate' uidb64=uid token=token %}
+<p><a href="http://{{ domain }}{% url 'activate' uidb64=uid token=token %}">Activate My Account</a></p>
 
-If you didn't request this, you can safely ignore this email.
+<p>If that link doesn't work, copy and paste this URL into your browser:<br>
+http://{{ domain }}{% url 'activate' uidb64=uid token=token %}</p>
 
-Thanks,
-The Bare Bones Crew
+<p>If you didn't request this, you can safely ignore this email.</p>
+
+<p>Thanks,<br>
+The Bare Bones Crew</p>
 {% endautoescape %}

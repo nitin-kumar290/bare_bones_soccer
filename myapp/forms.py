@@ -3,9 +3,41 @@ from .models import Person, PlayerProfile
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django import forms
-from .models import PlayerProfile, EventRSVP
+from .models import PlayerProfile, EventRSVP, ReferralSource, LeagueTeam
 import re
 from datetime import date
+
+
+class LeagueTeamCreateForm(forms.ModelForm):
+    payment_mode = forms.ChoiceField(
+        choices=LeagueTeam.PAYMENT_MODE_CHOICES,
+        widget=forms.RadioSelect(),
+        label="How will your team pay?",
+    )
+
+    class Meta:
+        model = LeagueTeam
+        fields = ['team_name', 'payment_mode', 'prepaid_roster_size', 'prepaid_roster_names']
+        widgets = {
+            'team_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Your Team Name'}),
+            'prepaid_roster_size': forms.Select(choices=[('', '— roster size —'), (4, '4 players'), (5, '5 players'), (6, '6 players')], attrs={'class': 'form-control'}),
+            'prepaid_roster_names': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'One player name per line — include at least 1 female player', 'rows': 5}),
+        }
+
+
+class ReferralSourceForm(forms.ModelForm):
+    source = forms.ChoiceField(
+        choices=ReferralSource.SOURCE_CHOICES,
+        widget=forms.RadioSelect(),
+        label="How did you find us?",
+    )
+
+    class Meta:
+        model = ReferralSource
+        fields = ['source', 'other_detail']
+        widgets = {
+            'other_detail': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Tell us more...'}),
+        }
 
 # DELETE LATER
 # class SportsStableForm(forms.ModelForm):

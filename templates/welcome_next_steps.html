@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Welcome to Bare Bones Soccer{% endblock %}
+{% block hero_background %}{% static 'images/banner_small.png' %}{% endblock %}
+
+{% block content %}
+<style>.hero-section { height: 75vh !important; background-position: center 45% !important; }</style>
+<div class="welcome-page-bg py-5">
+    <div class="container" style="position:relative; z-index:1; max-width:560px;">
+
+        <h1 class="welcome-eyebrow">You're In!</h1>
+        <div class="welcome-logo-badge">
+            <img src="https://bare-bones-soccer.s3.amazonaws.com/images/Primary%20Logo%20BK.png" alt="Bare Bones Soccer Collective">
+        </div>
+        <div class="welcome-title-rule"></div>
+        <p class="welcome-subtitle">Your account is active — here's how to stay in the loop.</p>
+
+        <div class="welcome-card">
+            <div class="welcome-links">
+                <a href="https://www.instagram.com/barebonessoccer/" target="_blank" rel="noopener" class="welcome-link-btn welcome-ig-btn">
+                    <i class="fab fa-instagram"></i> Follow us on Instagram
+                </a>
+                <a href="https://chat.whatsapp.com/IzHQHb1UODABuoABqXotvm" target="_blank" rel="noopener" class="welcome-link-btn welcome-wa-btn">
+                    <i class="fab fa-whatsapp"></i> Join the WhatsApp Community
+                </a>
+            </div>
+
+            <hr class="welcome-divider">
+
+            <form method="POST">
+                {% csrf_token %}
+                <p class="welcome-form-label">{{ form.source.label }}</p>
+
+                <div class="welcome-radio-group">
+                    {% for radio in form.source %}
+                        <label class="welcome-radio-option">
+                            {{ radio.tag }}
+                            <span>{{ radio.choice_label }}</span>
+                        </label>
+                    {% endfor %}
+                </div>
+
+                <div id="welcomeOtherWrap" class="mt-2" style="display:none;">
+                    {{ form.other_detail }}
+                </div>
+
+                <button type="submit" class="btn w-100 welcome-submit-btn">Continue</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var radios = document.querySelectorAll('input[name="source"]');
+    var otherWrap = document.getElementById('welcomeOtherWrap');
+    function toggleOther() {
+        var checked = document.querySelector('input[name="source"]:checked');
+        otherWrap.style.display = (checked && checked.value === 'other') ? 'block' : 'none';
+    }
+    radios.forEach(function(r) { r.addEventListener('change', toggleOther); });
+    toggleOther();
+});
+</script>
+
+<style>
+    /* ── Brand palette: Royal Purple #290a44 · Charcoal #08070b · Off White #fdf5ed · Light Blue #00b8e8 ── */
+    body { background: #fdf5ed !important; }
+
+    .welcome-page-bg {
+        background: linear-gradient(135deg, #08070b 0%, #290a44 100%);
+        position: relative;
+        overflow: hidden;
+        margin: 32px auto 40px;
+        max-width: 1140px;
+        border-radius: 20px;
+    }
+    @media (max-width: 767px) {
+        .welcome-page-bg { margin: 20px 16px 28px; border-radius: 14px; }
+    }
+    .welcome-logo-badge {
+        width: 110px;
+        height: 110px;
+        margin: 0 auto 14px;
+        border-radius: 50%;
+        background: #fdf5ed;
+        box-shadow: 0 6px 20px rgba(0,184,232,0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+    .welcome-logo-badge img {
+        display: block;
+        width: 112%;
+        height: 112%;
+        object-fit: contain;
+    }
+    .welcome-eyebrow {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.6rem;
+        font-weight: 700;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: #fdf5ed;
+        text-align: center;
+        margin-bottom: 14px;
+    }
+    .welcome-title-rule {
+        width: 60px;
+        height: 3px;
+        background: #00b8e8;
+        margin: 14px auto;
+        border-radius: 2px;
+    }
+    .welcome-subtitle {
+        font-family: 'Barlow Semi Condensed', sans-serif;
+        font-style: italic;
+        font-size: 1rem;
+        color: rgba(253,245,237,0.72);
+        text-align: center;
+        margin-bottom: 8px;
+    }
+    .welcome-card {
+        max-width: 460px;
+        margin: 24px auto 0;
+        background: rgba(8,7,11,0.7);
+        backdrop-filter: blur(10px);
+        border: 1.5px solid rgba(0,184,232,0.4);
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0,184,232,0.18), 0 0 0 1px rgba(41,10,68,0.4);
+        padding: 28px 30px 32px;
+    }
+    .welcome-links { display: flex; flex-direction: column; gap: 12px; }
+    .welcome-link-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 12px 0;
+        border-radius: 50px;
+        font-family: 'Oswald', sans-serif;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        text-decoration: none;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .welcome-link-btn:hover { transform: translateY(-2px); }
+    .welcome-ig-btn {
+        background: linear-gradient(135deg, #00b8e8 0%, #290a44 100%);
+        color: #fdf5ed;
+        box-shadow: 0 4px 16px rgba(0,184,232,0.35);
+    }
+    .welcome-wa-btn {
+        background: #25D366;
+        color: #08070b;
+        box-shadow: 0 4px 16px rgba(37,211,102,0.35);
+    }
+    .welcome-divider { border-color: rgba(253,245,237,0.15); margin: 24px 0; }
+    .welcome-form-label {
+        font-family: 'Oswald', sans-serif;
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: #fdf5ed;
+        text-align: center;
+        margin-bottom: 14px;
+    }
+    .welcome-radio-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 6px; }
+    .welcome-radio-option {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(253,245,237,0.05);
+        border: 1.5px solid rgba(253,245,237,0.18);
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-family: 'Barlow Semi Condensed', sans-serif;
+        font-size: 0.95rem;
+        color: #fdf5ed;
+        cursor: pointer;
+        transition: border-color 0.2s ease, background 0.2s ease;
+    }
+    .welcome-radio-option:has(input:checked) {
+        border-color: #00b8e8;
+        background: rgba(0,184,232,0.1);
+    }
+    .welcome-radio-option input { accent-color: #00b8e8; }
+    #welcomeOtherWrap .form-control {
+        background: rgba(253,245,237,0.05);
+        border: 1.5px solid rgba(253,245,237,0.18);
+        border-radius: 10px;
+        padding: 10px 14px;
+        color: #fdf5ed;
+        font-family: 'Barlow Semi Condensed', sans-serif;
+        font-size: 0.9rem;
+    }
+    #welcomeOtherWrap .form-control::placeholder { color: rgba(253,245,237,0.35); }
+    #welcomeOtherWrap .form-control:focus {
+        border-color: #00b8e8;
+        box-shadow: 0 0 0 3px rgba(0,184,232,0.25);
+        outline: none;
+        color: #fdf5ed;
+    }
+    .welcome-submit-btn {
+        background: linear-gradient(135deg, #00b8e8 0%, #290a44 100%);
+        color: #fdf5ed;
+        font-family: 'Oswald', sans-serif;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        border: none;
+        border-radius: 50px;
+        padding: 12px 0;
+        margin-top: 18px;
+        box-shadow: 0 4px 16px rgba(0,184,232,0.35);
+        transition: box-shadow 0.2s ease, transform 0.2s ease;
+    }
+    .welcome-submit-btn:hover { box-shadow: 0 6px 22px rgba(0,184,232,0.55); transform: translateY(-1px); color: #fdf5ed; }
+</style>
+{% endblock %}

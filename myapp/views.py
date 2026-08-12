@@ -6,8 +6,8 @@ import logging
 import stripe
 from datetime import datetime, timedelta
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import PersonForm, UserRegistrationForm, UserLoginForm, PlayerProfileForm, UnsubscribeForm, EventRSVPForm, SponsorInquiryForm
-from .models import Person, Pickup, Event, EventImage, AttendancePayment, EmailUnsubscribe, EventRSVP, OneOffEvent, Partner
+from .forms import PersonForm, UserRegistrationForm, UserLoginForm, PlayerProfileForm, UnsubscribeForm, EventRSVPForm, SponsorInquiryForm, ReferralSourceForm, LeagueTeamCreateForm
+from .models import Person, Pickup, Event, EventImage, AttendancePayment, EmailUnsubscribe, EventRSVP, OneOffEvent, Partner, ReferralSource, LeagueTeam, LeagueTeamPlayer
 from django.core.mail import send_mail, EmailMessage
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -206,8 +206,8 @@ def register(request):
                 email = EmailMessage(mail_subject, message, to=[user.email])
                 email.content_subtype = 'html'
                 email.send()
-            except Exception:
-                pass
+            except Exception as e:
+                print(f"ACTIVATION EMAIL FAILED TO SEND: {e}")
 
             return redirect('activation_sent')
             
@@ -341,9 +341,8 @@ def activate(request, uidb64, token):
         email.content_subtype = "html"
         email.send()
 
-        messages.success(request, "Account created! Please sign in.")
         login(request, user)
-        return redirect('registration_success')
+        return redirect('welcome_next_steps')
     else:
         return render(request, 'activation_invalid.html')
 
@@ -357,6 +356,27 @@ def registration_success(request):
     Display registration success message and redirect to login after 5 seconds
     """
     return render(request, 'registration_success.html')
+
+
+@login_required
+def welcome_next_steps(request):
+    """
+    Shown right after account activation — Follow IG / Join WhatsApp, plus a
+    one-time "how did you find us?" survey saved to ReferralSource.
+    """
+    existing = ReferralSource.objects.filter(user=request.user).first()
+
+    if request.method == 'POST':
+        form = ReferralSourceForm(request.POST, instance=existing)
+        if form.is_valid():
+            referral = form.save(commit=False)
+            referral.user = request.user
+            referral.save()
+            return redirect('series_catalog')
+    else:
+        form = ReferralSourceForm(instance=existing)
+
+    return render(request, 'welcome_next_steps.html', {'form': form})
 
 
 
@@ -637,6 +657,147 @@ def get_presigned_url(request):
 #         form = SportsStableForm()
 
 #     return render(request, 'sports_stable_register.html', {'form': form})
+
+
+def leagues_hub(request):
+    return render(request, 'leagues_hub.html')
+
+
+def waldy_street_league(request):
+    return render(request, 'waldy_street_league.html')
+
+
+@login_required
+def waldy_league_register(request):
+    if request.method == 'POST':
+        form = LeagueTeamCreateForm(request.POST)
+        if form.is_valid():
+            team = form.save(commit=False)
+            team.captain = request.user
+            team.league_name = 'Waldy Street League'
+            if team.payment_mode == 'team_prepay' and team.prepaid_roster_size:
+                team.prepaid_amount = int(team.prepaid_roster_size) * 45
+            team.save()
+            if team.payment_mode == 'individual':
+                LeagueTeamPlayer.objects.get_or_create(team=team, player=request.user, defaults={'is_captain': True})
+            return redirect('waldy_league_checkout', team_id=team.id)
+    else:
+        form = LeagueTeamCreateForm()
+
+    return render(request, 'waldy_league_register.html', {'form': form})
+
+
+@login_required
+def waldy_league_checkout(request, team_id):
+    team = get_object_or_404(LeagueTeam, id=team_id, captain=request.user)
+    if team.payment_mode == 'team_prepay':
+        amount = team.prepaid_amount
+        already_paid = team.prepaid_status == 'Paid'
+    else:
+        amount = 45
+        already_paid = LeagueTeamPlayer.objects.filter(team=team, player=request.user, status='Paid').exists()
+    return render(request, 'waldy_league_checkout.html', {'team': team, 'amount': amount, 'already_paid': already_paid})
+
+
+@login_required
+def create_league_checkout_session(request, team_id):
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Only POST allowed'}, status=405)
+    team = get_object_or_404(LeagueTeam, id=team_id, captain=request.user)
+
+    if team.payment_mode == 'team_prepay':
+        amount_cents = int(team.prepaid_amount * 100)
+        name = f"{team.team_name} — Team Prepay ({team.prepaid_roster_size} players)"
+    else:
+        amount_cents = 4500
+        name = f"{team.team_name} — Captain's Individual Spot"
+
+    session = stripe.checkout.Session.create(
+        payment_method_types=["card"],
+        line_items=[{
+            "price_data": {
+                "currency": "usd",
+                "product_data": {"name": name},
+                "unit_amount": amount_cents,
+            },
+            "quantity": 1,
+        }],
+        mode="payment",
+        success_url=request.build_absolute_uri(f'/leagues/waldy-street-league/checkout/{team.id}/success/') + "?session_id={CHECKOUT_SESSION_ID}",
+        cancel_url=request.build_absolute_uri('/payment-cancel/'),
+    )
+    return JsonResponse({"id": session.id})
+
+
+@login_required
+def league_checkout_success(request, team_id):
+    team = get_object_or_404(LeagueTeam, id=team_id, captain=request.user)
+    session_id = request.GET.get("session_id")
+    if session_id:
+        stripe.api_key = settings.STRIPE_SECRET_KEY
+        session = stripe.checkout.Session.retrieve(session_id)
+        if session.payment_status == "paid":
+            if team.payment_mode == 'team_prepay':
+                if team.prepaid_status != 'Paid':
+                    team.prepaid_status = 'Paid'
+                    team.prepaid_payment_id = session_id
+                    team.save()
+            else:
+                LeagueTeamPlayer.objects.filter(team=team, player=request.user).update(status='Paid', payment_id=session_id)
+    return render(request, 'waldy_league_checkout_success.html', {'team': team})
+
+
+@login_required
+def waldy_league_join(request, invite_code):
+    team = get_object_or_404(LeagueTeam, invite_code=invite_code)
+    roster_count = team.players.filter(status='Paid').count()
+    already_joined = team.players.filter(player=request.user, status='Paid').exists()
+    is_full = roster_count >= 6
+    return render(request, 'waldy_league_join.html', {
+        'team': team, 'roster_count': roster_count, 'already_joined': already_joined, 'is_full': is_full
+    })
+
+
+@login_required
+def create_league_join_checkout_session(request, invite_code):
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Only POST allowed'}, status=405)
+    team = get_object_or_404(LeagueTeam, invite_code=invite_code)
+    if team.players.filter(status='Paid').count() >= 6:
+        return JsonResponse({'error': 'Team is full'}, status=400)
+
+    session = stripe.checkout.Session.create(
+        payment_method_types=["card"],
+        line_items=[{
+            "price_data": {
+                "currency": "usd",
+                "product_data": {"name": f"Join {team.team_name} — Waldy Street League"},
+                "unit_amount": 4500,
+            },
+            "quantity": 1,
+        }],
+        mode="payment",
+        success_url=request.build_absolute_uri(f'/leagues/waldy-street-league/join/{invite_code}/success/') + "?session_id={CHECKOUT_SESSION_ID}",
+        cancel_url=request.build_absolute_uri('/payment-cancel/'),
+    )
+    return JsonResponse({"id": session.id})
+
+
+@login_required
+def league_join_success(request, invite_code):
+    team = get_object_or_404(LeagueTeam, invite_code=invite_code)
+    session_id = request.GET.get("session_id")
+    if session_id and not LeagueTeamPlayer.objects.filter(team=team, player=request.user, status='Paid').exists():
+        stripe.api_key = settings.STRIPE_SECRET_KEY
+        session = stripe.checkout.Session.retrieve(session_id)
+        if session.payment_status == "paid":
+            LeagueTeamPlayer.objects.update_or_create(
+                team=team, player=request.user,
+                defaults={'status': 'Paid', 'payment_id': session_id, 'amount': 45}
+            )
+    return render(request, 'waldy_league_join_success.html', {'team': team})
 
 
 @login_required

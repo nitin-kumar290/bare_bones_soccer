@@ -106,7 +106,29 @@
 </head>
 <body>
 
-    {% block announcement_bar %}{% endblock announcement_bar %}
+    {% block announcement_bar %}
+    <a href="{% url 'waldy_street_league' %}" class="wsl-announcement-bar">
+        <span class="wsl-announcement-badge">New</span>
+        Waldy Street League is here — coed 4v4, Wednesday nights at Waldschänke &middot; <span class="wsl-announcement-cta">Learn More &rarr;</span>
+    </a>
+    <style>
+        .wsl-announcement-bar {
+            display: block; text-align: center; padding: 10px 16px;
+            background: linear-gradient(90deg, #290a44 0%, #08070b 100%);
+            color: #fdf5ed; text-decoration: none;
+            font-family: 'Barlow Semi Condensed', sans-serif; font-size: 0.92rem; font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+        .wsl-announcement-bar:hover { color: #fdf5ed; background: linear-gradient(90deg, #33124f 0%, #0d0b12 100%); }
+        .wsl-announcement-badge {
+            display: inline-block; background: #00b8e8; color: #08070b;
+            font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 0.65rem; letter-spacing: 1px; text-transform: uppercase;
+            padding: 2px 9px; border-radius: 50px; margin-right: 8px; vertical-align: middle;
+        }
+        .wsl-announcement-cta { color: #00b8e8; font-weight: 700; }
+        @media (max-width: 576px) { .wsl-announcement-bar { font-size: 0.8rem; padding: 9px 12px; } }
+    </style>
+    {% endblock announcement_bar %}
 
     <!-- <header class="hero-section" style="background: url('{% static 'images/bb_banner.jpg' %}') no-repeat center center/cover;"> -->
     <!-- In base.html -->
@@ -199,6 +221,7 @@
                     <ul class="navbar-nav" style="font-family: 'Oswald', sans-serif;">
                         <li class="nav-item fs-5"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
                         <li class="nav-item fs-5"><a class="nav-link special-link" href="{% url 'series' %}">Pickup</a></li>
+                        <li class="nav-item fs-5"><a class="nav-link" href="{% url 'leagues_hub' %}">Leagues</a></li>
                         <li class="nav-item fs-5"><a class="nav-link" href="{% url 'events' %}">Events</a></li>
                         <!-- <li class="nav-item fs-5"><a class="nav-link" href="{% url 'pickup' %}">Pick Up</a></li> -->
                         <li class="nav-item fs-5 dropdown">
@@ -254,11 +277,75 @@
 
         {% endblock %}
     </main>
-    <footer class="text-center p-1" style="background-color:#00b8e8;">
+    <footer class="text-center p-1" style="background-color:#00b8e8; position:relative;">
         <style>
             .footer-icon { color:#0d1928; transition: transform 0.2s ease, color 0.2s ease; }
             .footer-icon:hover { color:#fff; transform: translateY(-2px); }
             .footer-crest { margin-bottom: 0; line-height: 0; }
+
+            /* ── Footer mascot + speech bubble ── */
+            .footer-mascot {
+                position: absolute;
+                right: 20px;
+                bottom: 6px;
+                display: flex;
+                flex-direction: column;
+                align-items: flex-end;
+                cursor: pointer;
+                z-index: 5;
+            }
+            .mascot-img {
+                width: 72px;
+                height: auto;
+                filter: drop-shadow(0 3px 8px rgba(0,0,0,0.25));
+                transition: transform 0.2s ease;
+            }
+            .footer-mascot:hover .mascot-img { transform: translateY(-3px) rotate(-4deg); }
+            .mascot-bubble {
+                background: #fdf5ed;
+                color: #08070b;
+                border-radius: 14px;
+                padding: 10px 14px;
+                font-family: 'Barlow Semi Condensed', sans-serif;
+                font-size: 0.8rem;
+                font-weight: 700;
+                text-align: center;
+                max-width: none;
+                width: max-content;
+                margin-bottom: 8px;
+                box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+                position: relative;
+            }
+            .mascot-bubble::after {
+                content: '';
+                position: absolute;
+                bottom: -8px;
+                right: 22px;
+                border-width: 8px 8px 0 8px;
+                border-style: solid;
+                border-color: #fdf5ed transparent transparent transparent;
+            }
+            .mascot-bubble-options { display: none; flex-direction: column; gap: 8px; }
+            .mascot-option {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                color: #08070b;
+                text-decoration: none;
+                font-size: 0.78rem;
+                font-weight: 700;
+                padding: 4px 2px;
+                border-bottom: 1px solid rgba(0,0,0,0.08);
+                transition: color 0.2s ease;
+            }
+            .mascot-option:last-child { border-bottom: none; }
+            .mascot-option:hover { color: #00b8e8; }
+            .mascot-option i { color: #00b8e8; width: 16px; text-align: center; }
+            @media (max-width: 767px) {
+                .footer-mascot { right: 10px; bottom: 4px; }
+                .mascot-img { width: 52px; }
+                .mascot-bubble { font-size: 0.72rem; padding: 8px 10px; }
+            }
         </style>
         <div class="container text-center my-0">
             <!-- Icons (Font Awesome) -->
@@ -283,7 +370,39 @@
        </div>
 
         <p class="mb-0" style="font-size:0.8rem;">&copy; 2025 Bare Bones Soccer. All rights reserved.</p>
+
+        <div class="footer-mascot" id="footerMascot">
+            <div class="mascot-bubble">
+                <div id="mascotPrompt">New here?! Got questions?</div>
+                <div class="mascot-bubble-options" id="mascotOptions">
+                    <a href="https://www.instagram.com/barebonessoccer/" target="_blank" rel="noopener" class="mascot-option"><i class="fab fa-instagram"></i> Follow us on IG</a>
+                    <a href="https://chat.whatsapp.com/IzHQHb1UODABuoABqXotvm" target="_blank" rel="noopener" class="mascot-option"><i class="fab fa-whatsapp"></i> Join our WhatsApp</a>
+                    <a href="{% url 'contact' %}" class="mascot-option"><i class="fas fa-envelope"></i> Email us</a>
+                </div>
+            </div>
+            <img src="https://bare-bones-soccer.s3.amazonaws.com/images/Mascot%201%20BK.png" alt="Bare Bones Soccer mascot" class="mascot-img">
+        </div>
     </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var mascot = document.getElementById('footerMascot');
+            var prompt = document.getElementById('mascotPrompt');
+            var options = document.getElementById('mascotOptions');
+            if (!mascot) return;
+            mascot.addEventListener('click', function(e) {
+                if (e.target.closest('.mascot-option')) return;
+                var isOpen = options.style.display === 'flex';
+                options.style.display = isOpen ? 'none' : 'flex';
+                prompt.style.display = isOpen ? 'block' : 'none';
+            });
+            document.addEventListener('click', function(e) {
+                if (!mascot.contains(e.target)) {
+                    options.style.display = 'none';
+                    prompt.style.display = 'block';
+                }
+            });
+        });
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
