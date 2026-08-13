@@ -86,26 +86,9 @@ It should print a long string starting with `AKIA...`. If it prints nothing, run
 
 ---
 
-## 5. Deploy to the Live Site
+## 5. Save Changes to GitHub (do this BEFORE deploying)
 
-Once you're happy with your changes locally, push them live:
-
-```
-zappa update dev
-```
-
-This will take 1–2 minutes. When it's done you'll see:
-```
-Your updated Zappa deployment is live!
-```
-
-Then visit **barebonessoccer.com** to confirm your changes are live.
-
----
-
-## 6. Save Changes to GitHub
-
-After the site is live, save your work to GitHub so it's backed up and tracked.
+Commit your work first — `deploy.sh` (see Step 6) will actually refuse to deploy if you have uncommitted changes, so this order matters.
 
 ```
 git add .
@@ -124,6 +107,26 @@ git commit -m "fix brunch ball ticket pricing"
 
 ---
 
+## 6. Deploy — Dev First, Then Prod
+
+**There are now two environments.** `dev` is a safe-to-break testing stage on its own URL. `prod` is the real live site at barebonessoccer.com. **They share the same database, Stripe account, and email sending** — dev is for testing that a deploy actually works (no code errors, pages load), not a data/payment sandbox. Don't complete real transactions on dev unless you mean to.
+
+**Step A — push to dev and check it there first:**
+```
+./deploy.sh dev
+```
+Then visit **https://as6dpc4s80.execute-api.us-east-2.amazonaws.com/dev/** and click through your changes.
+
+**Step B — once dev looks right, push the same code to the real site:**
+```
+./deploy.sh prod
+```
+This will ask you to type `prod` to confirm, since it's the real live site. Once done, visit **barebonessoccer.com** to confirm.
+
+`deploy.sh` handles the safety checks automatically (right branch, no uncommitted changes, no stray untracked files, and the confirmation prompt for prod). If you ever need the raw command instead: `zappa update dev` or `zappa update prod`.
+
+---
+
 ## Full Deploy Checklist (Quick Reference)
 
 Every time you make changes, run these in order:
@@ -131,10 +134,11 @@ Every time you make changes, run these in order:
 ```
 source .venv/bin/activate     ← activate environment
 source load_env.sh            ← load AWS credentials
-zappa update dev              ← push to live site
 git add .                     ← stage changes
 git commit -m "your message"  ← save snapshot
 git push                      ← upload to GitHub
+./deploy.sh dev                ← push to test stage, verify there
+./deploy.sh prod                ← push to the real live site
 ```
 
 ---
@@ -148,6 +152,7 @@ git push                      ← upload to GitHub
 | `NoCredentialsError` | Run `source load_env.sh` then retry |
 | Changes not showing live | Hard refresh browser: `Cmd+Shift+R` |
 | Local server port in use | Run `python manage.py runserver 8001` instead |
+| `./deploy.sh` says usage error | You need to specify a stage: `./deploy.sh dev` or `./deploy.sh prod` |
 
 ---
 
@@ -157,6 +162,7 @@ git push                      ← upload to GitHub
 |---|---|
 | HTML templates | `templates/` |
 | Static files (images, CSS, JS) | `myapp/static/` |
-| Django settings | `barebones/settings.py` |
-| Zappa deploy config | `zappa_settings.json` |
+| Django settings | `barebones/settings.py` (never commit — real secrets, not tracked by git) |
+| Zappa deploy config | `zappa_settings.json` (never commit — real secrets, not tracked by git; see `zappa_settings.json.example` for the shape) |
 | Environment variables | `.env` (never commit this file) |
+| Deploy script | `deploy.sh dev\|prod` |

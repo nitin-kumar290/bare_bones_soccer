@@ -48,7 +48,7 @@
 
 <script>
     
-const stripe = Stripe("pk_live_51Qe6VrKKPDelkA7OgycGGoqfOS3cfz4k6KQ53R2LvHJann8fxkRLFX2XF7CwBxqLOc8WfXpv3lLurLmh0og9TUlX00VSXk1ZM7");
+const stripe = Stripe("{{ STRIPE_PUBLISHABLE_KEY }}");
 const csrftoken = "{{ csrf_token }}";
 
 async function registerForEvent() {

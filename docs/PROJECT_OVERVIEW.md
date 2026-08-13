@@ -14,7 +14,7 @@ Bare Bones Soccer is a Denver, CO community soccer brand. The website serves as 
 |---|---|
 | Framework | Django 5.1 (Python) |
 | Database | PostgreSQL via Neon (serverless, SSL required) |
-| Hosting | AWS Lambda via Zappa (serverless) |
+| Hosting | AWS Lambda via Zappa (serverless) — two stages: `dev` (test, generic URL) and `prod` (barebonessoccer.com) |
 | Static Files | AWS S3 (`bare-bones-soccer` bucket, `us-east-2`) |
 | Media Files | AWS S3 (same bucket) |
 | Email | AWS SES, from `no-reply@barebonessoccer.com` |
@@ -24,7 +24,7 @@ Bare Bones Soccer is a Denver, CO community soccer brand. The website serves as 
 | Analytics | Google Analytics (`G-RZW0GLKZ78`), Google Ads (`AW-17617578293`), Meta Pixel (`580190001252813`) |
 | Calendar | FullCalendar 6.1.6 |
 
-**Deploy command:** `source load_env.sh && zappa update dev`
+**Deploy command:** `source load_env.sh && ./deploy.sh dev` to test, then `./deploy.sh prod` to go live. Both stages share the same Neon database, Stripe account, and email sending — `dev` is for verifying a deploy works, not a data/payment sandbox.
 
 ---
 

@@ -64,7 +64,7 @@
 
 <!-- 2) Then your inline script. -->
 <script>
- const stripe = Stripe("pk_live_51Qe6VrKKPDelkA7OgycGGoqfOS3cfz4k6KQ53R2LvHJann8fxkRLFX2XF7CwBxqLOc8WfXpv3lLurLmh0og9TUlX00VSXk1ZM7");
+ const stripe = Stripe("{{ STRIPE_PUBLISHABLE_KEY }}");
 //  const stripe = Stripe("pk_test_51Qe6VrKKPDelkA7OOVE8XKi1D7SS3dprsHi201IIHQJFaJzUHqUgWjjaVGQUcprHjkb4DHHYpnSADtTtVrctr4rW00uBtvrMnm");
  const csrftoken = "{{ csrf_token }}"; 
 

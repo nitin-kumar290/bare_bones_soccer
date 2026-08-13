@@ -50,3 +50,18 @@ That's it! The secret keys are now available in this terminal window for as long
 - You need to run this **every time** you open a new terminal window.
 - Never share the `.env` file or its contents with anyone. It contains live secret keys.
 - The `.env` file is already excluded from git, so it will never be accidentally uploaded to GitHub.
+- **After editing `.env`, double check the file with something like `awk -F'=' '{print $1}' .env`** — a missing trailing newline on the last line can cause the next value you append to silently merge into the previous line's value (this happened once with `STRIPE_SECRET_KEY`/`LOCAL_SQLITE` and went unnoticed for a while).
+
+## Variables `.env` can define
+
+| Variable | Required? | Notes |
+|---|---|---|
+| `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` | Yes | Needed for Zappa deploys and S3 access |
+| `SECRET_KEY` | Yes | Django secret key |
+| `STRIPE_SECRET_KEY` | Yes | Same live key used on both dev and prod |
+| `LOCAL_SQLITE` | No | Set to `1` to run against a local throwaway SQLite DB instead of live Neon — see `docs/WORKFLOW.md` |
+| `SSL_CERT_FILE` | No | Only needed if you hit `CERTIFICATE_VERIFY_FAILED` errors sending email locally (common on macOS) |
+| `DB_NAME` / `DB_USER` / `DB_PASSWORD` / `DB_HOST` | No | Override the default Neon connection details if needed — otherwise the existing values in `barebones/settings.py` are used |
+| `EMAIL_HOST_USER` / `EMAIL_HOST_PASSWORD` | No | Override the default Gmail sending account if needed |
+
+`zappa_settings.json` (separate from `.env`, also gitignored — see `zappa_settings.json.example` for the shape) is what actually supplies these values to the deployed Lambda for both the `dev` and `prod` stages.

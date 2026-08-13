@@ -1,0 +1,75 @@
+{
+    "dev": {
+        "aws_region": "us-east-2",
+        "django_settings": "barebones.settings",
+        "project_name": "bare-bones-socc",
+        "runtime": "python3.12",
+        "s3_bucket": "bare-bones-soccer",
+        "slim_handler": true,
+        "keep_warm": false,
+        "exclude": [
+            "*.git*", "*.pyc", "*.pyo", "*.pyd", "__pycache__", ".Python", "*.so",
+            ".history/*", "*.ipynb", "*.tar.gz", "*.csv", "staticfiles/*", "media/*",
+            ".venv/*", "handler_venv/*", "*.md", "*.log", "*.sqlite3",
+            "*.code-workspace", "data_pull.ipynb", "video_conversion.ipynb"
+        ],
+        "exclude_glob": [
+            "*/locale/*", "*/tests/*", "*/test_*"
+        ],
+        "environment_variables": {
+            "DATABASE_URL": "REPLACE_WITH_REAL_NEON_CONNECTION_STRING",
+            "DJANGO_SETTINGS_MODULE": "barebones.settings",
+            "SECRET_KEY": "REPLACE_WITH_REAL_DJANGO_SECRET_KEY",
+            "EMAIL_HOST_USER": "REPLACE_WITH_GMAIL_ADDRESS",
+            "EMAIL_HOST_PASSWORD": "REPLACE_WITH_GMAIL_APP_PASSWORD",
+            "STRIPE_SECRET_KEY": "REPLACE_WITH_STRIPE_SECRET_KEY",
+            "STRIPE_PUBLISHABLE_KEY": "REPLACE_WITH_STRIPE_PUBLISHABLE_KEY"
+        },
+        "aws_environment_variables": {
+            "DATABASE_URL": "REPLACE_WITH_REAL_NEON_CONNECTION_STRING",
+            "DJANGO_SETTINGS_MODULE": "barebones.settings",
+            "SECRET_KEY": "REPLACE_WITH_REAL_DJANGO_SECRET_KEY",
+            "EMAIL_HOST_USER": "REPLACE_WITH_GMAIL_ADDRESS",
+            "EMAIL_HOST_PASSWORD": "REPLACE_WITH_GMAIL_APP_PASSWORD",
+            "STRIPE_SECRET_KEY": "REPLACE_WITH_STRIPE_SECRET_KEY",
+            "STRIPE_PUBLISHABLE_KEY": "REPLACE_WITH_STRIPE_PUBLISHABLE_KEY"
+        }
+    },
+    "prod": {
+        "aws_region": "us-east-2",
+        "django_settings": "barebones.settings",
+        "project_name": "bare-bones-socc",
+        "runtime": "python3.12",
+        "s3_bucket": "bare-bones-soccer",
+        "slim_handler": true,
+        "certificate_arn": "REPLACE_WITH_ACM_CERTIFICATE_ARN",
+        "domain": "barebonessoccer.com",
+        "exclude": [
+            "*.git*", "*.pyc", "*.pyo", "*.pyd", "__pycache__", ".Python", "*.so",
+            ".history/*", "*.ipynb", "*.tar.gz", "*.csv", "staticfiles/*", "media/*",
+            ".venv/*", "handler_venv/*", "*.md", "*.log", "*.sqlite3",
+            "*.code-workspace", "data_pull.ipynb", "video_conversion.ipynb"
+        ],
+        "exclude_glob": [
+            "*/locale/*", "*/tests/*", "*/test_*"
+        ],
+        "environment_variables": {
+            "DATABASE_URL": "REPLACE_WITH_REAL_NEON_CONNECTION_STRING",
+            "DJANGO_SETTINGS_MODULE": "barebones.settings",
+            "SECRET_KEY": "REPLACE_WITH_REAL_DJANGO_SECRET_KEY",
+            "EMAIL_HOST_USER": "REPLACE_WITH_GMAIL_ADDRESS",
+            "EMAIL_HOST_PASSWORD": "REPLACE_WITH_GMAIL_APP_PASSWORD",
+            "STRIPE_SECRET_KEY": "REPLACE_WITH_STRIPE_SECRET_KEY",
+            "STRIPE_PUBLISHABLE_KEY": "REPLACE_WITH_STRIPE_PUBLISHABLE_KEY"
+        },
+        "aws_environment_variables": {
+            "DATABASE_URL": "REPLACE_WITH_REAL_NEON_CONNECTION_STRING",
+            "DJANGO_SETTINGS_MODULE": "barebones.settings",
+            "SECRET_KEY": "REPLACE_WITH_REAL_DJANGO_SECRET_KEY",
+            "EMAIL_HOST_USER": "REPLACE_WITH_GMAIL_ADDRESS",
+            "EMAIL_HOST_PASSWORD": "REPLACE_WITH_GMAIL_APP_PASSWORD",
+            "STRIPE_SECRET_KEY": "REPLACE_WITH_STRIPE_SECRET_KEY",
+            "STRIPE_PUBLISHABLE_KEY": "REPLACE_WITH_STRIPE_PUBLISHABLE_KEY"
+        }
+    }
+}

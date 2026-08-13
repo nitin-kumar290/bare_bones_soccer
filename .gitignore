@@ -147,6 +147,9 @@ barebones/settings.py
 
 aws
 
+# Local-only deploy notes (may contain infra IDs/rollback info, not for git)
+.deploy-notes/
+
 staticfiles/
 
 *.tar.gz
