@@ -23,9 +23,21 @@ from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 
 # Create your views here.
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, Http404
 from textwrap import dedent
 from .forms import ForgotUsernameForm
+from functools import wraps
+
+
+def hide_on_prod(view_func):
+    """Blocks a view entirely on the prod stage — feature not ready for real users yet.
+    Still fully live on dev/local. Remove this decorator when ready to launch on prod."""
+    @wraps(view_func)
+    def wrapper(request, *args, **kwargs):
+        if settings.IS_PROD:
+            raise Http404
+        return view_func(request, *args, **kwargs)
+    return wrapper
 
 
 logger = logging.getLogger(__name__)
@@ -659,14 +671,17 @@ def get_presigned_url(request):
 #     return render(request, 'sports_stable_register.html', {'form': form})
 
 
+@hide_on_prod
 def leagues_hub(request):
     return render(request, 'leagues_hub.html')
 
 
+@hide_on_prod
 def waldy_street_league(request):
     return render(request, 'waldy_street_league.html')
 
 
+@hide_on_prod
 @login_required
 def waldy_league_register(request):
     if request.method == 'POST':
@@ -687,6 +702,7 @@ def waldy_league_register(request):
     return render(request, 'waldy_league_register.html', {'form': form})
 
 
+@hide_on_prod
 @login_required
 def waldy_league_checkout(request, team_id):
     team = get_object_or_404(LeagueTeam, id=team_id, captain=request.user)
@@ -699,6 +715,7 @@ def waldy_league_checkout(request, team_id):
     return render(request, 'waldy_league_checkout.html', {'team': team, 'amount': amount, 'already_paid': already_paid})
 
 
+@hide_on_prod
 @login_required
 def create_league_checkout_session(request, team_id):
     stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -730,6 +747,7 @@ def create_league_checkout_session(request, team_id):
     return JsonResponse({"id": session.id})
 
 
+@hide_on_prod
 @login_required
 def league_checkout_success(request, team_id):
     team = get_object_or_404(LeagueTeam, id=team_id, captain=request.user)
@@ -748,6 +766,7 @@ def league_checkout_success(request, team_id):
     return render(request, 'waldy_league_checkout_success.html', {'team': team})
 
 
+@hide_on_prod
 @login_required
 def waldy_league_join(request, invite_code):
     team = get_object_or_404(LeagueTeam, invite_code=invite_code)
@@ -759,6 +778,7 @@ def waldy_league_join(request, invite_code):
     })
 
 
+@hide_on_prod
 @login_required
 def create_league_join_checkout_session(request, invite_code):
     stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -785,6 +805,7 @@ def create_league_join_checkout_session(request, invite_code):
     return JsonResponse({"id": session.id})
 
 
+@hide_on_prod
 @login_required
 def league_join_success(request, invite_code):
     team = get_object_or_404(LeagueTeam, invite_code=invite_code)

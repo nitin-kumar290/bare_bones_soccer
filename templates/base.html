@@ -126,6 +126,7 @@
     {% endif %}
 
     {% block announcement_bar %}
+    {% if not IS_PROD %}
     <a href="{% url 'waldy_street_league' %}" class="wsl-announcement-bar">
         <span class="wsl-announcement-badge">New</span>
         Waldy Street League is here — coed 4v4, Wednesday nights at Waldschänke &middot; <span class="wsl-announcement-cta">Learn More &rarr;</span>
@@ -147,6 +148,7 @@
         .wsl-announcement-cta { color: #00b8e8; font-weight: 700; }
         @media (max-width: 576px) { .wsl-announcement-bar { font-size: 0.8rem; padding: 9px 12px; } }
     </style>
+    {% endif %}
     {% endblock announcement_bar %}
 
     <!-- <header class="hero-section" style="background: url('{% static 'images/bb_banner.jpg' %}') no-repeat center center/cover;"> -->
@@ -240,7 +242,9 @@
                     <ul class="navbar-nav" style="font-family: 'Oswald', sans-serif;">
                         <li class="nav-item fs-5"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
                         <li class="nav-item fs-5"><a class="nav-link special-link" href="{% url 'series' %}">Pickup</a></li>
+                        {% if not IS_PROD %}
                         <li class="nav-item fs-5"><a class="nav-link" href="{% url 'leagues_hub' %}">Leagues</a></li>
+                        {% endif %}
                         <li class="nav-item fs-5"><a class="nav-link" href="{% url 'events' %}">Events</a></li>
                         <!-- <li class="nav-item fs-5"><a class="nav-link" href="{% url 'pickup' %}">Pick Up</a></li> -->
                         <li class="nav-item fs-5 dropdown">
