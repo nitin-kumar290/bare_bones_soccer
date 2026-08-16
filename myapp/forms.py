@@ -14,14 +14,21 @@ class LeagueTeamCreateForm(forms.ModelForm):
         widget=forms.RadioSelect(),
         label="How will your team pay?",
     )
+    captain_first_name = forms.CharField(
+        label="Your First Name",
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'}),
+    )
+    captain_last_name = forms.CharField(
+        label="Your Last Name",
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}),
+    )
 
     class Meta:
         model = LeagueTeam
-        fields = ['team_name', 'payment_mode', 'prepaid_roster_size', 'prepaid_roster_names']
+        fields = ['team_name', 'payment_mode', 'prepaid_roster_size']
         widgets = {
             'team_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Your Team Name'}),
             'prepaid_roster_size': forms.Select(choices=[('', '— roster size —'), (4, '4 players'), (5, '5 players'), (6, '6 players')], attrs={'class': 'form-control'}),
-            'prepaid_roster_names': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'One player name per line — include at least 1 female player', 'rows': 5}),
         }
 
 

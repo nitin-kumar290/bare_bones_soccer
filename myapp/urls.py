@@ -34,6 +34,7 @@ urlpatterns = [
     path('leagues/waldy-street-league/join/<str:invite_code>/', views.waldy_league_join, name='waldy_league_join'),
     path('api/create-league-join-checkout-session/<str:invite_code>/', views.create_league_join_checkout_session, name='create_league_join_checkout_session'),
     path('leagues/waldy-street-league/join/<str:invite_code>/success/', views.league_join_success, name='league_join_success'),
+    path('leagues/waldy-street-league/claim/<str:claim_code>/', views.waldy_league_claim, name='waldy_league_claim'),
     #path('pay/<str:date_str>/', views.create_checkout_session, name='create_checkout_session'),
     path('payment-success/', views.payment_success, name='payment_success'),
     path('payment-cancel/', views.payment_cancel, name='payment_cancel'),

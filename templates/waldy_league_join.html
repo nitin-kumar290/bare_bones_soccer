@@ -19,6 +19,16 @@
                 <p style="font-family:'Barlow Semi Condensed',sans-serif; color:#fdf5ed;">This team's roster is full.</p>
             {% else %}
                 <p style="font-family:'Barlow Semi Condensed',sans-serif; color:rgba(253,245,237,0.75);">Pay for your own spot on this roster &mdash; full 8-week season.</p>
+                <div style="display:flex; gap:10px; margin:16px 0 8px; text-align:left;">
+                    <div style="flex:1;">
+                        <p class="wlr-field-label" style="font-family:'Oswald',sans-serif; font-size:0.72rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:rgba(253,245,237,0.55); margin-bottom:6px;">First Name</p>
+                        <input type="text" id="joinFirstName" class="form-control" placeholder="First Name">
+                    </div>
+                    <div style="flex:1;">
+                        <p class="wlr-field-label" style="font-family:'Oswald',sans-serif; font-size:0.72rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:rgba(253,245,237,0.55); margin-bottom:6px;">Last Name</p>
+                        <input type="text" id="joinLastName" class="form-control" placeholder="Last Name">
+                    </div>
+                </div>
                 <div style="font-family:'Oswald',sans-serif; font-weight:700; font-size:2.4rem; color:#fdf5ed; margin:14px 0;">$45</div>
                 <button id="joinBtn" class="btn w-100 wlr-submit-btn">Pay & Join Team</button>
             {% endif %}
@@ -32,12 +42,19 @@ const stripe = Stripe("{{ STRIPE_PUBLISHABLE_KEY }}");
 const joinBtn = document.getElementById('joinBtn');
 if (joinBtn) {
     joinBtn.addEventListener('click', async function() {
+        const firstName = document.getElementById('joinFirstName').value.trim();
+        const lastName = document.getElementById('joinLastName').value.trim();
+        if (!firstName || !lastName) {
+            alert("Enter your first and last name before paying.");
+            return;
+        }
         joinBtn.disabled = true;
         joinBtn.textContent = 'Redirecting to payment...';
         try {
             const res = await fetch("{% url 'create_league_join_checkout_session' team.invite_code %}", {
                 method: "POST",
-                headers: { "Content-Type": "application/json", "X-CSRFToken": "{{ csrf_token }}" }
+                headers: { "Content-Type": "application/json", "X-CSRFToken": "{{ csrf_token }}" },
+                body: JSON.stringify({ first_name: firstName, last_name: lastName })
             });
             const session = await res.json();
             if (!session.id) throw new Error(session.error || "No session ID returned.");

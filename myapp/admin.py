@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django import forms
-from .models import Pickup, Event, EventImage
+from .models import Pickup, Event, EventImage, LeagueTeam, LeagueTeamPlayer
 
 import boto3
 import uuid
@@ -54,3 +54,25 @@ class EventAdmin(admin.ModelAdmin):
 @admin.register(EventImage)
 class EventImageAdmin(admin.ModelAdmin):
     list_display = ('event',)
+
+
+class LeagueTeamPlayerInline(admin.TabularInline):
+    model = LeagueTeamPlayer
+    extra = 0
+    fields = ('first_name', 'last_name', 'email', 'player', 'is_captain', 'status', 'claimed_at')
+    readonly_fields = ('claimed_at',)
+
+
+@admin.register(LeagueTeam)
+class LeagueTeamAdmin(admin.ModelAdmin):
+    list_display = ('team_name', 'league_name', 'captain', 'payment_mode', 'prepaid_status', 'invite_code', 'created_at')
+    list_filter = ('league_name', 'payment_mode', 'prepaid_status')
+    search_fields = ('team_name', 'captain__username', 'captain__email', 'invite_code')
+    inlines = [LeagueTeamPlayerInline]
+
+
+@admin.register(LeagueTeamPlayer)
+class LeagueTeamPlayerAdmin(admin.ModelAdmin):
+    list_display = ('first_name', 'last_name', 'team', 'player', 'is_captain', 'status', 'claimed_at')
+    list_filter = ('team', 'status', 'is_captain')
+    search_fields = ('first_name', 'last_name', 'email', 'player__username', 'player__email')

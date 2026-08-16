@@ -19,6 +19,10 @@
 .leagues-eyebrow { font-family:'Oswald',sans-serif; font-size:0.8rem; font-weight:700; letter-spacing:4px; text-transform:uppercase; color:#00b8e8; position:relative; z-index:1; }
 .leagues-title { font-family:'Oswald',sans-serif; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:#fdf5ed; font-size:clamp(1.8rem,4vw,2.6rem); margin:8px 0 12px; position:relative; z-index:1; }
 .leagues-subtitle { font-family:'Barlow Semi Condensed',sans-serif; font-style:italic; color:rgba(253,245,237,0.72); max-width:520px; margin:0 auto; position:relative; z-index:1; }
+.leagues-subtitle-tagline {
+    font-style:normal; font-weight:700; letter-spacing:2px; text-transform:uppercase;
+    font-size:0.85rem; color:#00b8e8; margin-top:8px;
+}
 
 .leagues-grid-bg { background:#fdf5ed; padding: 56px 20px 72px; }
 .leagues-grid { max-width: 900px; margin: 0 auto; display:grid; grid-template-columns: 1fr; gap: 24px; }
@@ -34,15 +38,20 @@
     display: block;
     transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
-.league-card-featured:hover { transform: translateY(-6px); box-shadow: 0 16px 48px rgba(0,184,232,0.35), 0 0 0 1px rgba(41,10,68,0.3); }
+.league-card-featured:hover { box-shadow: 0 16px 48px rgba(0,184,232,0.35), 0 0 0 1px rgba(41,10,68,0.3); }
 .league-card-media { position:relative; height: 260px; overflow:hidden; }
 .league-card-media video { position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; }
 .league-card-media::after { content:''; position:absolute; inset:0; background:linear-gradient(180deg, rgba(8,7,11,0.1) 0%, rgba(8,7,11,0.85) 100%); }
+@keyframes league-badge-glow {
+    0%, 100% { box-shadow: 0 0 6px rgba(0,184,232,0.4), 0 0 0 0 rgba(0,184,232,0.4); }
+    50% { box-shadow: 0 0 18px rgba(0,184,232,0.9), 0 0 0 5px rgba(0,184,232,0); }
+}
 .league-card-badge {
     position:absolute; top:18px; left:18px; z-index:2;
     background: linear-gradient(135deg, #00b8e8 0%, #290a44 100%); color:#fdf5ed;
     font-family:'Oswald',sans-serif; font-size:0.68rem; font-weight:700; letter-spacing:2px; text-transform:uppercase;
     padding:6px 14px; border-radius:50px;
+    animation: league-badge-glow 1.8s ease-in-out infinite;
 }
 .league-card-body { padding: 28px 30px 32px; text-align: center; }
 .league-card-body h2 { font-family:'Oswald',sans-serif; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:#fdf5ed; font-size:1.6rem; margin-bottom:8px; }
@@ -53,15 +62,25 @@
     color:#00b8e8; background:rgba(0,184,232,0.1); border:1px solid rgba(0,184,232,0.3); border-radius:50px; padding:5px 12px;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+@keyframes coed-badge-pulse {
+    0%, 100% { box-shadow: 0 3px 12px rgba(0,184,232,0.35), 0 0 0 0 rgba(0,184,232,0.4); }
+    50% { box-shadow: 0 3px 16px rgba(0,184,232,0.55), 0 0 0 5px rgba(0,184,232,0); }
+}
 .league-card-meta span.coed {
     color:#08070b; background:#00b8e8; border-color:#00b8e8;
-    box-shadow: 0 3px 12px rgba(0,184,232,0.35);
+    animation: coed-badge-pulse 2.4s ease-in-out infinite;
 }
-.league-card-meta span.coed:hover { transform: translateY(-2px); box-shadow: 0 5px 18px rgba(0,184,232,0.5); }
+.league-card-meta span.coed:hover { transform: translateY(-2px); animation: none; box-shadow: 0 5px 18px rgba(0,184,232,0.5); }
 .league-card-cta {
     display:inline-block; background: linear-gradient(135deg, #00b8e8 0%, #290a44 100%); color:#fdf5ed;
     font-family:'Oswald',sans-serif; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; font-size:0.85rem;
     padding:12px 30px; border-radius:50px;
+    box-shadow: 0 4px 14px rgba(0,184,232,0.25);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.league-card-featured:hover .league-card-cta {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0,184,232,0.45);
 }
 </style>
 
@@ -69,9 +88,9 @@
 
 <div class="leagues-header-bg">
     <div class="leagues-ball-bg" aria-hidden="true">⚽</div>
-    <p class="leagues-eyebrow">Bare Bones Leagues</p>
-    <h1 class="leagues-title">Structured Seasons, Same Community</h1>
-    <p class="leagues-subtitle">Real standings, real playoffs — every league we run still feels like Bare Bones. Pick a league below.</p>
+    <p class="leagues-eyebrow">Bare Bones Soccer Leagues</p>
+    <p class="leagues-subtitle">Community-driven soccer built around patio hangouts and night-league street ball energy.</p>
+    <p class="leagues-subtitle leagues-subtitle-tagline">Competitive. Social. Fun.</p>
 </div>
 
 <div class="leagues-grid-bg">
@@ -86,14 +105,14 @@
             </div>
             <div class="league-card-body">
                 <h2>Waldy Street League at The Lot</h2>
-                <p>4v4 street soccer in Waldschänke's parking lot. 8-week season, full playoff bracket, drinks and patio games every week.</p>
+                <p>4v4 street soccer in a cidery parking lot. 8-week season, full playoff bracket, food & drinks, patio hangouts every week.</p>
                 <div class="league-card-meta">
                     <span class="coed"><i class="fas fa-venus-mars"></i> Coed</span>
                     <span><i class="fas fa-map-marker-alt"></i> Waldschänke &middot; The Lot</span>
                     <span><i class="fas fa-calendar"></i> Wednesdays</span>
                     <span><i class="fas fa-clock"></i> 6:30&ndash;8:30 PM</span>
                 </div>
-                <span class="league-card-cta">View The League</span>
+                <span class="league-card-cta">View League Details!</span>
             </div>
         </a>
 

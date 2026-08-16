@@ -2,6 +2,7 @@ import boto3
 import uuid
 import json
 import logging
+import secrets
 
 import stripe
 from datetime import datetime, timedelta
@@ -18,6 +19,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.views import PasswordResetView
 from django.utils.encoding import force_bytes
+from django.utils import timezone
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -687,14 +689,46 @@ def waldy_league_register(request):
     if request.method == 'POST':
         form = LeagueTeamCreateForm(request.POST)
         if form.is_valid():
+            payment_mode = form.cleaned_data['payment_mode']
+            roster_size = form.cleaned_data.get('prepaid_roster_size')
+            teammates = []
+
+            if payment_mode == 'team_prepay':
+                if not roster_size:
+                    messages.error(request, "Select a roster size.")
+                    return render(request, 'waldy_league_register.html', {'form': form})
+                for i in range(1, int(roster_size)):
+                    fn = request.POST.get(f'teammate_first_name_{i}', '').strip()
+                    ln = request.POST.get(f'teammate_last_name_{i}', '').strip()
+                    em = request.POST.get(f'teammate_email_{i}', '').strip()
+                    if not (fn and ln and em):
+                        messages.error(request, "Enter a first name, last name, and email for every teammate on your roster — each of them will get an email to confirm their spot with their own Bare Bones account.")
+                        return render(request, 'waldy_league_register.html', {'form': form})
+                    teammates.append((fn, ln, em))
+
             team = form.save(commit=False)
             team.captain = request.user
             team.league_name = 'Waldy Street League'
-            if team.payment_mode == 'team_prepay' and team.prepaid_roster_size:
-                team.prepaid_amount = int(team.prepaid_roster_size) * 45
+            if payment_mode == 'team_prepay' and roster_size:
+                team.prepaid_amount = int(roster_size) * 45
             team.save()
-            if team.payment_mode == 'individual':
-                LeagueTeamPlayer.objects.get_or_create(team=team, player=request.user, defaults={'is_captain': True})
+
+            LeagueTeamPlayer.objects.get_or_create(
+                team=team, player=request.user,
+                defaults={
+                    'is_captain': True,
+                    'first_name': form.cleaned_data['captain_first_name'],
+                    'last_name': form.cleaned_data['captain_last_name'],
+                    'email': request.user.email,
+                }
+            )
+
+            for fn, ln, em in teammates:
+                LeagueTeamPlayer.objects.create(
+                    team=team, first_name=fn, last_name=ln, email=em,
+                    claim_code=secrets.token_hex(4).upper(),
+                )
+
             return redirect('waldy_league_checkout', team_id=team.id)
     else:
         form = LeagueTeamCreateForm()
@@ -761,9 +795,205 @@ def league_checkout_success(request, team_id):
                     team.prepaid_status = 'Paid'
                     team.prepaid_payment_id = session_id
                     team.save()
+                    team.players.update(status='Paid', payment_id=session_id)
+                    send_league_captain_confirmation_email(request, team)
+                    for teammate in team.players.filter(player__isnull=True):
+                        send_league_claim_email(request, teammate)
             else:
+                was_already_paid = LeagueTeamPlayer.objects.filter(team=team, player=request.user, status='Paid').exists()
                 LeagueTeamPlayer.objects.filter(team=team, player=request.user).update(status='Paid', payment_id=session_id)
+                if not was_already_paid:
+                    send_league_captain_confirmation_email(request, team)
     return render(request, 'waldy_league_checkout_success.html', {'team': team})
+
+
+def send_league_captain_confirmation_email(request, team):
+    invite_link = request.build_absolute_uri(f"/leagues/waldy-street-league/join/{team.invite_code}/")
+
+    if team.payment_mode == 'team_prepay':
+        subject = f"Team Payment Confirmed — {team.team_name} is Locked In for Waldy Street League"
+        teammates = team.players.filter(is_captain=False)
+        names = "<br>".join(f"{p.first_name} {p.last_name}" for p in teammates)
+        roster_html = ""
+        if names:
+            roster_html = f"""
+            <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
+            <tr>
+                <td style="font-size:15px; padding:0 24px; text-align:center; line-height:24px;">
+                <b>Your Roster:</b><br>{names}
+                </td>
+            </tr>
+            <tr><td style="height:14px; line-height:14px;">&nbsp;</td></tr>
+            <tr>
+                <td style="font-size:13px; padding:0 24px; text-align:center; line-height:20px; color:#555;">
+                Each teammate above will get their own email to confirm their spot with a Bare Bones account &mdash; everyone needs one for game-day roster verification.
+                </td>
+            </tr>
+            """
+        body_details = f"""
+            <tr>
+                <td style="font-size:16px; padding:24px; text-align:center; line-height:26px;">
+                💰 <b>${team.prepaid_amount} paid</b> for {team.prepaid_roster_size} players<br>
+                🧢 <b>Team:</b> {team.team_name}
+                </td>
+            </tr>
+            {roster_html}
+        """
+    else:
+        subject = f"You're In! {team.team_name} — Waldy Street League Confirmed"
+        body_details = f"""
+            <tr>
+                <td style="font-size:16px; padding:24px 24px 8px; text-align:center; line-height:26px;">
+                💰 <b>$45 paid</b> — your spot is locked in<br>
+                🧢 <b>Team:</b> {team.team_name}
+                </td>
+            </tr>
+            <tr><td style="height:12px; line-height:12px;">&nbsp;</td></tr>
+            <tr>
+                <td style="padding:0 24px 8px; text-align:center;">
+                <table role="presentation" align="center" cellspacing="0" cellpadding="0" style="border:1.5px solid #00b8e8; border-radius:10px; background:#f5fbfd;">
+                    <tr>
+                        <td style="padding:16px 20px; text-align:center; font-size:14px; line-height:22px;">
+                        <b>Share this with your teammates:</b><br>
+                        You need 4&ndash;6 players total (including at least 1 female player). Send them the link below &mdash; each person pays their own $45 spot.<br><br>
+                        <a href="{invite_link}" style="color:#08070b; background:#00b8e8; padding:10px 20px; border-radius:50px; text-decoration:none; font-weight:bold; display:inline-block;">{invite_link}</a>
+                        </td>
+                    </tr>
+                </table>
+                </td>
+            </tr>
+        """
+
+    html_message = f"""
+    <!DOCTYPE html>
+    <html>
+    <body>
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#ffffff; margin:0; padding:0;">
+    <tr>
+        <td align="center" style="padding:0;">
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="width:100%; max-width:600px; margin:0 auto;">
+            <tr>
+            <td align="center" style="padding:24px;">
+                <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width:600px; width:100%; font-family:Arial, Helvetica, sans-serif; color:#111;">
+
+                <tr>
+                    <td style="font-size:22px; line-height:30px; text-align:center; font-weight:bold; color:#290a44;">
+                    ⚽ WALDY STREET LEAGUE CONFIRMATION
+                    </td>
+                </tr>
+
+                <tr><td style="height:8px; line-height:8px;">&nbsp;</td></tr>
+
+                <tr>
+                    <td style="font-size:16px; line-height:24px; text-align:center;">
+                        You're all set! Details below.
+                    </td>
+                </tr>
+
+                {body_details}
+
+                <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
+
+                <tr>
+                    <td style="font-size:16px; line-height:24px; text-align:center;">
+                    See you on the pitch!
+                    <br>
+                    The Bare Bones Crew
+                    </td>
+                </tr>
+
+                </table>
+            </td>
+            </tr>
+        </table>
+        </td>
+    </tr>
+    </table>
+
+    </body>
+    </html>
+    """
+    email = EmailMessage(subject, html_message, settings.EMAIL_HOST_USER, [request.user.email])
+    email.content_subtype = "html"
+    try:
+        email.send()
+    except Exception:
+        logger.exception("Failed to send league captain confirmation email")
+
+
+def send_league_claim_email(request, teammate):
+    claim_link = request.build_absolute_uri(f"/leagues/waldy-street-league/claim/{teammate.claim_code}/")
+    team = teammate.team
+    subject = f"Confirm Your Spot on {team.team_name} — Waldy Street League"
+    html_message = f"""
+    <!DOCTYPE html>
+    <html>
+    <body>
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#ffffff; margin:0; padding:0;">
+    <tr>
+        <td align="center" style="padding:0;">
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="width:100%; max-width:600px; margin:0 auto;">
+            <tr>
+            <td align="center" style="padding:24px;">
+                <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width:600px; width:100%; font-family:Arial, Helvetica, sans-serif; color:#111;">
+
+                <tr>
+                    <td style="font-size:22px; line-height:30px; text-align:center; font-weight:bold; color:#290a44;">
+                    ⚽ YOU'RE ON THE ROSTER
+                    </td>
+                </tr>
+
+                <tr><td style="height:8px; line-height:8px;">&nbsp;</td></tr>
+
+                <tr>
+                    <td style="font-size:16px; padding:0 24px; line-height:24px; text-align:center;">
+                    {teammate.first_name}, your captain already paid your $45 for <b>{team.team_name}</b> in the Waldy Street League. One last step &mdash; confirm your spot with a Bare Bones account so we can verify you on game day.
+                    </td>
+                </tr>
+
+                <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
+
+                <tr>
+                    <td style="padding:0 24px; text-align:center;">
+                    <a href="{claim_link}" style="color:#fdf5ed; background:linear-gradient(135deg, #00b8e8 0%, #290a44 100%); padding:12px 28px; border-radius:50px; text-decoration:none; font-weight:bold; display:inline-block;">Confirm My Spot</a>
+                    </td>
+                </tr>
+
+                <tr><td style="height:16px; line-height:16px;">&nbsp;</td></tr>
+
+                <tr>
+                    <td style="font-size:13px; padding:0 24px; line-height:20px; text-align:center; color:#555;">
+                    Log in if you already have an account, or create a free one &mdash; no additional payment needed, this just confirms it's you.
+                    </td>
+                </tr>
+
+                <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
+
+                <tr>
+                    <td style="font-size:16px; line-height:24px; text-align:center;">
+                    See you on the pitch!
+                    <br>
+                    The Bare Bones Crew
+                    </td>
+                </tr>
+
+                </table>
+            </td>
+            </tr>
+        </table>
+        </td>
+    </tr>
+    </table>
+
+    </body>
+    </html>
+    """
+    email = EmailMessage(subject, html_message, settings.EMAIL_HOST_USER, [teammate.email])
+    email.content_subtype = "html"
+    try:
+        email.send()
+    except Exception:
+        logger.exception("Failed to send league claim email")
 
 
 @hide_on_prod
@@ -788,6 +1018,15 @@ def create_league_join_checkout_session(request, invite_code):
     if team.players.filter(status='Paid').count() >= 6:
         return JsonResponse({'error': 'Team is full'}, status=400)
 
+    try:
+        body = json.loads(request.body or '{}')
+    except json.JSONDecodeError:
+        body = {}
+    first_name = body.get('first_name', '').strip()
+    last_name = body.get('last_name', '').strip()
+    if not (first_name and last_name):
+        return JsonResponse({'error': 'First and last name are required'}, status=400)
+
     session = stripe.checkout.Session.create(
         payment_method_types=["card"],
         line_items=[{
@@ -799,6 +1038,7 @@ def create_league_join_checkout_session(request, invite_code):
             "quantity": 1,
         }],
         mode="payment",
+        metadata={"first_name": first_name, "last_name": last_name},
         success_url=request.build_absolute_uri(f'/leagues/waldy-street-league/join/{invite_code}/success/') + "?session_id={CHECKOUT_SESSION_ID}",
         cancel_url=request.build_absolute_uri('/payment-cancel/'),
     )
@@ -816,9 +1056,102 @@ def league_join_success(request, invite_code):
         if session.payment_status == "paid":
             LeagueTeamPlayer.objects.update_or_create(
                 team=team, player=request.user,
-                defaults={'status': 'Paid', 'payment_id': session_id, 'amount': 45}
+                defaults={
+                    'status': 'Paid', 'payment_id': session_id, 'amount': 45,
+                    'first_name': session.metadata.get('first_name', ''),
+                    'last_name': session.metadata.get('last_name', ''),
+                    'email': request.user.email,
+                }
             )
+            send_league_player_join_confirmation_email(request, team)
     return render(request, 'waldy_league_join_success.html', {'team': team})
+
+
+def send_league_player_join_confirmation_email(request, team):
+    roster_count = team.players.filter(status='Paid').count()
+    subject = f"You're In! You Joined {team.team_name} — Waldy Street League"
+    html_message = f"""
+    <!DOCTYPE html>
+    <html>
+    <body>
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#ffffff; margin:0; padding:0;">
+    <tr>
+        <td align="center" style="padding:0;">
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="width:100%; max-width:600px; margin:0 auto;">
+            <tr>
+            <td align="center" style="padding:24px;">
+                <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width:600px; width:100%; font-family:Arial, Helvetica, sans-serif; color:#111;">
+
+                <tr>
+                    <td style="font-size:22px; line-height:30px; text-align:center; font-weight:bold; color:#290a44;">
+                    ⚽ WALDY STREET LEAGUE CONFIRMATION
+                    </td>
+                </tr>
+
+                <tr><td style="height:8px; line-height:8px;">&nbsp;</td></tr>
+
+                <tr>
+                    <td style="font-size:16px; line-height:24px; text-align:center;">
+                        You're on the roster! Details below.
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="font-size:16px; padding:24px; text-align:center; line-height:26px;">
+                    💰 <b>$45 paid</b> — your spot is locked in<br>
+                    🧢 <b>Team:</b> {team.team_name}<br>
+                    👥 <b>Roster:</b> {roster_count}/6 paid
+                    </td>
+                </tr>
+
+                <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
+
+                <tr>
+                    <td style="font-size:16px; line-height:24px; text-align:center;">
+                    See you on the pitch!
+                    <br>
+                    The Bare Bones Crew
+                    </td>
+                </tr>
+
+                </table>
+            </td>
+            </tr>
+        </table>
+        </td>
+    </tr>
+    </table>
+
+    </body>
+    </html>
+    """
+    email = EmailMessage(subject, html_message, settings.EMAIL_HOST_USER, [request.user.email])
+    email.content_subtype = "html"
+    try:
+        email.send()
+    except Exception:
+        logger.exception("Failed to send league player join confirmation email")
+
+
+@hide_on_prod
+@login_required
+def waldy_league_claim(request, claim_code):
+    slot = get_object_or_404(LeagueTeamPlayer, claim_code=claim_code)
+    already_claimed_by_other = slot.player is not None and slot.player != request.user
+    account_conflict = LeagueTeamPlayer.objects.filter(team=slot.team, player=request.user).exclude(id=slot.id).exists()
+
+    if request.method == 'POST' and slot.player is None and not account_conflict:
+        slot.player = request.user
+        slot.claimed_at = timezone.now()
+        slot.save()
+        messages.success(request, "You're confirmed on the roster!")
+        return redirect('waldy_league_claim', claim_code=claim_code)
+
+    return render(request, 'waldy_league_claim.html', {
+        'slot': slot, 'team': slot.team,
+        'already_claimed_by_other': already_claimed_by_other,
+        'account_conflict': account_conflict,
+    })
 
 
 @login_required

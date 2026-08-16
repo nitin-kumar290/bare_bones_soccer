@@ -187,9 +187,9 @@ class LeagueTeam(models.Model):
     captain = models.ForeignKey(User, on_delete=models.CASCADE, related_name='captained_league_teams')
     invite_code = models.CharField(max_length=12, unique=True, blank=True)
     payment_mode = models.CharField(max_length=20, choices=PAYMENT_MODE_CHOICES, default='individual')
-    # Only used for the team_prepay path — captain declares roster upfront and pays for everyone at once
+    # Only used for the team_prepay path — captain declares roster upfront and pays for everyone at once.
+    # Individual teammates are captured as LeagueTeamPlayer rows (see below), not free text.
     prepaid_roster_size = models.PositiveSmallIntegerField(blank=True, null=True)
-    prepaid_roster_names = models.TextField(blank=True, null=True, help_text="One player name per line — must include at least 1 female player")
     prepaid_payment_id = models.CharField(max_length=200, blank=True, null=True)
     prepaid_amount = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
     prepaid_status = models.CharField(max_length=20, choices=[('Pending', 'Pending'), ('Paid', 'Paid')], default='Pending')
@@ -207,18 +207,28 @@ class LeagueTeam(models.Model):
 
 class LeagueTeamPlayer(models.Model):
     team = models.ForeignKey(LeagueTeam, on_delete=models.CASCADE, related_name='players')
-    player = models.ForeignKey(User, on_delete=models.CASCADE)
+    # Null until the player has a confirmed Bare Bones account attached — every player on a game-day
+    # roster must eventually have this set, whether they paid directly (individual path, set immediately)
+    # or were named by the captain (team_prepay path, set once they claim their slot).
+    player = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    first_name = models.CharField(max_length=60, blank=True)
+    last_name = models.CharField(max_length=60, blank=True)
+    email = models.EmailField(blank=True)
     is_captain = models.BooleanField(default=False)
     payment_id = models.CharField(max_length=200, blank=True, null=True)
     amount = models.DecimalField(max_digits=8, decimal_places=2, default=45)
     status = models.CharField(max_length=20, choices=[('Pending', 'Pending'), ('Paid', 'Paid')], default='Pending')
+    # Only used for team_prepay slots waiting on the named player to log in / create an account.
+    claim_code = models.CharField(max_length=12, unique=True, blank=True, null=True)
+    claimed_at = models.DateTimeField(blank=True, null=True)
     joined_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = ('team', 'player')
 
     def __str__(self):
-        return f"{self.player.username} on {self.team.team_name}"
+        who = self.player.username if self.player else f"{self.first_name} {self.last_name} (unclaimed)"
+        return f"{who} on {self.team.team_name}"
 
 
 class OneOffEvent(models.Model):

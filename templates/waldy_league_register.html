@@ -3,6 +3,9 @@
 {% block title %}Register Your Team | Waldy Street League{% endblock %}
 {% block hero_background %}{% static 'images/banner_small.png' %}{% endblock %}
 {% block announcement_bar %}{% endblock %}
+{% block navbar_style %}
+.hero-section { height: calc(100vw / 1.58) !important; max-height: 114vh !important; background-position: center top !important; overflow: hidden !important; }
+{% endblock %}
 
 {% block content %}
 <div class="wlr-page-bg py-5">
@@ -25,6 +28,21 @@
                 <p class="wlr-field-label">{{ form.team_name.label }}</p>
                 {{ form.team_name }}
 
+                <div style="display:flex; gap:12px; margin-top:14px;">
+                    <div style="flex:1;">
+                        <p class="wlr-field-label">{{ form.captain_first_name.label }}</p>
+                        {{ form.captain_first_name }}
+                    </div>
+                    <div style="flex:1;">
+                        <p class="wlr-field-label">{{ form.captain_last_name.label }}</p>
+                        {{ form.captain_last_name }}
+                    </div>
+                </div>
+
+                <div class="wlr-coed-reminder">
+                    Reminder: every roster needs <span class="coed-highlight">at least 1 female player</span>.
+                </div>
+
                 <p class="wlr-field-label" style="margin-top:18px;">{{ form.payment_mode.label }}</p>
                 <div class="wlr-radio-group">
                     {% for radio in form.payment_mode %}
@@ -38,8 +56,17 @@
                 <div id="prepayFields" style="display:none; margin-top:14px;">
                     <p class="wlr-field-label">{{ form.prepaid_roster_size.label }}</p>
                     {{ form.prepaid_roster_size }}
-                    <p class="wlr-field-label" style="margin-top:14px;">Roster</p>
-                    {{ form.prepaid_roster_names }}
+                    <p id="prepayTotal" style="display:none; font-family:'Barlow Semi Condensed',sans-serif; color:rgba(253,245,237,0.75); margin-top:8px;">$45 &times; <span id="prepayTotalCount"></span> players = <b id="prepayTotalAmount" style="color:#00b8e8;"></b></p>
+                    <p class="wlr-field-label" style="margin-top:14px;">Teammates <span style="text-transform:none; letter-spacing:normal; font-weight:400;">(each gets an email to confirm their spot with their own account)</span></p>
+                    <div id="teammateRows">
+                        {% for i in "12345" %}
+                        <div class="wlr-teammate-row" data-slot="{{ i }}" style="display:none;">
+                            <input type="text" name="teammate_first_name_{{ i }}" class="form-control" placeholder="First Name">
+                            <input type="text" name="teammate_last_name_{{ i }}" class="form-control" placeholder="Last Name">
+                            <input type="email" name="teammate_email_{{ i }}" class="form-control" placeholder="Email">
+                        </div>
+                        {% endfor %}
+                    </div>
                 </div>
 
                 <button type="submit" class="btn w-100 wlr-submit-btn">Continue to Payment</button>
@@ -53,11 +80,37 @@
 document.addEventListener('DOMContentLoaded', function() {
     var radios = document.querySelectorAll('input[name="payment_mode"]');
     var prepayFields = document.getElementById('prepayFields');
+    var rosterSize = document.getElementById('id_prepaid_roster_size');
+    var teammateRows = document.querySelectorAll('.wlr-teammate-row');
+    var prepayTotal = document.getElementById('prepayTotal');
+    var prepayTotalCount = document.getElementById('prepayTotalCount');
+    var prepayTotalAmount = document.getElementById('prepayTotalAmount');
+
+    function toggleTeammateRows() {
+        var needed = rosterSize && rosterSize.value ? parseInt(rosterSize.value, 10) - 1 : 0;
+        teammateRows.forEach(function(row) {
+            var slot = parseInt(row.dataset.slot, 10);
+            row.style.display = slot <= needed ? 'flex' : 'none';
+        });
+        if (rosterSize && rosterSize.value) {
+            var size = parseInt(rosterSize.value, 10);
+            prepayTotalCount.textContent = size;
+            prepayTotalAmount.textContent = '$' + (size * 45);
+            prepayTotal.style.display = 'block';
+        } else {
+            prepayTotal.style.display = 'none';
+        }
+    }
+
     function togglePrepay() {
         var checked = document.querySelector('input[name="payment_mode"]:checked');
-        prepayFields.style.display = (checked && checked.value === 'team_prepay') ? 'block' : 'none';
+        var isPrepay = checked && checked.value === 'team_prepay';
+        prepayFields.style.display = isPrepay ? 'block' : 'none';
+        if (isPrepay) toggleTeammateRows();
     }
+
     radios.forEach(function(r) { r.addEventListener('change', togglePrepay); });
+    if (rosterSize) rosterSize.addEventListener('change', toggleTeammateRows);
     togglePrepay();
 });
 </script>
@@ -116,5 +169,17 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     .wlr-submit-btn:hover { box-shadow: 0 6px 22px rgba(0,184,232,0.55); transform: translateY(-1px); color:#fdf5ed; }
     .wlr-fine-print { font-family:'Barlow Semi Condensed',sans-serif; font-size:0.78rem; color:rgba(253,245,237,0.5); text-align:center; margin-top:14px; margin-bottom:0; }
+
+    @keyframes coed-text-glow {
+        0%, 100% { text-shadow: 0 0 4px rgba(0,184,232,0.3); }
+        50% { text-shadow: 0 0 10px rgba(0,184,232,0.7); }
+    }
+    .coed-highlight { color:#00b8e8; font-weight:700; animation: coed-text-glow 2.4s ease-in-out infinite; }
+    .wlr-coed-reminder {
+        margin-top:14px; padding:10px 14px; border:1.5px solid rgba(0,184,232,0.4); border-radius:10px;
+        background: rgba(0,184,232,0.07); font-family:'Barlow Semi Condensed',sans-serif; font-size:0.9rem; color:rgba(253,245,237,0.85);
+    }
+    .wlr-teammate-row { display:flex; gap:8px; margin-bottom:8px; }
+    .wlr-teammate-row input { font-size:0.9rem; padding:9px 12px; }
 </style>
 {% endblock %}

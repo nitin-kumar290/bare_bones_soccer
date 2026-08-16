@@ -59,24 +59,41 @@
 .wsl-spec-card .num { font-family:'Oswald',sans-serif; font-weight:700; font-size:1.8rem; color:#290a44; }
 .wsl-spec-card .label { font-family:'Barlow Semi Condensed',sans-serif; font-size:0.82rem; color:#555; text-transform:uppercase; letter-spacing:0.5px; margin-top:4px; }
 
+@keyframes coed-glow-pulse {
+    0%, 100% { box-shadow: 0 4px 16px rgba(0,184,232,0.22), 0 0 0 0 rgba(0,184,232,0.4); }
+    50% { box-shadow: 0 4px 20px rgba(0,184,232,0.4), 0 0 0 6px rgba(0,184,232,0); }
+}
 .wsl-spec-card.coed {
     border: 1.5px solid #00b8e8;
-    box-shadow: 0 4px 16px rgba(0,184,232,0.18);
+    animation: coed-glow-pulse 2.4s ease-in-out infinite;
 }
 .wsl-spec-card.coed .num { color: #00b8e8; }
 .wsl-spec-card.coed:hover {
     transform: translateY(-4px);
-    box-shadow: 0 10px 28px rgba(0,184,232,0.32);
     border-color: #290a44;
+    animation: none;
+    box-shadow: 0 10px 28px rgba(0,184,232,0.4);
+}
+.coed-highlight {
+    color: #00b8e8;
+    font-weight: 700;
+    animation: coed-text-glow 2.4s ease-in-out infinite;
+}
+@keyframes coed-text-glow {
+    0%, 100% { text-shadow: 0 0 4px rgba(0,184,232,0.3); }
+    50% { text-shadow: 0 0 10px rgba(0,184,232,0.7); }
 }
 
 /* ── Schedule ── */
 .wsl-schedule { background: #fdf5ed; padding: 56px 20px 60px; }
 .wsl-schedule-card { max-width: 720px; margin: 0 auto; background:#fff; border:1.5px solid rgba(0,0,0,0.1); border-radius:16px; padding:32px 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.07); }
-.wsl-schedule-row { display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid rgba(0,0,0,0.08); font-family:'Barlow Semi Condensed',sans-serif; }
+.wsl-schedule-row { display:grid; grid-template-columns:100px 1fr; gap:2px 20px; align-items:start; padding:14px 0; border-bottom:1px solid rgba(0,0,0,0.08); font-family:'Barlow Semi Condensed',sans-serif; }
 .wsl-schedule-row:last-child { border-bottom:none; }
-.wsl-schedule-row .wk { font-family:'Oswald',sans-serif; font-weight:700; color:#08070b; }
-.wsl-schedule-row .desc { color:#555; text-align:right; }
+.wsl-schedule-row .wk { font-family:'Oswald',sans-serif; font-weight:700; color:#08070b; padding-top:2px; }
+.wsl-schedule-row .desc { color:#555; text-align:left; line-height:1.45; }
+@media (max-width:480px) {
+    .wsl-schedule-row { grid-template-columns:1fr; gap:2px; }
+}
 .wsl-schedule-note { font-size:0.85rem; color:#888; text-align:center; margin-top:18px; font-style:italic; }
 
 /* ── Rules ── */
@@ -98,6 +115,8 @@
 .wsl-register { background:#fdf5ed; padding:70px 20px; text-align:center; }
 .wsl-register h2 { font-family:'Oswald',sans-serif; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#08070b; }
 .wsl-register p { font-family:'Barlow Semi Condensed',sans-serif; color:#555; max-width:480px; margin:10px auto 26px; }
+.wsl-register-urgency { font-family:'Oswald',sans-serif; text-transform:uppercase; font-size:1rem; letter-spacing:0.5px; color:#08070b; }
+.wsl-register-urgency strong { color:#00b8e8; }
 .wsl-register-options { max-width:520px; margin:0 auto; display:flex; flex-direction:column; gap:12px; }
 .wsl-register-btn {
     display:block; padding:16px; border-radius:50px; text-decoration:none;
@@ -119,29 +138,19 @@
 .wsl-faq-item p { font-family:'Barlow Semi Condensed',sans-serif; color:#555; margin-top:10px; margin-bottom:0; }
 </style>
 
-<!-- Concept -->
-<div class="wsl-concept">
-    <div class="wsl-concept-ball" aria-hidden="true">⚽</div>
-    <div class="wsl-concept-inner">
-        <p class="eyebrow" style="font-family:'Oswald',sans-serif; font-size:0.75rem; font-weight:700; letter-spacing:4px; text-transform:uppercase; color:#00b8e8; margin-bottom:14px;">What This Is</p>
-        <p>Every Wednesday night, Waldschänke's parking lot turns into a pitch. Real standings, real rivalries, same Bare Bones energy that's always been about showing up and playing — just with a season, a bracket, and a trophy on the line this time.</p>
-        <p class="tag">By soccer people, for soccer people.</p>
-    </div>
-</div>
-
 <!-- Format specs -->
 <div class="wsl-specs">
     <p class="wsl-specs-eyebrow">Format</p>
     <h2>The Basics</h2>
     <div class="wsl-spec-grid">
-        <div class="wsl-spec-card"><div class="num">4v4</div><div class="label">On the field</div></div>
+        <div class="wsl-spec-card"><div class="num">4v4</div><div class="label">On the court</div></div>
         <div class="wsl-spec-card"><div class="num">4&ndash;6</div><div class="label">Roster size</div></div>
         <div class="wsl-spec-card"><div class="num">8 Weeks</div><div class="label">Incl. playoffs</div></div>
         <div class="wsl-spec-card"><div class="num">18+</div><div class="label">Min. age</div></div>
     </div>
     <div class="wsl-spec-grid" style="margin-top:18px;">
-        <div class="wsl-spec-card"><div class="num">6&ndash;8</div><div class="label">Teams (min&ndash;max)</div></div>
-        <div class="wsl-spec-card coed"><div class="num">Coed &middot; 1</div><div class="label">Female player req'd per team</div></div>
+        <div class="wsl-spec-card"><div class="num">6</div><div class="label">Teams, fixed field</div></div>
+        <div class="wsl-spec-card coed"><div class="num">COED &middot; 1</div><div class="label">Female player req'd per team</div></div>
         <div class="wsl-spec-card"><div class="num">15 min</div><div class="label">Halves</div></div>
         <div class="wsl-spec-card"><div class="num">6:30&ndash;8:30</div><div class="label">PM Wednesdays</div></div>
     </div>
@@ -150,11 +159,10 @@
 <!-- Schedule -->
 <div class="wsl-schedule">
     <div class="wsl-schedule-card">
-        <p class="wsl-specs-eyebrow">Season Structure</p>
-        <h2 style="margin-bottom:20px;">How the Season Runs</h2>
-        <div class="wsl-schedule-row"><span class="wk">Weeks 1&ndash;7</span><span class="desc">Regular season &mdash; single round robin, one game per team per week</span></div>
-        <div class="wsl-schedule-row"><span class="wk">Week 8</span><span class="desc">Playoffs &mdash; every team makes the bracket, seeded by regular season record</span></div>
-        <p class="wsl-schedule-note">One field, one game at a time &mdash; exact weekly matchups and dates posted once the season fills.</p>
+        <p class="wsl-specs-eyebrow" style="font-size:1.3rem; font-weight:800; letter-spacing:2px; margin-bottom:22px;">Season Structure</p>
+        <div class="wsl-schedule-row"><span class="wk">Weeks 1&ndash;6</span><span class="desc">Regular season &mdash; single round robin, one game per team per week</span></div>
+        <div class="wsl-schedule-row"><span class="wk">Week 7</span><span class="desc">Playoffs Round 1 &mdash; all 6 teams play, seeded by regular season record</span></div>
+        <div class="wsl-schedule-row"><span class="wk">Week 8</span><span class="desc">Championship &mdash; the top remaining seed byes into the final; the other two Week 7 winners play first to earn their spot</span></div>
     </div>
 </div>
 
@@ -165,9 +173,10 @@
         <h2>Rules, Short Version</h2>
         <ul>
             <li>4v4, no goalkeepers, self-officiated with a league organizer on-site</li>
-            <li>Rosters lock at 4&ndash;6 players; every team needs at least 1 female player</li>
-            <li>18+ only, standings tracked all season, full bracket in Week 8</li>
-            <li>Full written ruleset available before the season kicks off</li>
+            <li>Rosters lock at 4&ndash;6 players; every team needs <span class="coed-highlight">at least 1 female player</span></li>
+            <li>18+ only, standings tracked all season, full playoff bracket across Weeks 7&ndash;8</li>
+            <li>No corners, no dirty play, no jerks</li>
+            <li>Bare Bones Code of Conduct enforced</li>
         </ul>
     </div>
 </div>
@@ -175,8 +184,7 @@
 <!-- Pricing -->
 <div class="wsl-pricing" id="reserve">
     <p class="wsl-specs-eyebrow" style="color:#00b8e8;">Pricing</p>
-    <h2 style="font-family:'Oswald',sans-serif; font-weight:700; text-transform:uppercase; text-align:center; color:#fdf5ed; margin-bottom:8px;">Two Ways to Pay</h2>
-    <p style="font-family:'Barlow Semi Condensed',sans-serif; text-align:center; color:rgba(253,245,237,0.7); max-width:480px; margin:0 auto 30px;">$45 per player either way &mdash; a full 8-week season, refs, standings, a full playoff bracket, $5 8oz pours, and patio games every week.</p>
+    <h2 style="font-family:'Oswald',sans-serif; font-weight:700; text-transform:uppercase; text-align:center; color:#fdf5ed; margin-bottom:30px;">Two Ways to Pay</h2>
     <div class="wsl-price-grid">
         <div class="wsl-price-card">
             <p class="wsl-price-card-label">Pay Your Own Way</p>
@@ -195,9 +203,8 @@
 
 <!-- Registration -->
 <div class="wsl-register">
-    <p class="wsl-specs-eyebrow">Reserve Your Spot</p>
     <h2>Register Your Squad</h2>
-    <p>Teams register together, 4&ndash;6 players including at least 1 female player. Spots are limited to 8 teams.</p>
+    <p class="wsl-register-urgency">Registration ends 9/7 &mdash; <strong>DO NOT WAIT TO SIGN UP!</strong></p>
     <div class="wsl-register-options">
         {% if user.is_authenticated %}
         <a href="{% url 'waldy_league_register' %}" class="wsl-register-btn primary">Register Your Team</a>
@@ -214,7 +221,7 @@
         <h2 style="font-family:'Oswald',sans-serif; text-transform:uppercase; color:#08070b; margin-bottom:20px;">Good Questions</h2>
         <details class="wsl-faq-item">
             <summary>I don't have a full team &mdash; can I still play?</summary>
-            <p>Registration is team-based, so you'll need a squad of 4&ndash;6 (including at least 1 female player) before you register.</p>
+            <p>Registration is team-based, so you'll need a squad of 4&ndash;6 (including <span class="coed-highlight">at least 1 female player</span>) before you register.</p>
         </details>
         <details class="wsl-faq-item">
             <summary>What if it rains?</summary>
@@ -226,7 +233,7 @@
         </details>
         <details class="wsl-faq-item">
             <summary>Do we need to bring anything?</summary>
-            <p>Cleats or turf shoes and a light/dark shirt for color scrimmages &mdash; we'll cover the rest.</p>
+            <p>Flats or indoor soccer shoes only (no cleats or turf shoes) &mdash; we'll cover the rest. Bare Bones pinnies provided.</p>
         </details>
     </div>
 </div>
