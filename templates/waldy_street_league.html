@@ -184,7 +184,7 @@
 <!-- Pricing -->
 <div class="wsl-pricing" id="reserve">
     <p class="wsl-specs-eyebrow" style="color:#00b8e8;">Pricing</p>
-    <h2 style="font-family:'Oswald',sans-serif; font-weight:700; text-transform:uppercase; text-align:center; color:#fdf5ed; margin-bottom:30px;">Two Ways to Pay</h2>
+    <h2 style="font-family:'Oswald',sans-serif; font-weight:700; text-transform:uppercase; text-align:center; color:#fdf5ed; margin-bottom:30px;">Two Ways to Register</h2>
     <div class="wsl-price-grid">
         <div class="wsl-price-card">
             <p class="wsl-price-card-label">Pay Your Own Way</p>
@@ -204,7 +204,7 @@
 <!-- Registration -->
 <div class="wsl-register">
     <h2>Register Your Squad</h2>
-    <p class="wsl-register-urgency">Registration ends 9/7 &mdash; <strong>DO NOT WAIT TO SIGN UP!</strong></p>
+    <p class="wsl-register-urgency">Registration ends 9/7 &mdash; <strong>DON'T WAIT TO SIGN UP!</strong></p>
     <div class="wsl-register-options">
         {% if user.is_authenticated %}
         <a href="{% url 'waldy_league_register' %}" class="wsl-register-btn primary">Register Your Team</a>
@@ -219,6 +219,10 @@
     <div class="wsl-faq-inner">
         <p class="wsl-specs-eyebrow">FAQ</p>
         <h2 style="font-family:'Oswald',sans-serif; text-transform:uppercase; color:#08070b; margin-bottom:20px;">Good Questions</h2>
+        <details class="wsl-faq-item">
+            <summary>What makes this different from a normal league?</summary>
+            <p>Well, for starters, we're playing street ball in a parking lot. But it's also a real gathering spot for footy people &mdash; drinks, food, and patio hangs while games happen all night. Come early, stay late if you want. Standings and playoffs are still 100% real either way.</p>
+        </details>
         <details class="wsl-faq-item">
             <summary>I don't have a full team &mdash; can I still play?</summary>
             <p>Registration is team-based, so you'll need a squad of 4&ndash;6 (including <span class="coed-highlight">at least 1 female player</span>) before you register.</p>
