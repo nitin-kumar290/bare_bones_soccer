@@ -7,6 +7,7 @@ import secrets
 import stripe
 from datetime import datetime, timedelta
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 from .forms import PersonForm, UserRegistrationForm, UserLoginForm, PlayerProfileForm, UnsubscribeForm, EventRSVPForm, SponsorInquiryForm, ReferralSourceForm, LeagueTeamCreateForm
 from .models import Person, Pickup, Event, EventImage, AttendancePayment, EmailUnsubscribe, EventRSVP, OneOffEvent, Partner, ReferralSource, LeagueTeam, LeagueTeamPlayer
 from django.core.mail import send_mail, EmailMessage
@@ -775,8 +776,8 @@ def create_league_checkout_session(request, team_id):
             "quantity": 1,
         }],
         mode="payment",
-        success_url=request.build_absolute_uri(f'/leagues/waldy-street-league/checkout/{team.id}/success/') + "?session_id={CHECKOUT_SESSION_ID}",
-        cancel_url=request.build_absolute_uri('/payment-cancel/'),
+        success_url=request.build_absolute_uri(reverse('league_checkout_success', args=[team.id])) + "?session_id={CHECKOUT_SESSION_ID}",
+        cancel_url=request.build_absolute_uri(reverse('payment_cancel')),
     )
     return JsonResponse({"id": session.id})
 
@@ -1039,8 +1040,8 @@ def create_league_join_checkout_session(request, invite_code):
         }],
         mode="payment",
         metadata={"first_name": first_name, "last_name": last_name},
-        success_url=request.build_absolute_uri(f'/leagues/waldy-street-league/join/{invite_code}/success/') + "?session_id={CHECKOUT_SESSION_ID}",
-        cancel_url=request.build_absolute_uri('/payment-cancel/'),
+        success_url=request.build_absolute_uri(reverse('league_join_success', args=[invite_code])) + "?session_id={CHECKOUT_SESSION_ID}",
+        cancel_url=request.build_absolute_uri(reverse('payment_cancel')),
     )
     return JsonResponse({"id": session.id})
 
