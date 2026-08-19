@@ -809,7 +809,7 @@ def league_checkout_success(request, team_id):
 
 
 def send_league_captain_confirmation_email(request, team):
-    invite_link = request.build_absolute_uri(f"/leagues/waldy-street-league/join/{team.invite_code}/")
+    invite_link = request.build_absolute_uri(reverse('waldy_league_join', args=[team.invite_code]))
 
     if team.payment_mode == 'team_prepay':
         subject = f"Team Payment Confirmed — {team.team_name} is Locked In for Waldy Street League"
@@ -896,6 +896,14 @@ def send_league_captain_confirmation_email(request, team):
                 <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
 
                 <tr>
+                    <td style="font-size:14px; padding:0 24px; line-height:22px; text-align:center; color:#555;">
+                    📅 See you <b>September 9th</b> &mdash; full league schedule will be posted soon.
+                    </td>
+                </tr>
+
+                <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
+
+                <tr>
                     <td style="font-size:16px; line-height:24px; text-align:center;">
                     See you on the pitch!
                     <br>
@@ -923,7 +931,7 @@ def send_league_captain_confirmation_email(request, team):
 
 
 def send_league_claim_email(request, teammate):
-    claim_link = request.build_absolute_uri(f"/leagues/waldy-street-league/claim/{teammate.claim_code}/")
+    claim_link = request.build_absolute_uri(reverse('waldy_league_claim', args=[teammate.claim_code]))
     team = teammate.team
     subject = f"Confirm Your Spot on {team.team_name} — Waldy Street League"
     html_message = f"""
@@ -965,6 +973,14 @@ def send_league_claim_email(request, teammate):
                 <tr>
                     <td style="font-size:13px; padding:0 24px; line-height:20px; text-align:center; color:#555;">
                     Log in if you already have an account, or create a free one &mdash; no additional payment needed, this just confirms it's you.
+                    </td>
+                </tr>
+
+                <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
+
+                <tr>
+                    <td style="font-size:14px; padding:0 24px; line-height:22px; text-align:center; color:#555;">
+                    📅 See you <b>September 9th</b> &mdash; full league schedule will be posted soon.
                     </td>
                 </tr>
 
@@ -1108,6 +1124,14 @@ def send_league_player_join_confirmation_email(request, team):
                 <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
 
                 <tr>
+                    <td style="font-size:14px; padding:0 24px; line-height:22px; text-align:center; color:#555;">
+                    📅 See you <b>September 9th</b> &mdash; full league schedule will be posted soon.
+                    </td>
+                </tr>
+
+                <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
+
+                <tr>
                     <td style="font-size:16px; line-height:24px; text-align:center;">
                     See you on the pitch!
                     <br>
@@ -1132,6 +1156,90 @@ def send_league_player_join_confirmation_email(request, team):
         email.send()
     except Exception:
         logger.exception("Failed to send league player join confirmation email")
+
+
+def send_league_week_reminder_email(player_row):
+    """
+    Sends the 1-week-until-kickoff reminder to a single confirmed, paid, account-linked
+    LeagueTeamPlayer. Only ever call this for rows that pass the strict audience filter
+    in the `send_league_reminders` management command (status='Paid' AND player is not
+    None) — this function itself does not re-check eligibility, so the caller is what
+    guarantees unconfirmed/unpaid people never receive it.
+    """
+    team = player_row.team
+    user = player_row.player
+    subject = "1 Week Until Kickoff — Waldy Street League"
+    html_message = f"""
+    <!DOCTYPE html>
+    <html>
+    <body>
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#ffffff; margin:0; padding:0;">
+    <tr>
+        <td align="center" style="padding:0;">
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="width:100%; max-width:600px; margin:0 auto;">
+            <tr>
+            <td align="center" style="padding:24px;">
+                <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width:600px; width:100%; font-family:Arial, Helvetica, sans-serif; color:#111;">
+
+                <tr>
+                    <td style="font-size:22px; line-height:30px; text-align:center; font-weight:bold; color:#290a44;">
+                    ⚽ 1 WEEK UNTIL KICKOFF
+                    </td>
+                </tr>
+
+                <tr><td style="height:8px; line-height:8px;">&nbsp;</td></tr>
+
+                <tr>
+                    <td style="font-size:16px; padding:0 24px; line-height:24px; text-align:center;">
+                    {player_row.first_name}, the Waldy Street League kicks off in one week &mdash; <b>Wednesday, September 9th</b> at Waldschänke's parking lot, 6:30&ndash;8:30 PM.
+                    </td>
+                </tr>
+
+                <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
+
+                <tr>
+                    <td style="font-size:16px; padding:24px; text-align:center; line-height:26px;">
+                    🧢 <b>Team:</b> {team.team_name}<br>
+                    👟 Flats or indoor soccer shoes only &mdash; no cleats or turf shoes<br>
+                    👕 Bring a light/dark shirt for color scrimmages &mdash; Bare Bones pinnies provided
+                    </td>
+                </tr>
+
+                <tr><td style="height:8px; line-height:8px;">&nbsp;</td></tr>
+
+                <tr>
+                    <td style="font-size:14px; padding:0 24px; line-height:22px; text-align:center; color:#555;">
+                    📅 Full league schedule will be posted soon.
+                    </td>
+                </tr>
+
+                <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
+
+                <tr>
+                    <td style="font-size:16px; line-height:24px; text-align:center;">
+                    See you on the pitch!
+                    <br>
+                    The Bare Bones Crew
+                    </td>
+                </tr>
+
+                </table>
+            </td>
+            </tr>
+        </table>
+        </td>
+    </tr>
+    </table>
+
+    </body>
+    </html>
+    """
+    email = EmailMessage(subject, html_message, settings.EMAIL_HOST_USER, [user.email])
+    email.content_subtype = "html"
+    try:
+        email.send()
+    except Exception:
+        logger.exception("Failed to send league week reminder email")
 
 
 @hide_on_prod
