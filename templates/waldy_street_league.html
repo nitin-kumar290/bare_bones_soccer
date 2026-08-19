@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 {% block title %}Waldy Street League at The Lot | Bare Bones Soccer{% endblock %}
-{% block meta_description %}4v4 street soccer league at Waldschänke Ciders' parking lot. Wednesday nights, 8-week season, all skill levels welcome. Denver metro's newest pickup-adjacent soccer league.{% endblock %}
+{% block meta_description %}4v4 street soccer league at Waldschänke Ciders' parking lot. Wednesday nights, 7-8 week season, all skill levels welcome. Denver metro's newest pickup-adjacent soccer league.{% endblock %}
 
 {% block hero_video %}
 <video class="hero-video" autoplay muted loop playsinline preload="metadata">
@@ -15,6 +15,13 @@
 <div class="wsl-hero-overlay text-center">
     <p class="wsl-hero-eyebrow">Coed &middot; 4v4 &middot; Wednesday Nights &middot; Waldschänke Parking Lot</p>
     <h1 class="wsl-hero-title">Waldy Street League<br>at The Lot</h1>
+    {% if not WALDY_LEAGUE_FULL %}
+        {% if user.is_authenticated %}
+        <a href="{% url 'waldy_league_register' %}" class="wsl-register-btn primary">Register Now</a>
+        {% else %}
+        <a href="{% url 'login' %}?next={% url 'waldy_league_register' %}" class="wsl-register-btn primary">Register Now</a>
+        {% endif %}
+    {% endif %}
 </div>
 {% endblock %}
 
@@ -145,7 +152,7 @@
     <div class="wsl-spec-grid">
         <div class="wsl-spec-card"><div class="num">4v4</div><div class="label">On the court</div></div>
         <div class="wsl-spec-card"><div class="num">4&ndash;6</div><div class="label">Roster size</div></div>
-        <div class="wsl-spec-card"><div class="num">8 Weeks</div><div class="label">Incl. playoffs</div></div>
+        <div class="wsl-spec-card"><div class="num">7-8 Weeks</div><div class="label">Incl. playoffs</div></div>
         <div class="wsl-spec-card"><div class="num">18+</div><div class="label">Min. age</div></div>
     </div>
     <div class="wsl-spec-grid" style="margin-top:18px;">
@@ -188,14 +195,14 @@
     <div class="wsl-price-grid">
         <div class="wsl-price-card">
             <p class="wsl-price-card-label">Pay Your Own Way</p>
-            <div class="amount">$45</div>
+            <div class="amount">$50</div>
             <div class="per">per player</div>
             <p class="wsl-price-card-desc">Create your team, pay for your own spot, then send teammates a private invite link to pay for theirs.</p>
         </div>
         <div class="wsl-price-card">
             <p class="wsl-price-card-label">Prepay Your Team</p>
-            <div class="amount">$45</div>
-            <div class="per">&times; roster size</div>
+            <div class="amount">$40</div>
+            <div class="per">per player &mdash; save $10/player</div>
             <p class="wsl-price-card-desc">Captain pays for the whole roster (4&ndash;6 players) upfront in one payment &mdash; no waiting on anyone else.</p>
         </div>
     </div>
@@ -208,7 +215,7 @@
     <p>All 6 team spots for this season are taken. Check back for the next season, or head to <a href="{% url 'leagues_hub' %}" style="color:#00b8e8;">Leagues</a> to see what else is running.</p>
     {% else %}
     <h2>Register Your Squad</h2>
-    <p class="wsl-register-urgency">Registration ends 9/7 &mdash; <strong>DON'T WAIT TO SIGN UP!</strong></p>
+    <p class="wsl-register-urgency">Registration ends 9/5 &mdash; <strong>DON'T WAIT TO SIGN UP!</strong></p>
     <div class="wsl-register-options">
         {% if user.is_authenticated %}
         <a href="{% url 'waldy_league_register' %}" class="wsl-register-btn primary">Sign Up Today!</a>
@@ -226,11 +233,20 @@
         <h2 style="font-family:'Oswald',sans-serif; text-transform:uppercase; color:#08070b; margin-bottom:20px;">Good Questions</h2>
         <details class="wsl-faq-item">
             <summary>What makes this different from a normal league?</summary>
-            <p>Well, for starters, we're playing street ball in a parking lot. But it's also a real gathering spot for footy people &mdash; drinks, food, and patio hangs while games happen all night. Come early, stay late if you want. Standings and playoffs are still 100% real either way.</p>
+            <p>Well, it's street soccer under the lights in a parking lot at a cidery. Music, food, $5 drink pours and patio hangs. Come for the footy, stay for the community.</p>
         </details>
         <details class="wsl-faq-item">
             <summary>I don't have a full team &mdash; can I still play?</summary>
-            <p>Registration is team-based, so you'll need a squad of 4&ndash;6 (including <span class="coed-highlight">at least 1 female player</span>) before you register.</p>
+            <p>There's no free-agent signup &mdash; registration is team-based, but you don't need everyone lined up first. Register solo as team captain, then send teammates your invite link to pay for their own spot, or prepay for the whole roster (4&ndash;6 players, including <span class="coed-highlight">at least 1 female player</span>) yourself.</p>
+        </details>
+        <details class="wsl-faq-item">
+            <summary>What level of competition is this?</summary>
+            <p>Open competition &mdash; but it's street soccer, so expect some moves to get busted out. Come ready to play for real, just don't be surprised by a nutmeg or two.</p>
+        </details>
+        <details class="wsl-faq-item">
+            <summary>I don't have a full team ready. How can I find players?</summary>
+            <p>Join the Bare Bones WhatsApp community &mdash; it's the easiest way to link up with other players looking for a team, and it's where you'll find the freshly built Waldy Street League chat too.</p>
+            <p><a href="https://chat.whatsapp.com/IzHQHb1UODABuoABqXotvm" target="_blank" rel="noopener" style="color:#00b8e8;">Join the Bare Bones WhatsApp &rarr;</a><br><a href="https://chat.whatsapp.com/FCjKdfDz5EpFPekXnWdVNR?s=sh&p=i&mlu=0&ilr=0&amv=1" target="_blank" rel="noopener" style="color:#00b8e8;">Join the Waldy Street League chat &rarr;</a></p>
         </details>
         <details class="wsl-faq-item">
             <summary>What if it rains?</summary>

@@ -715,7 +715,7 @@ def waldy_league_register(request):
             team.captain = request.user
             team.league_name = 'Waldy Street League'
             if payment_mode == 'team_prepay' and roster_size:
-                team.prepaid_amount = int(roster_size) * 45
+                team.prepaid_amount = int(roster_size) * 40
             team.save()
 
             LeagueTeamPlayer.objects.get_or_create(
@@ -725,13 +725,14 @@ def waldy_league_register(request):
                     'first_name': form.cleaned_data['captain_first_name'],
                     'last_name': form.cleaned_data['captain_last_name'],
                     'email': request.user.email,
+                    'amount': 40 if payment_mode == 'team_prepay' else 50,
                 }
             )
 
             for fn, ln, em in teammates:
                 LeagueTeamPlayer.objects.create(
                     team=team, first_name=fn, last_name=ln, email=em,
-                    claim_code=secrets.token_hex(4).upper(),
+                    claim_code=secrets.token_hex(4).upper(), amount=40,
                 )
 
             return redirect('waldy_league_checkout', team_id=team.id)
@@ -749,7 +750,7 @@ def waldy_league_checkout(request, team_id):
         amount = team.prepaid_amount
         already_paid = team.prepaid_status == 'Paid'
     else:
-        amount = 45
+        amount = 50
         already_paid = LeagueTeamPlayer.objects.filter(team=team, player=request.user, status='Paid').exists()
     return render(request, 'waldy_league_checkout.html', {'team': team, 'amount': amount, 'already_paid': already_paid})
 
@@ -766,7 +767,7 @@ def create_league_checkout_session(request, team_id):
         amount_cents = int(team.prepaid_amount * 100)
         name = f"{team.team_name} — Team Prepay ({team.prepaid_roster_size} players)"
     else:
-        amount_cents = 4500
+        amount_cents = 5000
         name = f"{team.team_name} — Individual Spot"
 
     session = stripe.checkout.Session.create(
@@ -849,7 +850,7 @@ def send_league_captain_confirmation_email(request, team):
         body_details = f"""
             <tr>
                 <td style="font-size:16px; padding:24px 24px 8px; text-align:center; line-height:26px;">
-                💰 <b>$45 paid</b> — your spot is locked in<br>
+                💰 <b>$50 paid</b> — your spot is locked in<br>
                 🧢 <b>Team:</b> {team.team_name}
                 </td>
             </tr>
@@ -860,8 +861,11 @@ def send_league_captain_confirmation_email(request, team):
                     <tr>
                         <td style="padding:16px 20px; text-align:center; font-size:14px; line-height:22px;">
                         <b>Share this with your teammates:</b><br>
-                        You need 4&ndash;6 players total (including at least 1 female player). Send them the link below &mdash; each person pays their own $45 spot.<br><br>
-                        <a href="{invite_link}" style="color:#08070b; background:#00b8e8; padding:10px 20px; border-radius:50px; text-decoration:none; font-weight:bold; display:inline-block;">{invite_link}</a>
+                        You need 4&ndash;6 players total (including at least 1 female player). Send them the link below &mdash; each person pays their own $50 spot.<br><br>
+                        <a href="{invite_link}" style="color:#fdf5ed; background:#00b8e8; padding:10px 20px; border-radius:50px; text-decoration:none; font-weight:bold; display:inline-block;">Open Invite Link</a>
+                        <br><br>
+                        <span style="font-size:12px; color:#555;">Or copy &amp; paste this link to send it yourself:</span><br>
+                        <span style="font-family:monospace; font-size:13px; color:#08070b; background:#fff; border:1px solid #ddd; border-radius:6px; padding:8px 12px; display:inline-block; margin-top:4px; word-break:break-all;">{invite_link}</span>
                         </td>
                     </tr>
                 </table>
@@ -960,7 +964,7 @@ def send_league_claim_email(request, teammate):
 
                 <tr>
                     <td style="font-size:16px; padding:0 24px; line-height:24px; text-align:center;">
-                    {teammate.first_name}, your captain already paid your $45 for <b>{team.team_name}</b> in the Waldy Street League. One last step &mdash; confirm your spot with a Bare Bones account so we can verify you on game day.
+                    {teammate.first_name}, your captain already paid your $40 for <b>{team.team_name}</b> in the Waldy Street League. One last step &mdash; confirm your spot with a Bare Bones account so we can verify you on game day.
                     </td>
                 </tr>
 
@@ -1054,7 +1058,7 @@ def create_league_join_checkout_session(request, invite_code):
             "price_data": {
                 "currency": "usd",
                 "product_data": {"name": f"Join {team.team_name} — Waldy Street League"},
-                "unit_amount": 4500,
+                "unit_amount": 5000,
             },
             "quantity": 1,
         }],
@@ -1078,7 +1082,7 @@ def league_join_success(request, invite_code):
             LeagueTeamPlayer.objects.update_or_create(
                 team=team, player=request.user,
                 defaults={
-                    'status': 'Paid', 'payment_id': session_id, 'amount': 45,
+                    'status': 'Paid', 'payment_id': session_id, 'amount': 50,
                     'first_name': session.metadata.get('first_name', ''),
                     'last_name': session.metadata.get('last_name', ''),
                     'email': request.user.email,
@@ -1119,7 +1123,7 @@ def send_league_player_join_confirmation_email(request, team):
 
                 <tr>
                     <td style="font-size:16px; padding:24px; text-align:center; line-height:26px;">
-                    💰 <b>$45 paid</b> — your spot is locked in<br>
+                    💰 <b>$50 paid</b> — your spot is locked in<br>
                     🧢 <b>Team:</b> {team.team_name}<br>
                     👥 <b>Roster:</b> {roster_count}/6 paid
                     </td>

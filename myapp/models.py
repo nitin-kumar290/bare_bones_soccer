@@ -179,8 +179,8 @@ class ReferralSource(models.Model):
 
 class LeagueTeam(models.Model):
     PAYMENT_MODE_CHOICES = [
-        ('individual', 'Individual Pay-In — teammates join via invite link and pay their own $45'),
-        ('team_prepay', 'Team Prepay — captain pays for the whole roster upfront'),
+        ('individual', 'Individual Pay-In — teammates join via invite link and pay their own $50'),
+        ('team_prepay', 'Team Prepay — captain pays for the whole roster upfront, $40/player'),
     ]
     league_name = models.CharField(max_length=100, default='Waldy Street League')
     team_name = models.CharField(max_length=100)
@@ -216,7 +216,7 @@ class LeagueTeamPlayer(models.Model):
     email = models.EmailField(blank=True)
     is_captain = models.BooleanField(default=False)
     payment_id = models.CharField(max_length=200, blank=True, null=True)
-    amount = models.DecimalField(max_digits=8, decimal_places=2, default=45)
+    amount = models.DecimalField(max_digits=8, decimal_places=2, default=50)
     status = models.CharField(max_length=20, choices=[('Pending', 'Pending'), ('Paid', 'Paid')], default='Pending')
     # Only used for team_prepay slots waiting on the named player to log in / create an account.
     claim_code = models.CharField(max_length=12, unique=True, blank=True, null=True)

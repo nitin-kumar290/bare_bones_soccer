@@ -19,8 +19,8 @@
                 {% endif %}
             {% else %}
                 {% if team.payment_mode == 'team_prepay' %}
-                    <p style="font-family:'Barlow Semi Condensed',sans-serif; color:rgba(253,245,237,0.75);">Prepaying for {{ team.prepaid_roster_size }} players &mdash; same $45/player rate as paying individually, just charged as one team total.</p>
-                    <div style="font-family:'Barlow Semi Condensed',sans-serif; font-size:1.05rem; color:rgba(253,245,237,0.6); margin-top:10px;">$45 &times; {{ team.prepaid_roster_size }} players</div>
+                    <p style="font-family:'Barlow Semi Condensed',sans-serif; color:rgba(253,245,237,0.75);">Prepaying for {{ team.prepaid_roster_size }} players &mdash; $40/player, $10 off the $50 individual rate, charged as one team total.</p>
+                    <div style="font-family:'Barlow Semi Condensed',sans-serif; font-size:1.05rem; color:rgba(253,245,237,0.6); margin-top:10px;">$40 &times; {{ team.prepaid_roster_size }} players</div>
                 {% else %}
                     <p style="font-family:'Barlow Semi Condensed',sans-serif; color:rgba(253,245,237,0.75);">This is your own spot on the roster. You'll get an invite link to share with teammates after payment.</p>
                 {% endif %}

@@ -31,7 +31,7 @@
             </p>
         </div>
         {% else %}
-        <p class="wlr-subtitle">$45 per player. Pay for your own spot and invite teammates to pay for theirs, or prepay the whole roster yourself.</p>
+        <p class="wlr-subtitle">$50/player on your own, or $40/player when you prepay your whole team &mdash; pay for your own spot and invite teammates to pay for theirs, or prepay the whole roster yourself.</p>
 
         <div class="wlr-card">
             <form method="POST" id="teamCreateForm">
@@ -67,7 +67,7 @@
                 <div id="prepayFields" style="display:none; margin-top:14px;">
                     <p class="wlr-field-label">{{ form.prepaid_roster_size.label }}</p>
                     {{ form.prepaid_roster_size }}
-                    <p id="prepayTotal" style="display:none; font-family:'Barlow Semi Condensed',sans-serif; color:rgba(253,245,237,0.75); margin-top:8px;">$45 &times; <span id="prepayTotalCount"></span> players = <b id="prepayTotalAmount" style="color:#00b8e8;"></b></p>
+                    <p id="prepayTotal" style="display:none; font-family:'Barlow Semi Condensed',sans-serif; color:rgba(253,245,237,0.75); margin-top:8px;">$40 &times; <span id="prepayTotalCount"></span> players = <b id="prepayTotalAmount" style="color:#00b8e8;"></b></p>
                     <p class="wlr-field-label" style="margin-top:14px;">Teammates <span style="text-transform:none; letter-spacing:normal; font-weight:400;">(each gets an email to confirm their spot with their own account)</span></p>
                     <div id="teammateRows">
                         {% for i in "12345" %}
@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (rosterSize && rosterSize.value) {
             var size = parseInt(rosterSize.value, 10);
             prepayTotalCount.textContent = size;
-            prepayTotalAmount.textContent = '$' + (size * 45);
+            prepayTotalAmount.textContent = '$' + (size * 40);
             prepayTotal.style.display = 'block';
         } else {
             prepayTotal.style.display = 'none';
