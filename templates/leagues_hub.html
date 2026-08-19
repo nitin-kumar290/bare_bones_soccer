@@ -82,6 +82,9 @@
     transform: translateY(-2px);
     box-shadow: 0 6px 18px rgba(0,184,232,0.45);
 }
+.league-card-full { cursor:default; opacity:0.85; }
+.league-card-full:hover { box-shadow: 0 8px 32px rgba(0,184,232,0.2), 0 0 0 1px rgba(41,10,68,0.2); }
+.league-card-badge-full { background: linear-gradient(135deg, #555 0%, #290a44 100%); animation:none; }
 </style>
 
 <div class="leagues-hero-break"></div>
@@ -96,6 +99,27 @@
 <div class="leagues-grid-bg">
     <div class="leagues-grid">
 
+        {% if WALDY_LEAGUE_FULL %}
+        <div class="league-card-featured league-card-full">
+            <div class="league-card-media">
+                <span class="league-card-badge league-card-badge-full">League Full</span>
+                <video autoplay muted loop playsinline preload="metadata">
+                    <source src="https://bare-bones-soccer.s3.amazonaws.com/images/Waldyjo.mp4" type="video/mp4">
+                </video>
+            </div>
+            <div class="league-card-body">
+                <h2>Waldy Street League at The Lot</h2>
+                <p>4v4 street soccer in a cidery parking lot. 8-week season, full playoff bracket, food & drinks, patio hangouts every week.</p>
+                <div class="league-card-meta">
+                    <span class="coed"><i class="fas fa-venus-mars"></i> Coed</span>
+                    <span><i class="fas fa-map-marker-alt"></i> Waldschänke &middot; The Lot</span>
+                    <span><i class="fas fa-calendar"></i> Wednesdays</span>
+                    <span><i class="fas fa-clock"></i> 6:30&ndash;8:30 PM</span>
+                </div>
+                <p style="font-family:'Oswald',sans-serif; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:rgba(253,245,237,0.55); font-size:0.85rem; margin:0;">All 6 team spots are filled for this season</p>
+            </div>
+        </div>
+        {% else %}
         <a href="{% url 'waldy_street_league' %}" class="league-card-featured">
             <div class="league-card-media">
                 <span class="league-card-badge">New &middot; Now Registering</span>
@@ -115,6 +139,7 @@
                 <span class="league-card-cta">View League Details!</span>
             </div>
         </a>
+        {% endif %}
 
     </div>
 </div>

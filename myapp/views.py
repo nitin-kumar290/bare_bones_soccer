@@ -687,6 +687,10 @@ def waldy_street_league(request):
 @hide_on_prod
 @login_required
 def waldy_league_register(request):
+    from .context_processors import WALDY_LEAGUE_TEAM_CAP
+    if LeagueTeam.objects.filter(league_name='Waldy Street League').count() >= WALDY_LEAGUE_TEAM_CAP:
+        return render(request, 'waldy_league_register.html', {'league_full': True})
+
     if request.method == 'POST':
         form = LeagueTeamCreateForm(request.POST)
         if form.is_valid():
@@ -763,7 +767,7 @@ def create_league_checkout_session(request, team_id):
         name = f"{team.team_name} — Team Prepay ({team.prepaid_roster_size} players)"
     else:
         amount_cents = 4500
-        name = f"{team.team_name} — Captain's Individual Spot"
+        name = f"{team.team_name} — Individual Spot"
 
     session = stripe.checkout.Session.create(
         payment_method_types=["card"],
@@ -1033,7 +1037,7 @@ def create_league_join_checkout_session(request, invite_code):
         return JsonResponse({'error': 'Only POST allowed'}, status=405)
     team = get_object_or_404(LeagueTeam, invite_code=invite_code)
     if team.players.filter(status='Paid').count() >= 6:
-        return JsonResponse({'error': 'Team is full'}, status=400)
+        return JsonResponse({'error': "This team's roster is already full — no more spots available."}, status=400)
 
     try:
         body = json.loads(request.body or '{}')

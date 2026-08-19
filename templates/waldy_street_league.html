@@ -203,15 +203,20 @@
 
 <!-- Registration -->
 <div class="wsl-register">
+    {% if WALDY_LEAGUE_FULL %}
+    <h2>League Full</h2>
+    <p>All 6 team spots for this season are taken. Check back for the next season, or head to <a href="{% url 'leagues_hub' %}" style="color:#00b8e8;">Leagues</a> to see what else is running.</p>
+    {% else %}
     <h2>Register Your Squad</h2>
     <p class="wsl-register-urgency">Registration ends 9/7 &mdash; <strong>DON'T WAIT TO SIGN UP!</strong></p>
     <div class="wsl-register-options">
         {% if user.is_authenticated %}
-        <a href="{% url 'waldy_league_register' %}" class="wsl-register-btn primary">Register Your Team</a>
+        <a href="{% url 'waldy_league_register' %}" class="wsl-register-btn primary">Sign Up Today!</a>
         {% else %}
         <a href="{% url 'login' %}?next={% url 'waldy_league_register' %}" class="wsl-register-btn primary">Sign In to Register</a>
         {% endif %}
     </div>
+    {% endif %}
 </div>
 
 <!-- FAQ -->

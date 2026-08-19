@@ -61,7 +61,7 @@ if (joinBtn) {
             await stripe.redirectToCheckout({ sessionId: session.id });
         } catch (err) {
             console.error(err);
-            alert("Error starting checkout. Please try again.");
+            alert(err.message || "Error starting checkout. Please try again.");
             joinBtn.disabled = false;
             joinBtn.textContent = 'Pay & Join Team';
         }

@@ -12,3 +12,14 @@ def stage_info(request):
         'STAGE': settings.STAGE,
         'IS_PROD': settings.IS_PROD,
     }
+
+
+WALDY_LEAGUE_TEAM_CAP = 6
+
+
+def league_status(request):
+    from .models import LeagueTeam
+    team_count = LeagueTeam.objects.filter(league_name='Waldy Street League').count()
+    return {
+        'WALDY_LEAGUE_FULL': team_count >= WALDY_LEAGUE_TEAM_CAP,
+    }

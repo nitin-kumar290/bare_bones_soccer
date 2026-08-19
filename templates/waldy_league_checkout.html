@@ -45,11 +45,11 @@ if (payBtn) {
                 headers: { "Content-Type": "application/json", "X-CSRFToken": "{{ csrf_token }}" }
             });
             const session = await res.json();
-            if (!session.id) throw new Error("No session ID returned.");
+            if (!session.id) throw new Error(session.error || "No session ID returned.");
             await stripe.redirectToCheckout({ sessionId: session.id });
         } catch (err) {
             console.error(err);
-            alert("Error starting checkout. Please try again.");
+            alert(err.message || "Error starting checkout. Please try again.");
             payBtn.disabled = false;
             payBtn.textContent = 'Pay & Confirm';
         }

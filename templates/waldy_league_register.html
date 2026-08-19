@@ -18,8 +18,19 @@
         {% endif %}
 
         <p class="wlr-eyebrow">Waldy Street League</p>
-        <h1 class="wlr-title">Create Your Team</h1>
+        <h1 class="wlr-title">{% if league_full %}League Full{% else %}Create Your Team{% endif %}</h1>
         <div class="wlr-rule"></div>
+
+        {% if league_full %}
+        <p class="wlr-subtitle">All 6 team spots for this season are taken.</p>
+        <div class="wlr-card" style="text-align:center;">
+            <p style="font-family:'Barlow Semi Condensed',sans-serif; color:rgba(253,245,237,0.85); margin:0;">
+                Registration is closed for this season &mdash; every team spot is filled.
+                Check back for the next Waldy Street League season, or head to
+                <a href="{% url 'leagues_hub' %}" style="color:#00b8e8;">Leagues</a> to see what else is running.
+            </p>
+        </div>
+        {% else %}
         <p class="wlr-subtitle">$45 per player. Pay for your own spot and invite teammates to pay for theirs, or prepay the whole roster yourself.</p>
 
         <div class="wlr-card">
@@ -73,13 +84,15 @@
                 <p class="wlr-fine-print">No refunds once the season starts, unless the league disbands.</p>
             </form>
         </div>
+        {% endif %}
     </div>
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    var radios = document.querySelectorAll('input[name="payment_mode"]');
     var prepayFields = document.getElementById('prepayFields');
+    if (!prepayFields) return;
+    var radios = document.querySelectorAll('input[name="payment_mode"]');
     var rosterSize = document.getElementById('id_prepaid_roster_size');
     var teammateRows = document.querySelectorAll('.wlr-teammate-row');
     var prepayTotal = document.getElementById('prepayTotal');
