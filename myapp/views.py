@@ -193,7 +193,11 @@ def pickup_temp(request):
 #     return render(request, 'register.html', {'form': form})
 
 def register(request):
-    next_url = request.POST.get('next') or request.GET.get('next', '')
+    # Only ever carry `next` through account creation for the league claim-confirmation
+    # flow specifically — not for team registration or any other page, so a curious click
+    # into the league doesn't accidentally dump a brand-new user onto "Create Your Team".
+    raw_next = request.POST.get('next') or request.GET.get('next', '')
+    next_url = raw_next if '/leagues/waldy-street-league/claim/' in raw_next else ''
     if request.method == 'POST':
         user_form = UserRegistrationForm(request.POST)
         profile_form = PlayerProfileForm(request.POST)
@@ -363,8 +367,10 @@ def activate(request, uidb64, token):
             logger.exception("Failed to send welcome email")
 
         login(request, user)
-        next_url = request.GET.get('next')
-        return redirect(next_url) if next_url else redirect('welcome_next_steps')
+        next_url = request.GET.get('next', '')
+        if '/leagues/waldy-street-league/claim/' in next_url:
+            return redirect(next_url)
+        return redirect('welcome_next_steps')
     else:
         return render(request, 'activation_invalid.html')
 
