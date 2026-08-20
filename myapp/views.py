@@ -986,7 +986,7 @@ def send_league_claim_email(request, teammate):
 
                 <tr>
                     <td style="font-size:13px; padding:0 24px; line-height:20px; text-align:center; color:#555;">
-                    Log in if you already have an account, or create a free one &mdash; no additional payment needed, this just confirms it's you.
+                    Log in or create a free account. New account? Activate it via email first, then click this link again &mdash; logging in alone won't confirm your spot.
                     </td>
                 </tr>
 

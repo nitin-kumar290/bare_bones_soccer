@@ -4,7 +4,7 @@
 {% block hero_background %}{% static 'images/banner_small.png' %}{% endblock %}
 {% block announcement_bar %}{% endblock %}
 {% block navbar_style %}
-.hero-section { height: 51vh !important; overflow: hidden !important; }
+.hero-section { height: 51vh !important; background-position: center 60% !important; overflow: hidden !important; }
 {% endblock %}
 
 {% block content %}
@@ -16,7 +16,7 @@
 
         <div class="wlr-card">
             {% if team.payment_mode == 'team_prepay' %}
-                <p style="font-family:'Barlow Semi Condensed',sans-serif; color:#fdf5ed;">Your full roster of {{ team.prepaid_roster_size }} is paid and locked in. See you Wednesday nights at The Lot.</p>
+                <p style="font-family:'Barlow Semi Condensed',sans-serif; color:#fdf5ed;">You're in! See you Wednesday, Sept 9 for your first game. Schedule will drop once teams are filled.</p>
             {% else %}
                 <p style="font-family:'Barlow Semi Condensed',sans-serif; color:#fdf5ed; margin-bottom:16px;">Your spot is confirmed. Share this link with your teammates so they can join and pay for their own spot:</p>
                 <div class="wlr-invite-box">{{ request.scheme }}://{{ request.get_host }}{% url 'waldy_league_join' team.invite_code %}</div>
