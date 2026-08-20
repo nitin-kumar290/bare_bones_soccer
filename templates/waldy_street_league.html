@@ -15,6 +15,7 @@
 <div class="wsl-hero-overlay text-center">
     <p class="wsl-hero-eyebrow">Coed &middot; 4v4 &middot; Wednesday Nights &middot; Waldschänke Parking Lot</p>
     <h1 class="wsl-hero-title">Waldy Street League<br>at The Lot</h1>
+    <p class="wsl-hero-eyebrow" style="margin-top:-16px;">4v4 &middot; Wednesday Nights &middot; Starts 9/9</p>
     {% if not WALDY_LEAGUE_FULL %}
         {% if user.is_authenticated %}
         <a href="{% url 'waldy_league_register' %}" class="wsl-register-btn primary">Register Now</a>
@@ -66,16 +67,26 @@
 .wsl-spec-card .num { font-family:'Oswald',sans-serif; font-weight:700; font-size:1.8rem; color:#290a44; }
 .wsl-spec-card .label { font-family:'Barlow Semi Condensed',sans-serif; font-size:0.82rem; color:#555; text-transform:uppercase; letter-spacing:0.5px; margin-top:4px; }
 
-@keyframes coed-glow-pulse {
+.wsl-spec-card.coed {
+    border: 1.5px solid #290a44;
+}
+.wsl-spec-card.coed .num { color: #290a44; }
+.wsl-spec-card.coed:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 28px rgba(41,10,68,0.25);
+}
+@keyframes starts-glow-pulse {
     0%, 100% { box-shadow: 0 4px 16px rgba(0,184,232,0.22), 0 0 0 0 rgba(0,184,232,0.4); }
     50% { box-shadow: 0 4px 20px rgba(0,184,232,0.4), 0 0 0 6px rgba(0,184,232,0); }
 }
-.wsl-spec-card.coed {
+.wsl-spec-card.starts-date {
+    background: linear-gradient(135deg, #00b8e8 0%, #290a44 100%);
     border: 1.5px solid #00b8e8;
-    animation: coed-glow-pulse 2.4s ease-in-out infinite;
+    animation: starts-glow-pulse 2.4s ease-in-out infinite;
 }
-.wsl-spec-card.coed .num { color: #00b8e8; }
-.wsl-spec-card.coed:hover {
+.wsl-spec-card.starts-date .num { color: #fdf5ed; }
+.wsl-spec-card.starts-date .label { color: rgba(253,245,237,0.85); }
+.wsl-spec-card.starts-date:hover {
     transform: translateY(-4px);
     border-color: #290a44;
     animation: none;
@@ -154,6 +165,7 @@
         <div class="wsl-spec-card"><div class="num">4&ndash;6</div><div class="label">Roster size</div></div>
         <div class="wsl-spec-card"><div class="num">7-8 Weeks</div><div class="label">Incl. playoffs</div></div>
         <div class="wsl-spec-card"><div class="num">18+</div><div class="label">Min. age</div></div>
+        <div class="wsl-spec-card starts-date"><div class="num">9/9</div><div class="label">Starts Sept 9</div></div>
     </div>
     <div class="wsl-spec-grid" style="margin-top:18px;">
         <div class="wsl-spec-card"><div class="num">6</div><div class="label">Teams, fixed field</div></div>
@@ -182,6 +194,7 @@
             <li>4v4, no goalkeepers, no corners, no jerks!</li>
             <li>Rosters lock at 4&ndash;6 players; every team needs <span class="coed-highlight">at least 1 female player</span></li>
             <li>18+, COED, all welcome</li>
+            <li>No free agents (unless needed later TBD)</li>
             <li>Bare Bones Code of Conduct enforced</li>
         </ul>
     </div>
