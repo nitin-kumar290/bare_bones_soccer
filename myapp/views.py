@@ -248,20 +248,23 @@ def activate(request, uidb64, token):
         user.is_active = True
         user.save()
 
-        # 2) Publish EventBridge event
-        detail = {
-            'userId': str(user.id),
-            'email': user.email,
-            'registeredAt': user.date_joined.isoformat()
-        }
-        EVENTBRIDGE.put_events(
-            Entries=[{
-                'Source': 'barebones.app',
-                'DetailType': 'UserRegistered',
-                'Detail': json.dumps(detail),
-                'EventBusName': 'default'
-            }]
-        )
+        # 2) Publish EventBridge event (best-effort — must never block real account activation)
+        try:
+            detail = {
+                'userId': str(user.id),
+                'email': user.email,
+                'registeredAt': user.date_joined.isoformat()
+            }
+            EVENTBRIDGE.put_events(
+                Entries=[{
+                    'Source': 'barebones.app',
+                    'DetailType': 'UserRegistered',
+                    'Detail': json.dumps(detail),
+                    'EventBusName': 'default'
+                }]
+            )
+        except Exception:
+            logger.exception("Failed to publish UserRegistered EventBridge event")
 
         # Send them a welcome email
         subject = "Welcome to Bare Bones Soccer!"
@@ -352,11 +355,12 @@ def activate(request, uidb64, token):
                 </html>
                 """
 
-        recipient_list = [user.email]  # user_form.email also works
-        # send_email_ses(user.email, subject, message)
-        email = EmailMessage(subject, message, to=[user.email])
-        email.content_subtype = "html"
-        email.send()
+        try:
+            email = EmailMessage(subject, message, to=[user.email])
+            email.content_subtype = "html"
+            email.send()
+        except Exception:
+            logger.exception("Failed to send welcome email")
 
         login(request, user)
         next_url = request.GET.get('next')
