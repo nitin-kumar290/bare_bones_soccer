@@ -4,6 +4,28 @@ A running log of site changes made through Claude Code, most recent first.
 
 ---
 
+## 2026-08-20
+
+### Critical fix: account activation was crashing with a 500 error on prod
+A real user (friend of Ian's) tried creating a new account, clicked the activation link in her email, and landed on a blank server error page. Confirmed via prod Lambda logs this was **not caused by any of the 2026-08-19 league work** — it's a separate, pre-existing bug that just happened to get triggered for the first time today.
+
+- **Root cause**: `activate()` in `myapp/views.py` publishes a `UserRegistered` event to AWS EventBridge right after activating an account. The prod Lambda's IAM execution role (`bare-bones-socc-prod-ZappaLambdaExecutionRole`) was never granted `events:PutEvents` permission — almost certainly missed when the dev/prod Zappa split created a brand-new prod IAM role back on 2026-08-12/13. This was likely the first real new-account activation to run on the actual prod Lambda since that split, which is why it surfaced only now.
+- **The account activation itself had already succeeded** before the crash — `user.is_active = True` and `user.save()` run *before* the EventBridge call, so the affected user's account was actually active in the database the whole time; she just saw a scary error page after that already-successful step. She can log in directly with her real credentials, no need to re-register.
+- **Fix**: wrapped the EventBridge publish in `try/except` (logs the failure instead of crashing the request) — this is a best-effort analytics event and must never be allowed to block real account activation. Found and fixed the identical unprotected risk sitting right next to it: the welcome-email send (`email.send()`) had the same exposure to any transient Gmail/SMTP hiccup, wrapped the same way.
+- Verified end-to-end locally before shipping: simulated a full activation, confirmed `is_active` flips to `True` and the redirect completes with no crash.
+- Deployed directly to prod given the severity (broken for every new signup, not just a cosmetic issue).
+- **Not fixed as part of this**: the actual IAM permissions gap on the prod role (`events:PutEvents` still isn't granted) — the try/except means it can no longer crash anything, but the `UserRegistered` EventBridge event itself will keep silently failing to publish on prod until that IAM policy is actually added. Worth doing as a follow-up if that event is used for anything downstream.
+
+### Waldy Street League detail page — copy cleanup
+- Removed the "Coed · 4v4 · Wednesday Nights · Waldschänke Parking Lot" eyebrow line above the hero title (the "4v4 · Wednesday Nights · Starts 9/9" line below the title stays).
+- "Format" section label (above "The Basics") made bolder and larger for better hierarchy.
+- Added a "Starts 9/9" spec card, styled as a solid purple-to-blue gradient fill with a persistent glow, positioned as its own centered row between the two spec-card grids rather than trailing awkwardly at the end of one.
+- Coed spec card recolored from its previous cyan glow treatment to a plain purple accent (the glow effect moved to the new "Starts 9/9" card instead).
+- Added "No free agents (unless needed later TBD)" to the Rules, Short Version list.
+- Added "*Starts September 9th*" as a small italic line under "Create Your Team" on the registration page.
+
+---
+
 ## 2026-08-19
 
 **Waldy Street League is now live on prod (`barebonessoccer.com`).** Everything below was built, tested on dev, and shipped in this stretch of work — closing out the `@hide_on_prod` gate from 2026-08-12/08-13 and taking the league from "hidden dev feature" to publicly launched.
