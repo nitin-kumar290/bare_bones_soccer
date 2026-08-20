@@ -158,6 +158,7 @@ staticfiles/
 # Large deployment files
 *.tar.gz
 aws/function.zip
+handler_*.zip
 
 # Editor history (already partially ignored)
 .history/

@@ -4,6 +4,72 @@ A running log of site changes made through Claude Code, most recent first.
 
 ---
 
+## 2026-08-19
+
+**Waldy Street League is now live on prod (`barebonessoccer.com`).** Everything below was built, tested on dev, and shipped in this stretch of work — closing out the `@hide_on_prod` gate from 2026-08-12/08-13 and taking the league from "hidden dev feature" to publicly launched.
+
+### Launch: league unhidden from prod
+- Removed `@hide_on_prod` from all 10 league views (`leagues_hub`, `waldy_street_league`, register/checkout/join/claim flows and their success pages).
+- Removed the `{% if not IS_PROD %}` guards on the "Leagues" nav link and the sitewide announcement banner in `base.html` — both now show on the real live site, not just dev.
+- Verified with `STAGE=prod` simulated locally before shipping: `/leagues/`, `/leagues/waldy-street-league/`, the nav link, and the banner all render correctly under prod conditions.
+- The generic "TEST ENVIRONMENT" warning banner (unrelated to league, applies sitewide on any non-prod stage) was left untouched.
+
+### Critical bug, found and fixed twice: `/dev` stage prefix silently dropped
+Zappa serves the dev stage at a URL with `/dev/` baked into the path (e.g. `.../dev/leagues/...`). Any URL built with `request.build_absolute_uri('/some/hardcoded/path/')` — a path starting with `/` — gets treated by Django as absolute from the server root, silently discarding that `/dev` prefix. The result: a link that goes to the bare API Gateway domain, which returns `{"message":"Forbidden"}`, indistinguishable from a real outage unless you look at the URL closely.
+- **First occurrence**: the invite link and claim link embedded in the two confirmation emails were built this way. A real user hit this in testing — an invite link sent to a teammate landed on a raw Forbidden JSON page. Fixed by switching both to `request.build_absolute_uri(reverse('view_name', args=[...]))`, the pattern already used correctly (and unaffected) in the Stripe success/cancel URLs.
+- **Second occurrence, same bug in a different shape**: found after a real player hit Forbidden clicking "Confirm My Spot" on the claim page. The redirect-after-success in `waldy_league_claim` used Django's bare `redirect('view_name', ...)` shortcut instead of the same explicit `build_absolute_uri(reverse(...))` pattern. Fixed there and proactively in the equivalent redirect at the end of team registration (`waldy_league_register`), which had the identical exposure but hadn't been hit yet.
+- Both fixes deployed and confirmed; any invite/claim links generated **before** these fixes are permanently dead — already-sent emails from testing needed to be re-sent after redeploying.
+
+### Local dev environment: two root-cause fixes that had been silently blocking testing
+- **`SESSION_COOKIE_SECURE` / `CSRF_COOKIE_SECURE`** were hardcoded `True` in `settings.py`. Secure cookies require HTTPS; local `runserver` is plain HTTP, so login would "succeed" (correct credentials accepted) but the browser silently refused to persist the session cookie — no error, just never actually staying logged in. Now conditional on `STAGE != 'local'`.
+- **`.env` now auto-loads inside `settings.py`** (reads the file directly, `os.environ.setdefault` per line) so `python manage.py runserver` picks up Stripe/email/DB credentials without needing `source load_env.sh` first. Note: this only helps Django itself — `zappa`/AWS CLI commands run directly in the shell still need `source load_env.sh` for AWS credentials, since those tools read the shell environment directly, not through Django.
+
+### Registration logic: real 6-team cap enforcement (previously copy-only)
+The "only 6 teams" rule existed as marketing copy but nothing actually stopped a 7th team from registering. Built real enforcement:
+- New `league_status` context processor (`myapp/context_processors.py`) exposes `WALDY_LEAGUE_FULL` sitewide (`LeagueTeam` count ≥ 6, counting all registered teams regardless of payment status — a deliberate call: a team occupies its slot the moment it registers, not once it's fully paid).
+- `waldy_league_register` now checks the cap on both GET (shows a "League Full" state instead of the form) and POST (blocks a bypass attempt even if someone gets a stale form loaded).
+- Three "full" states built to match: the register page, the leagues-hub card (badge changes to "League Full," CTA and click-through removed, location/day/time details stay visible), and the detail page's registration section — plus the sitewide announcement banner disappears entirely once full.
+- Verified end-to-end: created 6 teams locally, confirmed the 7th is blocked at both GET and POST, confirmed everything reverts correctly when back under 6.
+
+### Registration data model: every player now requires a real, confirmed account
+This was the biggest structural change. Previously, individual pay-in players had accounts (login required to pay), but team-prepay teammates were just a block of free text (`prepaid_roster_names`) — no account, no verifiable identity, no way to check anyone in at game time.
+- `LeagueTeamPlayer` reworked: `player` is now nullable (unclaimed until confirmed), `first_name`/`last_name`/`email` added directly on the row, `claim_code` + `claimed_at` added for the new claim flow. `LeagueTeam.prepaid_roster_names` removed entirely in favor of structured rows. Three migrations (`0020`, `0021`, `0022`) applied to Neon.
+- **New claim-link flow**: after a captain prepays, each named teammate gets a "Confirm Your Spot" email with a claim link (`waldy_league_claim` view/template). No additional payment — clicking it requires logging in or creating a Bare Bones account, which is what actually links a real, verifiable person to that roster slot.
+- Captain registration form (`waldy_league_register.html`) now collects first/last name for the captain, plus structured first/last/email fields for each named prepay teammate (replacing the old free-text box) — with a live JS-calculated running total (`$40 × N players`).
+- Individual-path joiners now also submit first/last name at checkout time (passed through Stripe session metadata, since the success redirect doesn't retain POST data).
+- Django admin registered for `LeagueTeam`/`LeagueTeamPlayer` (with an inline roster view per team) specifically so Ian can pull up any team and see exactly who's paid, who's account-confirmed, and who's still unclaimed — the actual gameday verification tool.
+- New management command `send_league_reminders` (`myapp/management/commands/`) for a "1 week until kickoff" email, built with a deliberately strict, documented audience rule: only `LeagueTeamPlayer` rows with `status='Paid'` **and** `player` not null (a real, claimed account) — explicitly excludes anyone unpaid or who never confirmed their claim. Sends to the player's own account email, never the raw entered email (which can be stale or typed in by someone else). Has a `--live` flag; without it, it only prints who *would* receive it.
+- New "auto-return after account creation" fix, sitewide (not league-specific): previously, someone directed to create a *brand-new* account mid-flow (e.g. from the claim page) would finish signup, get a separate activation email, click that, and land on the generic welcome page — losing their place entirely. Now a `next` parameter threads through login → register form (hidden field) → activation email → activation view, so after activating they land exactly back where they started. Verified end-to-end with a full simulated signup.
+
+### Pricing restructure — incentivize team prepay
+- Individual pay-in: $45 → **$50/player**. Team prepay: $45 → **$40/player** (a $10/player discount for committing the whole roster upfront). Updated everywhere this number lived: Stripe charge amounts (both checkout endpoints), the `LeagueTeamPlayer.amount` model default, the two pricing cards, both radio-button labels, the checkout page, the join page, and all four emails (captain confirmation for both modes, the claim email, the player join confirmation).
+
+### Email system built from scratch (four emails total)
+- **Captain confirmation** (`send_league_captain_confirmation_email`) — two variants. Individual mode includes the invite link; team-prepay mode includes the roster list and a note that each teammate will get their own claim email.
+- **Claim-your-spot** (`send_league_claim_email`) — sent to each named prepay teammate.
+- **Player join confirmation** (`send_league_player_join_confirmation_email`) — sent to individual-path teammates after they pay.
+- **1-week reminder** (`send_league_week_reminder_email`) — see audience rule above.
+- All four got a closing line ("See you September 9th — full league schedule will be posted soon").
+- Invite-link presentation iterated based on real usage: originally a clickable "Open Invite Link" button, changed to a plain-text, monospace, explicitly copy-pasteable link after Ian pointed out people are more likely to click through themselves than realize they can copy it to forward — confirmed that reusing the *same* link with multiple recipients is safe, since it's tied to the team via `invite_code`, not personalized or single-use.
+
+### Copy and content — season, pricing, rules, FAQ
+- Season structure corrected: 6 weeks regular season + 2 weeks playoffs (was incorrectly 7+1). Week 8 bye logic resolved and documented in the copy: top remaining seed byes into the final, the other two Week 7 winners play each other first.
+- "8-week season" → **"7-8 week season"** everywhere (leagues hub, detail page spec card + meta description, join page).
+- Registration deadline set to **9/5**; league start date **9/9** added as its own badge/bubble on the leagues-hub card (kept separate from the card description per Ian's call, not folded into the sentence).
+- Rules list simplified: "4v4, no goalkeepers, no corners, no jerks!" / roster + coed requirement / "18+, COED, all welcome" / Bare Bones Code of Conduct enforced. **Note: the Code of Conduct itself has no actual content yet** — this is currently a copy reference only; Ian's explicit call to build the real policy later, not now.
+- Coed rule now has a persistent glowing highlight (not hover-only) applied consistently across the spec card, every inline mention, and the leagues-hub "Coed" badge.
+- New FAQ items: "What makes this different from a normal league?" (parking lot + community framing), "What level of competition is this?" (open competition, street soccer, expect nutmegs), and "I don't have a full team ready — how can I find players?" (links both the general Bare Bones WhatsApp community and the new dedicated Waldy Street League WhatsApp chat).
+- "No free-agent signup" clarified twice based on feedback — final version explains you can register solo as captain and build your roster afterward via invite link, or prepay for everyone yourself; team-based only, but you don't need a full squad before you start.
+- "Captain's Individual Spot" renamed to just "Individual Spot" (Stripe line item + copy) — someone paying for their own spot via invite link isn't necessarily the team's captain.
+- Added a "Register Now" CTA directly in the hero, above the fold (respects login state and disappears automatically once the league is full).
+
+### Hero images and page layout
+- Leagues-hub hero: tried several alternatives (a smaller 2-3 person action shot, various group photos) before reverting to the original photo per Ian's explicit final call, after being flagged that it shows a child in frame.
+- Register page hero swapped from the default sitewide `banner_small.png` (which required extensive, ultimately-abandoned crop tuning to keep a shirt slogan in frame) to a proper horizontal photo (`Waldyparkinglot.jpeg`), with height and crop position dialed in interactively (78vh, `background-position: center 30%`).
+- Payment-success and claim-confirmation pages both got a shortened hero (51vh) for consistency, and the payment-success page got a "Check Email for Confirmation" line added to the card.
+
+---
+
 ## 2026-08-12
 
 Not yet deployed — local changes only. This entry covers the entire new Leagues product line, built and tested locally.
