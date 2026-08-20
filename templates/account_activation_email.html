@@ -3,10 +3,10 @@
 
 <p>Please click the link below to confirm your registration:</p>
 
-<p><a href="http://{{ domain }}{% url 'activate' uidb64=uid token=token %}">Activate My Account</a></p>
+<p><a href="http://{{ domain }}{% url 'activate' uidb64=uid token=token %}{% if next %}?next={{ next|urlencode }}{% endif %}">Activate My Account</a></p>
 
 <p>If that link doesn't work, copy and paste this URL into your browser:<br>
-http://{{ domain }}{% url 'activate' uidb64=uid token=token %}</p>
+http://{{ domain }}{% url 'activate' uidb64=uid token=token %}{% if next %}?next={{ next|urlencode }}{% endif %}</p>
 
 <p>If you didn't request this, you can safely ignore this email.</p>
 

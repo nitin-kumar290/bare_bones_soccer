@@ -3,6 +3,9 @@
 {% block title %}You're In! | Waldy Street League{% endblock %}
 {% block hero_background %}{% static 'images/banner_small.png' %}{% endblock %}
 {% block announcement_bar %}{% endblock %}
+{% block navbar_style %}
+.hero-section { height: 51vh !important; overflow: hidden !important; }
+{% endblock %}
 
 {% block content %}
 <div class="wlr-page-bg py-5">
@@ -19,6 +22,7 @@
                 <div class="wlr-invite-box">{{ request.scheme }}://{{ request.get_host }}{% url 'waldy_league_join' team.invite_code %}</div>
                 <p style="font-family:'Barlow Semi Condensed',sans-serif; font-size:0.85rem; color:rgba(253,245,237,0.6); margin-top:14px;">Roster fills up to 6 players. Only people with this link can join your team.</p>
             {% endif %}
+            <p style="font-family:'Oswald',sans-serif; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:#00b8e8; font-size:0.85rem; margin-top:18px;">Check Email for Confirmation</p>
             <a href="{% url 'waldy_street_league' %}" class="btn w-100 wlr-submit-btn" style="margin-top:18px; text-decoration:none;">Back to League Page</a>
         </div>
     </div>

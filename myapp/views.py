@@ -193,6 +193,7 @@ def pickup_temp(request):
 #     return render(request, 'register.html', {'form': form})
 
 def register(request):
+    next_url = request.POST.get('next') or request.GET.get('next', '')
     if request.method == 'POST':
         user_form = UserRegistrationForm(request.POST)
         profile_form = PlayerProfileForm(request.POST)
@@ -200,7 +201,7 @@ def register(request):
             user = user_form.save(commit=False)
 
             # Deactivate account till it is verified
-            user.is_active = False 
+            user.is_active = False
             user.set_password(user_form.cleaned_data['password'])
             user.save()
 
@@ -217,6 +218,7 @@ def register(request):
                     'domain': current_site.domain,
                     'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                     'token': default_token_generator.make_token(user),
+                    'next': next_url,
                 })
                 email = EmailMessage(mail_subject, message, to=[user.email])
                 email.content_subtype = 'html'
@@ -225,14 +227,14 @@ def register(request):
                 print(f"ACTIVATION EMAIL FAILED TO SEND: {e}")
 
             return redirect('activation_sent')
-            
+
         else:
             # Here form errors are attached to each field.
             messages.error(request, "Please correct the errors below.")
     else:
         user_form = UserRegistrationForm()
         profile_form = PlayerProfileForm()
-    return render(request, 'register.html', {'user_form': user_form, 'profile_form': profile_form})
+    return render(request, 'register.html', {'user_form': user_form, 'profile_form': profile_form, 'next': next_url})
 
 
 def activate(request, uidb64, token):
@@ -357,7 +359,8 @@ def activate(request, uidb64, token):
         email.send()
 
         login(request, user)
-        return redirect('welcome_next_steps')
+        next_url = request.GET.get('next')
+        return redirect(next_url) if next_url else redirect('welcome_next_steps')
     else:
         return render(request, 'activation_invalid.html')
 
@@ -735,7 +738,7 @@ def waldy_league_register(request):
                     claim_code=secrets.token_hex(4).upper(), amount=40,
                 )
 
-            return redirect('waldy_league_checkout', team_id=team.id)
+            return redirect(request.build_absolute_uri(reverse('waldy_league_checkout', args=[team.id])))
     else:
         form = LeagueTeamCreateForm()
 
@@ -1261,7 +1264,7 @@ def waldy_league_claim(request, claim_code):
         slot.claimed_at = timezone.now()
         slot.save()
         messages.success(request, "You're confirmed on the roster!")
-        return redirect('waldy_league_claim', claim_code=claim_code)
+        return redirect(request.build_absolute_uri(reverse('waldy_league_claim', args=[claim_code])))
 
     return render(request, 'waldy_league_claim.html', {
         'slot': slot, 'team': slot.team,

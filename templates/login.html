@@ -44,7 +44,7 @@
                 </div>
                 <div class="text-center mt-4">
                     <p class="mb-2 login-link">Don't have an account?</p>
-                    <a href="{% url 'register' %}" class="register-today-btn">Register Today</a>
+                    <a href="{% url 'register' %}{% if request.GET.next %}?next={{ request.GET.next|urlencode }}{% endif %}" class="register-today-btn">Register Today</a>
                 </div>
             </form>
         </div>
