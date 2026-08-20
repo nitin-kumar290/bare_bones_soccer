@@ -677,17 +677,14 @@ def get_presigned_url(request):
 #     return render(request, 'sports_stable_register.html', {'form': form})
 
 
-@hide_on_prod
 def leagues_hub(request):
     return render(request, 'leagues_hub.html')
 
 
-@hide_on_prod
 def waldy_street_league(request):
     return render(request, 'waldy_street_league.html')
 
 
-@hide_on_prod
 @login_required
 def waldy_league_register(request):
     from .context_processors import WALDY_LEAGUE_TEAM_CAP
@@ -745,7 +742,6 @@ def waldy_league_register(request):
     return render(request, 'waldy_league_register.html', {'form': form})
 
 
-@hide_on_prod
 @login_required
 def waldy_league_checkout(request, team_id):
     team = get_object_or_404(LeagueTeam, id=team_id, captain=request.user)
@@ -758,7 +754,6 @@ def waldy_league_checkout(request, team_id):
     return render(request, 'waldy_league_checkout.html', {'team': team, 'amount': amount, 'already_paid': already_paid})
 
 
-@hide_on_prod
 @login_required
 def create_league_checkout_session(request, team_id):
     stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -790,7 +785,6 @@ def create_league_checkout_session(request, team_id):
     return JsonResponse({"id": session.id})
 
 
-@hide_on_prod
 @login_required
 def league_checkout_success(request, team_id):
     team = get_object_or_404(LeagueTeam, id=team_id, captain=request.user)
@@ -1023,7 +1017,6 @@ def send_league_claim_email(request, teammate):
         logger.exception("Failed to send league claim email")
 
 
-@hide_on_prod
 @login_required
 def waldy_league_join(request, invite_code):
     team = get_object_or_404(LeagueTeam, invite_code=invite_code)
@@ -1035,7 +1028,6 @@ def waldy_league_join(request, invite_code):
     })
 
 
-@hide_on_prod
 @login_required
 def create_league_join_checkout_session(request, invite_code):
     stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -1072,7 +1064,6 @@ def create_league_join_checkout_session(request, invite_code):
     return JsonResponse({"id": session.id})
 
 
-@hide_on_prod
 @login_required
 def league_join_success(request, invite_code):
     team = get_object_or_404(LeagueTeam, invite_code=invite_code)
@@ -1252,7 +1243,6 @@ def send_league_week_reminder_email(player_row):
         logger.exception("Failed to send league week reminder email")
 
 
-@hide_on_prod
 @login_required
 def waldy_league_claim(request, claim_code):
     slot = get_object_or_404(LeagueTeamPlayer, claim_code=claim_code)

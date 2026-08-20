@@ -126,7 +126,7 @@
     {% endif %}
 
     {% block announcement_bar %}
-    {% if not IS_PROD and not WALDY_LEAGUE_FULL %}
+    {% if not WALDY_LEAGUE_FULL %}
     <a href="{% url 'waldy_street_league' %}" class="wsl-announcement-bar">
         <span class="wsl-announcement-badge">New</span>
         Waldy Street League — <span class="wsl-announcement-coed">COED</span> 4v4, Wednesday nights at Waldschänke &middot; <span class="wsl-announcement-cta">Sign Up!</span>
@@ -259,9 +259,7 @@
                     <ul class="navbar-nav" style="font-family: 'Oswald', sans-serif;">
                         <li class="nav-item fs-5"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
                         <li class="nav-item fs-5"><a class="nav-link special-link" href="{% url 'series' %}">Pickup</a></li>
-                        {% if not IS_PROD %}
                         <li class="nav-item fs-5"><a class="nav-link wsl-leagues-nav-link" href="{% url 'leagues_hub' %}">Leagues</a></li>
-                        {% endif %}
                         <li class="nav-item fs-5"><a class="nav-link" href="{% url 'events' %}">Events</a></li>
                         <!-- <li class="nav-item fs-5"><a class="nav-link" href="{% url 'pickup' %}">Pick Up</a></li> -->
                         <li class="nav-item fs-5 dropdown">
