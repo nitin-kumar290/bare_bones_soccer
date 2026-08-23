@@ -28,7 +28,7 @@ class LeagueTeamCreateForm(forms.ModelForm):
         fields = ['team_name', 'payment_mode', 'prepaid_roster_size']
         widgets = {
             'team_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Your Team Name'}),
-            'prepaid_roster_size': forms.Select(choices=[('', '— roster size —'), (4, '4 players'), (5, '5 players'), (6, '6 players')], attrs={'class': 'form-control'}),
+            'prepaid_roster_size': forms.Select(choices=[('', '— roster size —'), (4, '4 players'), (5, '5 players'), (6, '6 players'), (7, '7 players'), (8, '8 players')], attrs={'class': 'form-control'}),
         }
 
 

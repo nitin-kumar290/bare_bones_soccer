@@ -868,7 +868,7 @@ def send_league_captain_confirmation_email(request, team):
                     <tr>
                         <td style="padding:16px 20px; text-align:center; font-size:14px; line-height:22px;">
                         <b>Share this with your teammates:</b><br>
-                        You need 4&ndash;6 players total (including at least 1 female player) &mdash; each person pays their own $50 spot. Send them the link BELOW!<br><br>
+                        You need 4&ndash;8 players total (including at least 1 female player) &mdash; each person pays their own $50 spot. Send them the link BELOW!<br><br>
                         <span style="font-family:monospace; font-size:13px; color:#08070b; background:#fff; border:1px solid #ddd; border-radius:6px; padding:8px 12px; display:inline-block; margin-top:4px; word-break:break-all;">{invite_link}</span>
                         <br><br>
                         <b>Copy &amp; paste to your teammates so they can sign up!</b>
@@ -1032,7 +1032,7 @@ def waldy_league_join(request, invite_code):
     team = get_object_or_404(LeagueTeam, invite_code=invite_code)
     roster_count = team.players.filter(status='Paid').count()
     already_joined = team.players.filter(player=request.user, status='Paid').exists()
-    is_full = roster_count >= 6
+    is_full = roster_count >= 8
     return render(request, 'waldy_league_join.html', {
         'team': team, 'roster_count': roster_count, 'already_joined': already_joined, 'is_full': is_full
     })
@@ -1044,7 +1044,7 @@ def create_league_join_checkout_session(request, invite_code):
     if request.method != 'POST':
         return JsonResponse({'error': 'Only POST allowed'}, status=405)
     team = get_object_or_404(LeagueTeam, invite_code=invite_code)
-    if team.players.filter(status='Paid').count() >= 6:
+    if team.players.filter(status='Paid').count() >= 8:
         return JsonResponse({'error': "This team's roster is already full — no more spots available."}, status=400)
 
     try:
@@ -1128,7 +1128,7 @@ def send_league_player_join_confirmation_email(request, team):
                     <td style="font-size:16px; padding:24px; text-align:center; line-height:26px;">
                     💰 <b>$50 paid</b> — your spot is locked in<br>
                     🧢 <b>Team:</b> {team.team_name}<br>
-                    👥 <b>Roster:</b> {roster_count}/6 paid
+                    👥 <b>Roster:</b> {roster_count}/8 paid
                     </td>
                 </tr>
 
