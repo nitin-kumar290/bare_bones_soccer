@@ -928,6 +928,14 @@ def send_free_agent_placement_email(request, agent):
                     </td>
                 </tr>
 
+                <tr><td style="height:16px; line-height:16px;">&nbsp;</td></tr>
+
+                <tr>
+                    <td style="font-size:15px; padding:0 24px; line-height:22px; text-align:center;">
+                    Introduce yourself to your new team in the <a href="https://chat.whatsapp.com/Gi75d6cjGbgBcaqgf9KqmI?s=cl&p=i&mlu=0&ilr=0" style="color:#00b8e8; font-weight:bold;">Waldy Street League WhatsApp chat &rarr;</a>
+                    </td>
+                </tr>
+
                 <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
 
                 <tr>
