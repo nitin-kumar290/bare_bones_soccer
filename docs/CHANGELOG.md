@@ -4,6 +4,58 @@ A running log of site changes made through Claude Code, most recent first.
 
 ---
 
+## 2026-08-25
+
+### Free agency: built, reversed on payment timing, then merged into the register page
+Free agency went through three real iterations in one stretch of work — worth reading in order since each one changed based on Ian's feedback, not a redo of broken work.
+
+- **Built**: a `LeagueFreeAgent` model plus signup form, admin-curated placement (never player-visible, never self-service), and confirmation emails. Placement is 100% manual via Django admin — no captain consent step, no way for free agents to see or form their own team.
+- **Reversed the payment timing**: originally free agents paid only after being placed on a team. Ian pointed out this undercuts commitment compared to every other registration path (Volo Sports' free-agent model charges upfront too) — reworked so free agents pay the standard $50 immediately at signup, same as everyone else, and placement became a pure admin assignment step. The Django admin "place on team" action now directly creates the player's roster row (marked Paid, payment ID carried over) instead of sending a second pay-to-join email.
+- **Merged into the main register page**: free agency started as its own dedicated page/URL, reached via a separate CTA on the league page. Ian didn't want a second page and extra scrolling just to pick a path, so `/register/` now has all three options (pay your own way, prepay your team, free agent) as one selector — picking free agent swaps in first/last/email fields in place of team fields, same form, same submit button. The standalone `/free-agent/` URL still resolves (redirects into `/register/`) so nothing breaks for anyone who already has the old link.
+- Added a third "Free Agent" pricing card to the street league page to match (was "Two Ways to Register", now "Three Ways to Register").
+- Dropped the free-agent "notes" field entirely — agreed it would be extra manual overhead to track for little benefit.
+- Fixed a real layout bug: the first/last name fields on the free-agent form were misaligned because only one of the two had a label directly above it. Both fields now match the team-captain field pattern.
+- Added a defensive fix so a hidden, still-`required` field can never silently block form submission when switching between the three registration types (explicitly toggles `required` on/off per section instead of relying on `display:none` alone).
+- New migrations `0023` (creates `LeagueFreeAgent`) and `0024` (adds `amount`/`payment_id`, updates status choices) applied to the live Neon DB.
+
+### Registration flow: skip the intermediate checkout page, go straight to Stripe
+All three registration paths used to land on a Bare Bones–hosted "confirm your amount, click Pay" page before ever reaching Stripe. Removed that page entirely — the register view now creates the Stripe Checkout Session server-side and redirects the browser straight to Stripe's hosted checkout. Deleted the now-dead intermediate views, API endpoints, and templates (`waldy_league_checkout.html`, `waldy_league_free_agent_checkout.html`) since nothing else referenced them.
+
+### Payment confirmation pages made consistent across all paths
+- Every confirmation page (team individual, team prepay, invite-link join, free agent) now leads with a solid, high-contrast "📧 Check Your Email to Confirm" callout at the top of the card — previously a small, easy-to-miss line at the bottom, and on the free-agent page it directly contradicted a line above it saying "nothing else to do."
+- Removed the "Back to League Page" button from all of them, consistent across the board.
+- Added a dedicated success page for the free-agent path (`waldy_league_free_agent_success.html`) — it was redirecting back to the register/signup form after payment instead of showing a confirmation like the other two paths.
+- Added a link to the Waldy Street League WhatsApp chat in the placement email so newly placed free agents can introduce themselves to their new team before opening night.
+- Iterated the hero image sizing on the checkout/confirmation pages several times based on visual feedback — final state: confirmation pages at 70.4vh with the crop shifted up so no one's head gets cut off; the pre-payment checkout heroes (now removed along with the intermediate page) had been shrunk 15% total before that page was cut entirely.
+
+### Hardcoded-path link audit + Waldschänke made unindexable
+- Found and fixed the remaining spots where a link was built with a hardcoded leading-slash path (`request.build_absolute_uri('/some/path/')`) instead of `reverse()` — this class of bug silently drops Zappa's `/dev` stage prefix and produces a broken link. Fixed `unsubscribe_footer()` and the core pickup-session payment flow; left the Brighton/Waldschänke-ticket-type/World Cup Block Party paths alone since those are past, closed-out events.
+- Added a sitewide `{% block robots %}` mechanism to `base.html` and applied `noindex, nofollow` to the Waldschänke page and its payment-success page — that page is meant to be reachable only by direct link, not discoverable via Google.
+
+### Street league page: copy, layout, and registration UX cleanup
+A long list of smaller fixes and copy iterations, final state only (several went through a few rounds based on feedback):
+- Pricing section: "Three Ways to Register" (was "Two"), redundant per-card free-agency footnotes removed.
+- Registration section: "Register Your Squad" heading removed, urgency line flipped to lead with "DON'T WAIT TO SIGN UP!", CTA renamed to "Register Today!", both halves of the urgency line bolded in plain black (not the link-blue accent color).
+- Primary register CTA (hero + registration section) now has a pulsing glow animation to draw the eye.
+- FAQ: "Come ready to play for real" → "Come ready to compete"; removed the free-agency hyperlinks from FAQ answers and the Rules bullet (now plain text, since it's all one page now); shortened "I don't have a full team ready. How can I find players?" to "How can I find players?"; rewrote the "can I still play without a full team" answer to plainly cover all three paths instead of leading with "team-based."
+- Consolidated two separate WhatsApp links (general community + league chat) into one direct link to the Waldy Street League chat.
+- Refund policy line iterated a few times, final wording: "No refunds once the season starts, unless the league disbands or internal player issue resolved with league admin."
+- Centered the label/amount/description text on the three registration-type cards (was left-aligned by a missing `text-align`), and hid the radio-button dot in the corner of each card since the whole card is already clickable.
+- Tightened the spacing above "The Basics" spec-card section and shrunk the hero 6% to pull more content above the fold.
+- Team checkout confirmation copy: "You'll get an invite link to share with teammates after payment" → "Check your email for team link to share with teammates after payment."
+
+### Fix: real 500 crash on account activation (carried over from 2026-08-20, confirmed resolved)
+No further action needed — see the 2026-08-20 entry below for the original root cause and fix; noting here only because it was verified stable through this stretch of testing with no recurrence.
+
+---
+
+## 2026-08-23
+
+### Format change: 12-minute halves, 8-player max roster
+Updated everywhere the old numbers appeared — site copy (`waldy_street_league.html`, `waldy_league_join.html`, `waldy_league_register.html`, `waldy_league_checkout_success.html`) and the confirmation/reminder emails in `myapp/views.py`, plus the roster-size choices in `myapp/forms.py`.
+
+---
+
 ## 2026-08-20
 
 ### Critical fix: account activation was crashing with a 500 error on prod
