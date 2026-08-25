@@ -115,8 +115,8 @@
 
 /* ── Pricing ── */
 .wsl-pricing { background: linear-gradient(160deg, #08070b 0%, #290a44 60%, #08070b 100%); padding: 64px 20px; }
-.wsl-price-grid { max-width: 720px; margin: 0 auto; display:grid; grid-template-columns:1fr 1fr; gap:20px; }
-@media (max-width:700px) { .wsl-price-grid { grid-template-columns:1fr; } }
+.wsl-price-grid { max-width: 1020px; margin: 0 auto; display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; }
+@media (max-width:900px) { .wsl-price-grid { grid-template-columns:1fr; max-width:420px; } }
 .wsl-price-card { text-align:center; background: rgba(253,245,237,0.04); border:1.5px solid rgba(0,184,232,0.35); border-radius:18px; padding:32px 26px; }
 .wsl-price-card-label { font-family:'Oswald',sans-serif; font-weight:700; font-size:0.85rem; letter-spacing:1px; text-transform:uppercase; color:#00b8e8; margin-bottom:8px; }
 .wsl-price-card .amount { font-family:'Oswald',sans-serif; font-weight:700; font-size:2.6rem; color:#fdf5ed; }
@@ -196,7 +196,7 @@
             <li>4v4, no goalkeepers, no corners, no jerks!</li>
             <li>Rosters lock at 5&ndash;8 players; every team needs <span class="coed-highlight">at least 1 female player</span></li>
             <li>18+, COED, all welcome</li>
-            <li>No team? <a href="{% url 'waldy_league_free_agent' %}" style="color:#00b8e8;">Join as a free agent</a> and we'll place you on one</li>
+            <li>No team? <a href="{% url 'waldy_league_register' %}" style="color:#00b8e8;">Join as a free agent</a> and we'll place you on one</li>
             <li>Bare Bones Code of Conduct enforced</li>
         </ul>
     </div>
@@ -205,22 +205,26 @@
 <!-- Pricing -->
 <div class="wsl-pricing" id="reserve">
     <p class="wsl-specs-eyebrow" style="color:#00b8e8;">Pricing</p>
-    <h2 style="font-family:'Oswald',sans-serif; font-weight:700; text-transform:uppercase; text-align:center; color:#fdf5ed; margin-bottom:8px;">Two Ways to Register</h2>
-    <p style="font-family:'Barlow Semi Condensed',sans-serif; font-style:italic; text-transform:uppercase; font-size:0.7rem; text-align:center; color:rgba(253,245,237,0.5); margin-bottom:30px;">No team? Join as a free agent for $50</p>
+    <h2 style="font-family:'Oswald',sans-serif; font-weight:700; text-transform:uppercase; text-align:center; color:#fdf5ed; margin-bottom:8px;">Three Ways to Register</h2>
+    <p style="font-family:'Barlow Semi Condensed',sans-serif; font-style:italic; text-transform:uppercase; font-size:0.7rem; text-align:center; color:rgba(253,245,237,0.5); margin-bottom:30px;">Every path locks in your spot for opening night, 9/9</p>
     <div class="wsl-price-grid">
         <div class="wsl-price-card">
             <p class="wsl-price-card-label">Pay Your Own Way</p>
             <div class="amount">$50</div>
             <div class="per">per player</div>
             <p class="wsl-price-card-desc">Create your team, pay for your own spot, then send teammates a private invite link to pay for theirs.</p>
-            <p class="wsl-price-card-desc" style="font-style:italic; font-size:0.75rem; opacity:0.6; margin-top:8px;">No team? Join as a free agent for $50</p>
         </div>
         <div class="wsl-price-card">
             <p class="wsl-price-card-label">Prepay Your Team</p>
             <div class="amount">$40</div>
             <div class="per">per player &mdash; save $10/player</div>
             <p class="wsl-price-card-desc">Captain pays for the whole roster (5&ndash;8 players) upfront in one payment &mdash; no waiting on anyone else.</p>
-            <p class="wsl-price-card-desc" style="font-style:italic; font-size:0.75rem; opacity:0.6; margin-top:8px;">No team? Join as a free agent for $50</p>
+        </div>
+        <div class="wsl-price-card">
+            <p class="wsl-price-card-label">Free Agent</p>
+            <div class="amount">$50</div>
+            <div class="per">per player</div>
+            <p class="wsl-price-card-desc">No team? Pay upfront and we'll place you on a roster with an open spot.</p>
         </div>
     </div>
 </div>
@@ -240,15 +244,8 @@
         <a href="{% url 'login' %}?next={% url 'waldy_league_register' %}" class="wsl-register-btn primary">Sign In to Register</a>
         {% endif %}
     </div>
+    <p style="font-family:'Barlow Semi Condensed',sans-serif; color:#555; margin-top:12px; font-size:0.85rem;">Team or free agent &mdash; pick your path on the next page.</p>
     {% endif %}
-    <p style="font-family:'Barlow Semi Condensed',sans-serif; color:#555; margin-top:24px;">Don't have a team?</p>
-    <div class="wsl-register-options">
-        {% if user.is_authenticated %}
-        <a href="{% url 'waldy_league_free_agent' %}" class="wsl-register-btn secondary">Join as a Free Agent</a>
-        {% else %}
-        <a href="{% url 'login' %}?next={% url 'waldy_league_free_agent' %}" class="wsl-register-btn secondary">Join as a Free Agent</a>
-        {% endif %}
-    </div>
 </div>
 
 <!-- FAQ -->
@@ -262,7 +259,7 @@
         </details>
         <details class="wsl-faq-item">
             <summary>I don't have a full team &mdash; can I still play?</summary>
-            <p>Registration is team-based, but you don't need everyone lined up first. Register solo as team captain then send teammates your invite link to pay for their own spot or prepay for the whole roster yourself (5&ndash;8 players, including <span class="coed-highlight">at least 1 female player</span>). Prefer not to organize a team? <a href="{% url 'waldy_league_free_agent' %}" style="color:#00b8e8;">Join as a free agent</a> instead and we'll place you on one.</p>
+            <p>Registration is team-based, but you don't need everyone lined up first. Register solo as team captain then send teammates your invite link to pay for their own spot or prepay for the whole roster yourself (5&ndash;8 players, including <span class="coed-highlight">at least 1 female player</span>). Prefer not to organize a team? <a href="{% url 'waldy_league_register' %}" style="color:#00b8e8;">Join as a free agent</a> instead and we'll place you on one.</p>
         </details>
         <details class="wsl-faq-item">
             <summary>What level of competition is this?</summary>
@@ -270,7 +267,7 @@
         </details>
         <details class="wsl-faq-item">
             <summary>I don't have a full team ready. How can I find players?</summary>
-            <p>Join the Bare Bones WhatsApp community &mdash; it's the easiest way to link up with other players looking for a team, and it's where you'll find the freshly built Waldy Street League chat too. Or if you'd rather not organize a team yourself, <a href="{% url 'waldy_league_free_agent' %}" style="color:#00b8e8;">join as a free agent</a> and we'll place you on a team with an open spot.</p>
+            <p>Join the Bare Bones WhatsApp community &mdash; it's the easiest way to link up with other players looking for a team, and it's where you'll find the freshly built Waldy Street League chat too. Or if you'd rather not organize a team yourself, <a href="{% url 'waldy_league_register' %}" style="color:#00b8e8;">join as a free agent</a> and we'll place you on a team with an open spot.</p>
             <p><a href="https://chat.whatsapp.com/IzHQHb1UODABuoABqXotvm" target="_blank" rel="noopener" style="color:#00b8e8;">Join the Bare Bones WhatsApp &rarr;</a><br><a href="https://chat.whatsapp.com/FCjKdfDz5EpFPekXnWdVNR?s=sh&p=i&mlu=0&ilr=0&amv=1" target="_blank" rel="noopener" style="color:#00b8e8;">Join the Waldy Street League chat &rarr;</a></p>
         </details>
         <details class="wsl-faq-item">

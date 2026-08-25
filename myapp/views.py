@@ -701,8 +701,29 @@ def waldy_league_register(request):
     if LeagueTeam.objects.filter(league_name='Waldy Street League').count() >= WALDY_LEAGUE_TEAM_CAP:
         return render(request, 'waldy_league_register.html', {'league_full': True})
 
+    existing_agent = LeagueFreeAgent.objects.filter(player=request.user, league_name='Waldy Street League').first()
+
     if request.method == 'POST':
-        form = LeagueTeamCreateForm(request.POST)
+        registration_type = request.POST.get('registration_type', 'individual')
+
+        if registration_type == 'free_agent':
+            if existing_agent:
+                return redirect(request.build_absolute_uri(reverse('waldy_league_free_agent_checkout', args=[existing_agent.id])))
+            fa_form = LeagueFreeAgentForm(request.POST)
+            if fa_form.is_valid():
+                agent = fa_form.save(commit=False)
+                agent.player = request.user
+                agent.league_name = 'Waldy Street League'
+                agent.save()
+                return redirect(request.build_absolute_uri(reverse('waldy_league_free_agent_checkout', args=[agent.id])))
+            return render(request, 'waldy_league_register.html', {
+                'form': LeagueTeamCreateForm(), 'fa_form': fa_form,
+                'existing_agent': existing_agent, 'selected_type': 'free_agent',
+            })
+
+        post_data = request.POST.copy()
+        post_data['payment_mode'] = registration_type
+        form = LeagueTeamCreateForm(post_data)
         if form.is_valid():
             payment_mode = form.cleaned_data['payment_mode']
             roster_size = form.cleaned_data.get('prepaid_roster_size')
@@ -711,14 +732,20 @@ def waldy_league_register(request):
             if payment_mode == 'team_prepay':
                 if not roster_size:
                     messages.error(request, "Select a roster size.")
-                    return render(request, 'waldy_league_register.html', {'form': form})
+                    return render(request, 'waldy_league_register.html', {
+                        'form': form, 'fa_form': LeagueFreeAgentForm(initial={'email': request.user.email}),
+                        'existing_agent': existing_agent, 'selected_type': registration_type,
+                    })
                 for i in range(1, int(roster_size)):
                     fn = request.POST.get(f'teammate_first_name_{i}', '').strip()
                     ln = request.POST.get(f'teammate_last_name_{i}', '').strip()
                     em = request.POST.get(f'teammate_email_{i}', '').strip()
                     if not (fn and ln and em):
                         messages.error(request, "Enter a first name, last name, and email for every teammate on your roster — each of them will get an email to confirm their spot with their own Bare Bones account.")
-                        return render(request, 'waldy_league_register.html', {'form': form})
+                        return render(request, 'waldy_league_register.html', {
+                            'form': form, 'fa_form': LeagueFreeAgentForm(initial={'email': request.user.email}),
+                            'existing_agent': existing_agent, 'selected_type': registration_type,
+                        })
                     teammates.append((fn, ln, em))
 
             team = form.save(commit=False)
@@ -746,30 +773,20 @@ def waldy_league_register(request):
                 )
 
             return redirect(request.build_absolute_uri(reverse('waldy_league_checkout', args=[team.id])))
+
+        return render(request, 'waldy_league_register.html', {
+            'form': form, 'fa_form': LeagueFreeAgentForm(initial={'email': request.user.email}),
+            'existing_agent': existing_agent, 'selected_type': registration_type,
+        })
     else:
         form = LeagueTeamCreateForm()
+        fa_form = LeagueFreeAgentForm(initial={'email': request.user.email})
 
-    return render(request, 'waldy_league_register.html', {'form': form})
+    return render(request, 'waldy_league_register.html', {'form': form, 'fa_form': fa_form, 'existing_agent': existing_agent})
 
 
-@login_required
 def waldy_league_free_agent(request):
-    existing = LeagueFreeAgent.objects.filter(player=request.user, league_name='Waldy Street League').first()
-    if existing:
-        return render(request, 'waldy_league_free_agent.html', {'existing': existing})
-
-    if request.method == 'POST':
-        form = LeagueFreeAgentForm(request.POST)
-        if form.is_valid():
-            agent = form.save(commit=False)
-            agent.player = request.user
-            agent.league_name = 'Waldy Street League'
-            agent.save()
-            return redirect(request.build_absolute_uri(reverse('waldy_league_free_agent_checkout', args=[agent.id])))
-    else:
-        form = LeagueFreeAgentForm(initial={'email': request.user.email})
-
-    return render(request, 'waldy_league_free_agent.html', {'form': form})
+    return redirect(request.build_absolute_uri(reverse('waldy_league_register')))
 
 
 @login_required
@@ -814,7 +831,7 @@ def free_agent_checkout_success(request, agent_id):
             agent.payment_id = session_id
             agent.save()
             send_free_agent_signup_confirmation_email(request, agent)
-    return render(request, 'waldy_league_free_agent.html', {'existing': agent})
+    return redirect(request.build_absolute_uri(reverse('waldy_league_register')))
 
 
 def send_free_agent_signup_confirmation_email(request, agent):
