@@ -206,7 +206,6 @@
 <div class="wsl-pricing" id="reserve">
     <p class="wsl-specs-eyebrow" style="color:#00b8e8;">Pricing</p>
     <h2 style="font-family:'Oswald',sans-serif; font-weight:700; text-transform:uppercase; text-align:center; color:#fdf5ed; margin-bottom:8px;">Three Ways to Register</h2>
-    <p style="font-family:'Barlow Semi Condensed',sans-serif; font-style:italic; text-transform:uppercase; font-size:0.7rem; text-align:center; color:rgba(253,245,237,0.5); margin-bottom:30px;">Every path locks in your spot for opening night, 9/9</p>
     <div class="wsl-price-grid">
         <div class="wsl-price-card">
             <p class="wsl-price-card-label">Pay Your Own Way</p>
@@ -235,16 +234,14 @@
     <h2>League Full</h2>
     <p>All 6 team spots for this season are taken. Check back for the next season, or head to <a href="{% url 'leagues_hub' %}" style="color:#00b8e8;">Leagues</a> to see what else is running.</p>
     {% else %}
-    <h2>Register Your Squad</h2>
-    <p class="wsl-register-urgency">Registration ends 9/5 &mdash; <strong>DON'T WAIT TO SIGN UP!</strong></p>
+    <p class="wsl-register-urgency">DON'T WAIT TO SIGN UP! &mdash; <strong>Registration ends 9/5</strong></p>
     <div class="wsl-register-options">
         {% if user.is_authenticated %}
-        <a href="{% url 'waldy_league_register' %}" class="wsl-register-btn primary">Sign Up Today!</a>
+        <a href="{% url 'waldy_league_register' %}" class="wsl-register-btn primary">Register Today!</a>
         {% else %}
         <a href="{% url 'login' %}?next={% url 'waldy_league_register' %}" class="wsl-register-btn primary">Sign In to Register</a>
         {% endif %}
     </div>
-    <p style="font-family:'Barlow Semi Condensed',sans-serif; color:#555; margin-top:12px; font-size:0.85rem;">Team or free agent &mdash; pick your path on the next page.</p>
     {% endif %}
 </div>
 
@@ -259,7 +256,7 @@
         </details>
         <details class="wsl-faq-item">
             <summary>I don't have a full team &mdash; can I still play?</summary>
-            <p>Registration is team-based, but you don't need everyone lined up first. Register solo as team captain then send teammates your invite link to pay for their own spot or prepay for the whole roster yourself (5&ndash;8 players, including <span class="coed-highlight">at least 1 female player</span>). Prefer not to organize a team? <a href="{% url 'waldy_league_register' %}" style="color:#00b8e8;">Join as a free agent</a> instead and we'll place you on one.</p>
+            <p>You don't need a full team lined up to register. Start a team as captain and send teammates an invite link to pay for their own spot, prepay the whole roster yourself (5&ndash;8 players, including <span class="coed-highlight">at least 1 female player</span>), or skip organizing one entirely and join as a free agent &mdash; we'll place you on a roster with an open spot.</p>
         </details>
         <details class="wsl-faq-item">
             <summary>What level of competition is this?</summary>
