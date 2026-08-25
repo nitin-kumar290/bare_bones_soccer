@@ -82,6 +82,7 @@ class LeagueTeamPlayerAdmin(admin.ModelAdmin):
 @admin.register(LeagueFreeAgent)
 class LeagueFreeAgentAdmin(admin.ModelAdmin):
     list_display = ('first_name', 'last_name', 'email', 'status', 'placed_team', 'placement_email_sent', 'signed_up_at')
+    list_editable = ('placed_team',)
     list_filter = ('league_name', 'status', 'placed_team')
     search_fields = ('first_name', 'last_name', 'email', 'player__username', 'player__email')
     readonly_fields = ('player', 'signed_up_at', 'placed_at', 'placement_email_sent')
