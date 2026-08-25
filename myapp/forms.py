@@ -3,7 +3,7 @@ from .models import Person, PlayerProfile
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django import forms
-from .models import PlayerProfile, EventRSVP, ReferralSource, LeagueTeam
+from .models import PlayerProfile, EventRSVP, ReferralSource, LeagueTeam, LeagueFreeAgent
 import re
 from datetime import date
 
@@ -28,7 +28,19 @@ class LeagueTeamCreateForm(forms.ModelForm):
         fields = ['team_name', 'payment_mode', 'prepaid_roster_size']
         widgets = {
             'team_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Your Team Name'}),
-            'prepaid_roster_size': forms.Select(choices=[('', '— roster size —'), (4, '4 players'), (5, '5 players'), (6, '6 players'), (7, '7 players'), (8, '8 players')], attrs={'class': 'form-control'}),
+            'prepaid_roster_size': forms.Select(choices=[('', '— roster size —'), (5, '5 players'), (6, '6 players'), (7, '7 players'), (8, '8 players')], attrs={'class': 'form-control'}),
+        }
+
+
+class LeagueFreeAgentForm(forms.ModelForm):
+    class Meta:
+        model = LeagueFreeAgent
+        fields = ['first_name', 'last_name', 'email', 'notes']
+        widgets = {
+            'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}),
+            'notes': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Anything useful for placement — availability, who you know, etc. (optional)', 'rows': 3}),
         }
 
 

@@ -8,8 +8,8 @@ import stripe
 from datetime import datetime, timedelta
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-from .forms import PersonForm, UserRegistrationForm, UserLoginForm, PlayerProfileForm, UnsubscribeForm, EventRSVPForm, SponsorInquiryForm, ReferralSourceForm, LeagueTeamCreateForm
-from .models import Person, Pickup, Event, EventImage, AttendancePayment, EmailUnsubscribe, EventRSVP, OneOffEvent, Partner, ReferralSource, LeagueTeam, LeagueTeamPlayer
+from .forms import PersonForm, UserRegistrationForm, UserLoginForm, PlayerProfileForm, UnsubscribeForm, EventRSVPForm, SponsorInquiryForm, ReferralSourceForm, LeagueTeamCreateForm, LeagueFreeAgentForm
+from .models import Person, Pickup, Event, EventImage, AttendancePayment, EmailUnsubscribe, EventRSVP, OneOffEvent, Partner, ReferralSource, LeagueTeam, LeagueTeamPlayer, LeagueFreeAgent
 from django.core.mail import send_mail, EmailMessage
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -72,7 +72,7 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
 def unsubscribe_footer(request):
-    url = request.build_absolute_uri('/unsubscribe/')
+    url = request.build_absolute_uri(reverse('unsubscribe'))
     return f'<p style="font-size:11px;color:#777;border-top:1px solid #eee;padding-top:10px;margin-top:16px;text-align:center;">You are receiving this email as a Bare Bones Soccer member. If you have received this email in error and/or no longer wish to receive email reminders, <a href="{url}" style="color:#777;">Unsubscribe</a>.</p>'
 
 SES = boto3.client("ses", region_name="us-east-2")
@@ -438,8 +438,8 @@ def user_login(request):
                             "quantity": 1,
                         }],
                         mode="payment",
-                        success_url=request.build_absolute_uri('/waldschanke-payment-success/') + f"?session_id={{CHECKOUT_SESSION_ID}}",
-                        cancel_url=request.build_absolute_uri('/payment-cancel/'),
+                        success_url=request.build_absolute_uri(reverse('waldschanke_payment_success')) + f"?session_id={{CHECKOUT_SESSION_ID}}",
+                        cancel_url=request.build_absolute_uri(reverse('payment_cancel')),
                     )
                     return redirect(session.url)
                 
@@ -753,6 +753,167 @@ def waldy_league_register(request):
 
 
 @login_required
+def waldy_league_free_agent(request):
+    existing = LeagueFreeAgent.objects.filter(player=request.user, league_name='Waldy Street League').first()
+    if existing:
+        return render(request, 'waldy_league_free_agent.html', {'existing': existing})
+
+    if request.method == 'POST':
+        form = LeagueFreeAgentForm(request.POST)
+        if form.is_valid():
+            agent = form.save(commit=False)
+            agent.player = request.user
+            agent.league_name = 'Waldy Street League'
+            agent.save()
+            send_free_agent_signup_confirmation_email(request, agent)
+            return render(request, 'waldy_league_free_agent.html', {'existing': agent})
+    else:
+        form = LeagueFreeAgentForm(initial={'email': request.user.email})
+
+    return render(request, 'waldy_league_free_agent.html', {'form': form})
+
+
+def send_free_agent_signup_confirmation_email(request, agent):
+    subject = "You're in the Free Agent Pool — Waldy Street League"
+    html_message = f"""
+    <!DOCTYPE html>
+    <html>
+    <body>
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#ffffff; margin:0; padding:0;">
+    <tr>
+        <td align="center" style="padding:0;">
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="width:100%; max-width:600px; margin:0 auto;">
+            <tr>
+            <td align="center" style="padding:24px;">
+                <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width:600px; width:100%; font-family:Arial, Helvetica, sans-serif; color:#111;">
+
+                <tr>
+                    <td style="font-size:22px; line-height:30px; text-align:center; font-weight:bold; color:#290a44;">
+                    ⚽ YOU'RE IN THE POOL
+                    </td>
+                </tr>
+
+                <tr><td style="height:8px; line-height:8px;">&nbsp;</td></tr>
+
+                <tr>
+                    <td style="font-size:16px; padding:0 24px; line-height:24px; text-align:center;">
+                    {agent.first_name}, you're on the Waldy Street League free agent list. No payment needed yet &mdash; we'll place you on a team with an open spot and email you when it happens, with a link to pay your $50 and join.
+                    </td>
+                </tr>
+
+                <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
+
+                <tr>
+                    <td style="font-size:14px; padding:0 24px; line-height:22px; text-align:center; color:#555;">
+                    📅 See you <b>September 9th</b> &mdash; full league schedule will be posted soon.
+                    </td>
+                </tr>
+
+                <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
+
+                <tr>
+                    <td style="font-size:16px; line-height:24px; text-align:center;">
+                    See you on the pitch!
+                    <br>
+                    The Bare Bones Crew
+                    </td>
+                </tr>
+
+                </table>
+            </td>
+            </tr>
+        </table>
+        </td>
+    </tr>
+    </table>
+
+    </body>
+    </html>
+    """
+    email = EmailMessage(subject, html_message, settings.EMAIL_HOST_USER, [agent.email])
+    email.content_subtype = "html"
+    try:
+        email.send()
+    except Exception:
+        logger.exception("Failed to send free agent signup confirmation email")
+
+
+def send_free_agent_placement_email(request, agent):
+    team = agent.placed_team
+    join_link = request.build_absolute_uri(reverse('waldy_league_join', args=[team.invite_code]))
+    subject = f"You've Been Placed on {team.team_name} — Waldy Street League"
+    html_message = f"""
+    <!DOCTYPE html>
+    <html>
+    <body>
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#ffffff; margin:0; padding:0;">
+    <tr>
+        <td align="center" style="padding:0;">
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="width:100%; max-width:600px; margin:0 auto;">
+            <tr>
+            <td align="center" style="padding:24px;">
+                <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width:600px; width:100%; font-family:Arial, Helvetica, sans-serif; color:#111;">
+
+                <tr>
+                    <td style="font-size:22px; line-height:30px; text-align:center; font-weight:bold; color:#290a44;">
+                    ⚽ YOU'VE GOT A TEAM
+                    </td>
+                </tr>
+
+                <tr><td style="height:8px; line-height:8px;">&nbsp;</td></tr>
+
+                <tr>
+                    <td style="font-size:16px; padding:0 24px; line-height:24px; text-align:center;">
+                    {agent.first_name}, you've been placed on <b>{team.team_name}</b> in the Waldy Street League. Last step &mdash; pay your $50 to lock in your spot.
+                    </td>
+                </tr>
+
+                <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
+
+                <tr>
+                    <td style="padding:0 24px; text-align:center;">
+                    <a href="{join_link}" style="color:#fdf5ed; background:linear-gradient(135deg, #00b8e8 0%, #290a44 100%); padding:12px 28px; border-radius:50px; text-decoration:none; font-weight:bold; display:inline-block;">Pay & Join {team.team_name}</a>
+                    </td>
+                </tr>
+
+                <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
+
+                <tr>
+                    <td style="font-size:14px; padding:0 24px; line-height:22px; text-align:center; color:#555;">
+                    📅 See you <b>September 9th</b> &mdash; full league schedule will be posted soon.
+                    </td>
+                </tr>
+
+                <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
+
+                <tr>
+                    <td style="font-size:16px; line-height:24px; text-align:center;">
+                    See you on the pitch!
+                    <br>
+                    The Bare Bones Crew
+                    </td>
+                </tr>
+
+                </table>
+            </td>
+            </tr>
+        </table>
+        </td>
+    </tr>
+    </table>
+
+    </body>
+    </html>
+    """
+    email = EmailMessage(subject, html_message, settings.EMAIL_HOST_USER, [agent.email])
+    email.content_subtype = "html"
+    try:
+        email.send()
+    except Exception:
+        logger.exception("Failed to send free agent placement email")
+
+
+@login_required
 def waldy_league_checkout(request, team_id):
     team = get_object_or_404(LeagueTeam, id=team_id, captain=request.user)
     if team.payment_mode == 'team_prepay':
@@ -868,7 +1029,7 @@ def send_league_captain_confirmation_email(request, team):
                     <tr>
                         <td style="padding:16px 20px; text-align:center; font-size:14px; line-height:22px;">
                         <b>Share this with your teammates:</b><br>
-                        You need 4&ndash;8 players total (including at least 1 female player) &mdash; each person pays their own $50 spot. Send them the link BELOW!<br><br>
+                        You need 5&ndash;8 players total (including at least 1 female player) &mdash; each person pays their own $50 spot. Send them the link BELOW!<br><br>
                         <span style="font-family:monospace; font-size:13px; color:#08070b; background:#fff; border:1px solid #ddd; border-radius:6px; padding:8px 12px; display:inline-block; margin-top:4px; word-break:break-all;">{invite_link}</span>
                         <br><br>
                         <b>Copy &amp; paste to your teammates so they can sign up!</b>
@@ -1355,10 +1516,10 @@ def create_multi_checkout_session(request):
             line_items=line_items,
             mode="payment",
             success_url=(
-              request.build_absolute_uri('/payment-success/') +
+              request.build_absolute_uri(reverse('payment_success')) +
               f"?session_id={{CHECKOUT_SESSION_ID}}&free={free_flag}&dates={','.join(dates)}"
             ),
-            cancel_url=request.build_absolute_uri('/payment-cancel/'),
+            cancel_url=request.build_absolute_uri(reverse('payment_cancel')),
         )
         return JsonResponse({"id": session.id})
 

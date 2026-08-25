@@ -28,6 +28,7 @@ urlpatterns = [
     path('leagues/', views.leagues_hub, name='leagues_hub'),
     path('leagues/waldy-street-league/', views.waldy_street_league, name='waldy_street_league'),
     path('leagues/waldy-street-league/register/', views.waldy_league_register, name='waldy_league_register'),
+    path('leagues/waldy-street-league/free-agent/', views.waldy_league_free_agent, name='waldy_league_free_agent'),
     path('leagues/waldy-street-league/checkout/<int:team_id>/', views.waldy_league_checkout, name='waldy_league_checkout'),
     path('api/create-league-checkout-session/<int:team_id>/', views.create_league_checkout_session, name='create_league_checkout_session'),
     path('leagues/waldy-street-league/checkout/<int:team_id>/success/', views.league_checkout_success, name='league_checkout_success'),
@@ -71,12 +72,12 @@ urlpatterns = [
     path('promo-video/', views.promo_video, name='promo_video'),
     path('waldschanke/', views.waldschanke, name='waldschanke'),
     path('api/create-waldschanke-checkout-session', views.create_waldschanke_checkout_session),
-     path('waldschanke-payment-success/', views.waldschanke_payment_success),
+     path('waldschanke-payment-success/', views.waldschanke_payment_success, name='waldschanke_payment_success'),
      path('api/register-free-spectator', views.register_free_spectator, name='register_free_spectator'),
      path('spectator-registration-success/', views.spectator_registration_success, name='spectator_registration_success'),
      path('brighton/', views.brighton, name='brighton'),
      path('api/create-brighton-checkout-session', views.create_brighton_checkout_session),
-     path('brighton-payment-success/', views.brighton_payment_success),
+     path('brighton-payment-success/', views.brighton_payment_success, name='brighton_payment_success'),
      path('api/register-brighton-spectator', views.register_brighton_spectator, name='register_brighton_spectator'),
 
 

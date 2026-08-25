@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django import forms
-from .models import Pickup, Event, EventImage, LeagueTeam, LeagueTeamPlayer
+from .models import Pickup, Event, EventImage, LeagueTeam, LeagueTeamPlayer, LeagueFreeAgent
+from django.utils import timezone
 
 import boto3
 import uuid
@@ -76,3 +77,31 @@ class LeagueTeamPlayerAdmin(admin.ModelAdmin):
     list_display = ('first_name', 'last_name', 'team', 'player', 'is_captain', 'status', 'claimed_at')
     list_filter = ('team', 'status', 'is_captain')
     search_fields = ('first_name', 'last_name', 'email', 'player__username', 'player__email')
+
+
+@admin.register(LeagueFreeAgent)
+class LeagueFreeAgentAdmin(admin.ModelAdmin):
+    list_display = ('first_name', 'last_name', 'email', 'status', 'placed_team', 'placement_email_sent', 'signed_up_at')
+    list_filter = ('league_name', 'status', 'placed_team')
+    search_fields = ('first_name', 'last_name', 'email', 'player__username', 'player__email')
+    readonly_fields = ('player', 'signed_up_at', 'placed_at', 'placement_email_sent')
+    actions = ['send_placement_email']
+
+    @admin.action(description="Send placement invite to selected free agents (requires 'Placed team' to be set)")
+    def send_placement_email(self, request, queryset):
+        from .views import send_free_agent_placement_email
+        sent, skipped = 0, 0
+        for agent in queryset:
+            if not agent.placed_team:
+                skipped += 1
+                continue
+            agent.status = 'Placed'
+            agent.placed_at = timezone.now()
+            agent.placement_email_sent = True
+            agent.save()
+            send_free_agent_placement_email(request, agent)
+            sent += 1
+        if sent:
+            self.message_user(request, f"Sent placement email to {sent} free agent(s).")
+        if skipped:
+            self.message_user(request, f"Skipped {skipped} agent(s) with no team assigned yet — set 'Placed team' first.", level='warning')

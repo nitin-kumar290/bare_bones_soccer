@@ -231,6 +231,28 @@ class LeagueTeamPlayer(models.Model):
         return f"{who} on {self.team.team_name}"
 
 
+class LeagueFreeAgent(models.Model):
+    """
+    A player without a team, waiting to be manually placed by an admin — never
+    self-service, never a visible/joinable team of its own. Placement just emails
+    them the target team's existing invite link; payment reuses that flow as-is.
+    """
+    league_name = models.CharField(max_length=100, default='Waldy Street League')
+    player = models.ForeignKey(User, on_delete=models.CASCADE, related_name='free_agent_signups')
+    first_name = models.CharField(max_length=60)
+    last_name = models.CharField(max_length=60)
+    email = models.EmailField()
+    notes = models.TextField(blank=True, help_text="Optional — availability, preferences, anything useful for placement.")
+    status = models.CharField(max_length=20, choices=[('Pending', 'Pending'), ('Placed', 'Placed')], default='Pending')
+    placed_team = models.ForeignKey(LeagueTeam, on_delete=models.SET_NULL, null=True, blank=True, related_name='free_agents_placed')
+    placement_email_sent = models.BooleanField(default=False)
+    signed_up_at = models.DateTimeField(auto_now_add=True)
+    placed_at = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name} ({self.status})"
+
+
 class OneOffEvent(models.Model):
     TICKET_TYPE_CHOICES = [
         ('player', 'Player Ticket'),

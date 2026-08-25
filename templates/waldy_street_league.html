@@ -162,7 +162,7 @@
     <h2>The Basics</h2>
     <div class="wsl-spec-grid">
         <div class="wsl-spec-card"><div class="num">4v4</div><div class="label">On the court</div></div>
-        <div class="wsl-spec-card"><div class="num">4&ndash;8</div><div class="label">Roster size</div></div>
+        <div class="wsl-spec-card"><div class="num">5&ndash;8</div><div class="label">Roster size</div></div>
         <div class="wsl-spec-card"><div class="num">7-8 Weeks</div><div class="label">Incl. playoffs</div></div>
         <div class="wsl-spec-card"><div class="num">18+</div><div class="label">Min. age</div></div>
     </div>
@@ -194,9 +194,9 @@
         <h2>Rules, Short Version</h2>
         <ul>
             <li>4v4, no goalkeepers, no corners, no jerks!</li>
-            <li>Rosters lock at 4&ndash;8 players; every team needs <span class="coed-highlight">at least 1 female player</span></li>
+            <li>Rosters lock at 5&ndash;8 players; every team needs <span class="coed-highlight">at least 1 female player</span></li>
             <li>18+, COED, all welcome</li>
-            <li>No free agents (unless needed later TBD)</li>
+            <li>No team? <a href="{% url 'waldy_league_free_agent' %}" style="color:#00b8e8;">Join as a free agent</a> and we'll place you on one</li>
             <li>Bare Bones Code of Conduct enforced</li>
         </ul>
     </div>
@@ -219,7 +219,7 @@
             <p class="wsl-price-card-label">Prepay Your Team</p>
             <div class="amount">$40</div>
             <div class="per">per player &mdash; save $10/player</div>
-            <p class="wsl-price-card-desc">Captain pays for the whole roster (4&ndash;8 players) upfront in one payment &mdash; no waiting on anyone else.</p>
+            <p class="wsl-price-card-desc">Captain pays for the whole roster (5&ndash;8 players) upfront in one payment &mdash; no waiting on anyone else.</p>
             <p class="wsl-price-card-desc" style="font-style:italic; font-size:0.75rem; opacity:0.6; margin-top:8px;">*Free agency not yet added</p>
         </div>
     </div>
@@ -241,6 +241,14 @@
         {% endif %}
     </div>
     {% endif %}
+    <p style="font-family:'Barlow Semi Condensed',sans-serif; color:#555; margin-top:24px;">Don't have a team?</p>
+    <div class="wsl-register-options">
+        {% if user.is_authenticated %}
+        <a href="{% url 'waldy_league_free_agent' %}" class="wsl-register-btn secondary">Join as a Free Agent</a>
+        {% else %}
+        <a href="{% url 'login' %}?next={% url 'waldy_league_free_agent' %}" class="wsl-register-btn secondary">Join as a Free Agent</a>
+        {% endif %}
+    </div>
 </div>
 
 <!-- FAQ -->
@@ -254,7 +262,7 @@
         </details>
         <details class="wsl-faq-item">
             <summary>I don't have a full team &mdash; can I still play?</summary>
-            <p>Registration is team-based, but you don't need everyone lined up first. Register solo as team captain then send teammates your invite link to pay for their own spot or prepay for the whole roster yourself (4&ndash;8 players, including <span class="coed-highlight">at least 1 female player</span>). Free agency added ONLY if needed at a later point.</p>
+            <p>Registration is team-based, but you don't need everyone lined up first. Register solo as team captain then send teammates your invite link to pay for their own spot or prepay for the whole roster yourself (5&ndash;8 players, including <span class="coed-highlight">at least 1 female player</span>). Prefer not to organize a team? <a href="{% url 'waldy_league_free_agent' %}" style="color:#00b8e8;">Join as a free agent</a> instead and we'll place you on one.</p>
         </details>
         <details class="wsl-faq-item">
             <summary>What level of competition is this?</summary>
@@ -262,7 +270,7 @@
         </details>
         <details class="wsl-faq-item">
             <summary>I don't have a full team ready. How can I find players?</summary>
-            <p>Join the Bare Bones WhatsApp community &mdash; it's the easiest way to link up with other players looking for a team, and it's where you'll find the freshly built Waldy Street League chat too.</p>
+            <p>Join the Bare Bones WhatsApp community &mdash; it's the easiest way to link up with other players looking for a team, and it's where you'll find the freshly built Waldy Street League chat too. Or if you'd rather not organize a team yourself, <a href="{% url 'waldy_league_free_agent' %}" style="color:#00b8e8;">join as a free agent</a> and we'll place you on a team with an open spot.</p>
             <p><a href="https://chat.whatsapp.com/IzHQHb1UODABuoABqXotvm" target="_blank" rel="noopener" style="color:#00b8e8;">Join the Bare Bones WhatsApp &rarr;</a><br><a href="https://chat.whatsapp.com/FCjKdfDz5EpFPekXnWdVNR?s=sh&p=i&mlu=0&ilr=0&amv=1" target="_blank" rel="noopener" style="color:#00b8e8;">Join the Waldy Street League chat &rarr;</a></p>
         </details>
         <details class="wsl-faq-item">
