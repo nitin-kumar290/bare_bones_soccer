@@ -708,14 +708,19 @@ def waldy_league_register(request):
 
         if registration_type == 'free_agent':
             if existing_agent:
-                return redirect(request.build_absolute_uri(reverse('waldy_league_free_agent_checkout', args=[existing_agent.id])))
+                if existing_agent.status != 'Pending':
+                    messages.info(request, "You're already in the free agent pool.")
+                    return redirect(request.build_absolute_uri(reverse('waldy_street_league')))
+                session = create_free_agent_stripe_session(request, existing_agent)
+                return redirect(session.url)
             fa_form = LeagueFreeAgentForm(request.POST)
             if fa_form.is_valid():
                 agent = fa_form.save(commit=False)
                 agent.player = request.user
                 agent.league_name = 'Waldy Street League'
                 agent.save()
-                return redirect(request.build_absolute_uri(reverse('waldy_league_free_agent_checkout', args=[agent.id])))
+                session = create_free_agent_stripe_session(request, agent)
+                return redirect(session.url)
             return render(request, 'waldy_league_register.html', {
                 'form': LeagueTeamCreateForm(), 'fa_form': fa_form,
                 'existing_agent': existing_agent, 'selected_type': 'free_agent',
@@ -772,7 +777,8 @@ def waldy_league_register(request):
                     claim_code=secrets.token_hex(4).upper(), amount=40,
                 )
 
-            return redirect(request.build_absolute_uri(reverse('waldy_league_checkout', args=[team.id])))
+            session = create_league_team_stripe_session(request, team)
+            return redirect(session.url)
 
         return render(request, 'waldy_league_register.html', {
             'form': form, 'fa_form': LeagueFreeAgentForm(initial={'email': request.user.email}),
@@ -789,20 +795,9 @@ def waldy_league_free_agent(request):
     return redirect(request.build_absolute_uri(reverse('waldy_league_register')))
 
 
-@login_required
-def waldy_league_free_agent_checkout(request, agent_id):
-    agent = get_object_or_404(LeagueFreeAgent, id=agent_id, player=request.user)
-    return render(request, 'waldy_league_free_agent_checkout.html', {'agent': agent})
-
-
-@login_required
-def create_free_agent_checkout_session(request, agent_id):
+def create_free_agent_stripe_session(request, agent):
     stripe.api_key = settings.STRIPE_SECRET_KEY
-    if request.method != 'POST':
-        return JsonResponse({'error': 'Only POST allowed'}, status=405)
-    agent = get_object_or_404(LeagueFreeAgent, id=agent_id, player=request.user)
-
-    session = stripe.checkout.Session.create(
+    return stripe.checkout.Session.create(
         payment_method_types=["card"],
         line_items=[{
             "price_data": {
@@ -816,7 +811,6 @@ def create_free_agent_checkout_session(request, agent_id):
         success_url=request.build_absolute_uri(reverse('free_agent_checkout_success', args=[agent.id])) + "?session_id={CHECKOUT_SESSION_ID}",
         cancel_url=request.build_absolute_uri(reverse('payment_cancel')),
     )
-    return JsonResponse({"id": session.id})
 
 
 @login_required
@@ -973,25 +967,8 @@ def send_free_agent_placement_email(request, agent):
         logger.exception("Failed to send free agent placement email")
 
 
-@login_required
-def waldy_league_checkout(request, team_id):
-    team = get_object_or_404(LeagueTeam, id=team_id, captain=request.user)
-    if team.payment_mode == 'team_prepay':
-        amount = team.prepaid_amount
-        already_paid = team.prepaid_status == 'Paid'
-    else:
-        amount = 50
-        already_paid = LeagueTeamPlayer.objects.filter(team=team, player=request.user, status='Paid').exists()
-    return render(request, 'waldy_league_checkout.html', {'team': team, 'amount': amount, 'already_paid': already_paid})
-
-
-@login_required
-def create_league_checkout_session(request, team_id):
+def create_league_team_stripe_session(request, team):
     stripe.api_key = settings.STRIPE_SECRET_KEY
-    if request.method != 'POST':
-        return JsonResponse({'error': 'Only POST allowed'}, status=405)
-    team = get_object_or_404(LeagueTeam, id=team_id, captain=request.user)
-
     if team.payment_mode == 'team_prepay':
         amount_cents = int(team.prepaid_amount * 100)
         name = f"{team.team_name} — Team Prepay ({team.prepaid_roster_size} players)"
@@ -999,7 +976,7 @@ def create_league_checkout_session(request, team_id):
         amount_cents = 5000
         name = f"{team.team_name} — Individual Spot"
 
-    session = stripe.checkout.Session.create(
+    return stripe.checkout.Session.create(
         payment_method_types=["card"],
         line_items=[{
             "price_data": {
@@ -1013,7 +990,6 @@ def create_league_checkout_session(request, team_id):
         success_url=request.build_absolute_uri(reverse('league_checkout_success', args=[team.id])) + "?session_id={CHECKOUT_SESSION_ID}",
         cancel_url=request.build_absolute_uri(reverse('payment_cancel')),
     )
-    return JsonResponse({"id": session.id})
 
 
 @login_required
