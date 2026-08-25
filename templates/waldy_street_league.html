@@ -136,7 +136,11 @@
     transition: transform 0.2s ease;
 }
 .wsl-register-btn:hover { transform: translateY(-2px); }
-.wsl-register-btn.primary { background: linear-gradient(135deg, #00b8e8 0%, #290a44 100%); color:#fdf5ed; box-shadow: 0 6px 20px rgba(0,184,232,0.35); }
+.wsl-register-btn.primary { background: linear-gradient(135deg, #00b8e8 0%, #290a44 100%); color:#fdf5ed; animation: wsl-cta-glow 2.2s ease-in-out infinite; }
+@keyframes wsl-cta-glow {
+    0%, 100% { box-shadow: 0 6px 20px rgba(0,184,232,0.35); }
+    50% { box-shadow: 0 6px 32px rgba(0,184,232,0.85), 0 0 20px rgba(0,184,232,0.5); }
+}
 .wsl-register-btn.secondary { background: transparent; color:#290a44; border: 1.5px solid rgba(41,10,68,0.3); }
 
 /* ── FAQ ── */
@@ -234,7 +238,7 @@
     <h2>League Full</h2>
     <p>All 6 team spots for this season are taken. Check back for the next season, or head to <a href="{% url 'leagues_hub' %}" style="color:#00b8e8;">Leagues</a> to see what else is running.</p>
     {% else %}
-    <p class="wsl-register-urgency">DON'T WAIT TO SIGN UP! &mdash; <strong>Registration ends 9/5</strong></p>
+    <p class="wsl-register-urgency"><strong>DON'T WAIT TO SIGN UP!</strong> &mdash; Registration ends 9/5</p>
     <div class="wsl-register-options">
         {% if user.is_authenticated %}
         <a href="{% url 'waldy_league_register' %}" class="wsl-register-btn primary">Register Today!</a>
