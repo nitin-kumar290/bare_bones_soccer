@@ -85,23 +85,33 @@ class LeagueFreeAgentAdmin(admin.ModelAdmin):
     list_filter = ('league_name', 'status', 'placed_team')
     search_fields = ('first_name', 'last_name', 'email', 'player__username', 'player__email')
     readonly_fields = ('player', 'signed_up_at', 'placed_at', 'placement_email_sent')
-    actions = ['send_placement_email']
+    actions = ['place_on_team']
 
-    @admin.action(description="Send placement invite to selected free agents (requires 'Placed team' to be set)")
-    def send_placement_email(self, request, queryset):
+    @admin.action(description="Place selected free agents on their assigned team (requires 'Placed team' to be set; agent must already be Paid)")
+    def place_on_team(self, request, queryset):
         from .views import send_free_agent_placement_email
-        sent, skipped = 0, 0
+        placed, skipped = 0, 0
         for agent in queryset:
-            if not agent.placed_team:
+            if not agent.placed_team or agent.status != 'Paid':
                 skipped += 1
                 continue
+            LeagueTeamPlayer.objects.create(
+                team=agent.placed_team,
+                player=agent.player,
+                first_name=agent.first_name,
+                last_name=agent.last_name,
+                email=agent.email,
+                payment_id=agent.payment_id,
+                amount=agent.amount,
+                status='Paid',
+            )
             agent.status = 'Placed'
             agent.placed_at = timezone.now()
             agent.placement_email_sent = True
             agent.save()
             send_free_agent_placement_email(request, agent)
-            sent += 1
-        if sent:
-            self.message_user(request, f"Sent placement email to {sent} free agent(s).")
+            placed += 1
+        if placed:
+            self.message_user(request, f"Placed {placed} free agent(s) on their assigned team and notified them.")
         if skipped:
-            self.message_user(request, f"Skipped {skipped} agent(s) with no team assigned yet — set 'Placed team' first.", level='warning')
+            self.message_user(request, f"Skipped {skipped} agent(s) — 'Placed team' must be set and status must be 'Paid' first.", level='warning')

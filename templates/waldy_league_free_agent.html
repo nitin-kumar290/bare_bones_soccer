@@ -18,13 +18,16 @@
         {% if existing %}
         <div class="wlr-card">
             {% if existing.status == 'Placed' %}
-                <p style="font-family:'Barlow Semi Condensed',sans-serif; color:#fdf5ed;">You've been placed on <b>{{ existing.placed_team.team_name }}</b>! Check your email for a link to pay your $50 and lock in your spot.</p>
+                <p style="font-family:'Barlow Semi Condensed',sans-serif; color:#fdf5ed;">You've been placed on <b>{{ existing.placed_team.team_name }}</b>! Your $50 is already paid &mdash; nothing else to do.</p>
+            {% elif existing.status == 'Paid' %}
+                <p style="font-family:'Barlow Semi Condensed',sans-serif; color:#fdf5ed;">You're paid up and in the free agent pool. We'll place you on a team with an open spot and email you when it happens.</p>
             {% else %}
-                <p style="font-family:'Barlow Semi Condensed',sans-serif; color:#fdf5ed;">You're in the free agent pool. No payment needed yet &mdash; we'll place you on a team with an open spot and email you when it happens.</p>
+                <p style="font-family:'Barlow Semi Condensed',sans-serif; color:#fdf5ed;">You're almost in &mdash; finish paying your $50 to join the free agent pool.</p>
+                <a href="{% url 'waldy_league_free_agent_checkout' existing.id %}" class="btn w-100 wlr-submit-btn" style="margin-top:14px; text-decoration:none;">Finish Payment</a>
             {% endif %}
         </div>
         {% else %}
-        <p class="wlr-subtitle">Don't have a team? Register as a free agent and we'll place you on one with an open spot &mdash; no payment until you're placed.</p>
+        <p class="wlr-subtitle">Don't have a team? Register as a free agent, pay your $50 upfront &mdash; same as everyone else &mdash; and we'll place you on one with an open spot.</p>
 
         <div class="wlr-card">
             <form method="POST">

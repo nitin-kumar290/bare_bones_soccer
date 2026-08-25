@@ -765,12 +765,56 @@ def waldy_league_free_agent(request):
             agent.player = request.user
             agent.league_name = 'Waldy Street League'
             agent.save()
-            send_free_agent_signup_confirmation_email(request, agent)
-            return render(request, 'waldy_league_free_agent.html', {'existing': agent})
+            return redirect(request.build_absolute_uri(reverse('waldy_league_free_agent_checkout', args=[agent.id])))
     else:
         form = LeagueFreeAgentForm(initial={'email': request.user.email})
 
     return render(request, 'waldy_league_free_agent.html', {'form': form})
+
+
+@login_required
+def waldy_league_free_agent_checkout(request, agent_id):
+    agent = get_object_or_404(LeagueFreeAgent, id=agent_id, player=request.user)
+    return render(request, 'waldy_league_free_agent_checkout.html', {'agent': agent})
+
+
+@login_required
+def create_free_agent_checkout_session(request, agent_id):
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Only POST allowed'}, status=405)
+    agent = get_object_or_404(LeagueFreeAgent, id=agent_id, player=request.user)
+
+    session = stripe.checkout.Session.create(
+        payment_method_types=["card"],
+        line_items=[{
+            "price_data": {
+                "currency": "usd",
+                "product_data": {"name": f"{agent.first_name} {agent.last_name} — Free Agent Spot, Waldy Street League"},
+                "unit_amount": 5000,
+            },
+            "quantity": 1,
+        }],
+        mode="payment",
+        success_url=request.build_absolute_uri(reverse('free_agent_checkout_success', args=[agent.id])) + "?session_id={CHECKOUT_SESSION_ID}",
+        cancel_url=request.build_absolute_uri(reverse('payment_cancel')),
+    )
+    return JsonResponse({"id": session.id})
+
+
+@login_required
+def free_agent_checkout_success(request, agent_id):
+    agent = get_object_or_404(LeagueFreeAgent, id=agent_id, player=request.user)
+    session_id = request.GET.get("session_id")
+    if session_id and agent.status == 'Pending':
+        stripe.api_key = settings.STRIPE_SECRET_KEY
+        session = stripe.checkout.Session.retrieve(session_id)
+        if session.payment_status == "paid":
+            agent.status = 'Paid'
+            agent.payment_id = session_id
+            agent.save()
+            send_free_agent_signup_confirmation_email(request, agent)
+    return render(request, 'waldy_league_free_agent.html', {'existing': agent})
 
 
 def send_free_agent_signup_confirmation_email(request, agent):
@@ -797,7 +841,7 @@ def send_free_agent_signup_confirmation_email(request, agent):
 
                 <tr>
                     <td style="font-size:16px; padding:0 24px; line-height:24px; text-align:center;">
-                    {agent.first_name}, you're on the Waldy Street League free agent list. No payment needed yet &mdash; we'll place you on a team with an open spot and email you when it happens, with a link to pay your $50 and join.
+                    {agent.first_name}, your $50 is paid and you're on the Waldy Street League free agent list. We'll place you on a team with an open spot and email you as soon as it happens &mdash; nothing else for you to do.
                     </td>
                 </tr>
 
@@ -840,7 +884,6 @@ def send_free_agent_signup_confirmation_email(request, agent):
 
 def send_free_agent_placement_email(request, agent):
     team = agent.placed_team
-    join_link = request.build_absolute_uri(reverse('waldy_league_join', args=[team.invite_code]))
     subject = f"You've Been Placed on {team.team_name} — Waldy Street League"
     html_message = f"""
     <!DOCTYPE html>
@@ -864,15 +907,7 @@ def send_free_agent_placement_email(request, agent):
 
                 <tr>
                     <td style="font-size:16px; padding:0 24px; line-height:24px; text-align:center;">
-                    {agent.first_name}, you've been placed on <b>{team.team_name}</b> in the Waldy Street League. Last step &mdash; pay your $50 to lock in your spot.
-                    </td>
-                </tr>
-
-                <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
-
-                <tr>
-                    <td style="padding:0 24px; text-align:center;">
-                    <a href="{join_link}" style="color:#fdf5ed; background:linear-gradient(135deg, #00b8e8 0%, #290a44 100%); padding:12px 28px; border-radius:50px; text-decoration:none; font-weight:bold; display:inline-block;">Pay & Join {team.team_name}</a>
+                    {agent.first_name}, you've been placed on <b>{team.team_name}</b> in the Waldy Street League. Your $50 is already paid &mdash; you're all set, nothing else to do.
                     </td>
                 </tr>
 
