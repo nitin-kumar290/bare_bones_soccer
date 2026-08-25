@@ -967,6 +967,87 @@ def send_free_agent_placement_email(request, agent):
         logger.exception("Failed to send free agent placement email")
 
 
+def send_free_agent_added_to_roster_email(request, agent):
+    team = agent.placed_team
+    roster_count = team.players.filter(status='Paid').count()
+    subject = f"New Player Added to {team.team_name} — Waldy Street League"
+    html_message = f"""
+    <!DOCTYPE html>
+    <html>
+    <body>
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#ffffff; margin:0; padding:0;">
+    <tr>
+        <td align="center" style="padding:0;">
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="width:100%; max-width:600px; margin:0 auto;">
+            <tr>
+            <td align="center" style="padding:24px;">
+                <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width:600px; width:100%; font-family:Arial, Helvetica, sans-serif; color:#111;">
+
+                <tr>
+                    <td style="font-size:22px; line-height:30px; text-align:center; font-weight:bold; color:#290a44;">
+                    ⚽ NEW PLAYER ON YOUR ROSTER
+                    </td>
+                </tr>
+
+                <tr><td style="height:8px; line-height:8px;">&nbsp;</td></tr>
+
+                <tr>
+                    <td style="font-size:16px; padding:0 24px; line-height:24px; text-align:center;">
+                    A free agent has been placed on <b>{team.team_name}</b> to fill an open roster spot &mdash; already paid, nothing owed.
+                    </td>
+                </tr>
+
+                <tr><td style="height:16px; line-height:16px;">&nbsp;</td></tr>
+
+                <tr>
+                    <td style="padding:0 24px; text-align:center;">
+                    <table role="presentation" align="center" cellspacing="0" cellpadding="0" style="border:1.5px solid #00b8e8; border-radius:10px; background:#f5fbfd;">
+                        <tr>
+                            <td style="padding:14px 20px; text-align:center; font-size:15px; line-height:22px;">
+                            <b>{agent.first_name} {agent.last_name}</b><br>{agent.email}
+                            </td>
+                        </tr>
+                    </table>
+                    </td>
+                </tr>
+
+                <tr><td style="height:16px; line-height:16px;">&nbsp;</td></tr>
+
+                <tr>
+                    <td style="font-size:14px; padding:0 24px; line-height:22px; text-align:center; color:#555;">
+                    🧢 <b>Roster:</b> {roster_count}/8 paid &mdash; add them to your team chat so they're looped in before opening night.
+                    </td>
+                </tr>
+
+                <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
+
+                <tr>
+                    <td style="font-size:16px; line-height:24px; text-align:center;">
+                    See you on the pitch!
+                    <br>
+                    The Bare Bones Crew
+                    </td>
+                </tr>
+
+                </table>
+            </td>
+            </tr>
+        </table>
+        </td>
+    </tr>
+    </table>
+
+    </body>
+    </html>
+    """
+    email = EmailMessage(subject, html_message, settings.EMAIL_HOST_USER, [team.captain.email])
+    email.content_subtype = "html"
+    try:
+        email.send()
+    except Exception:
+        logger.exception("Failed to send captain new-player notification email")
+
+
 def create_league_team_stripe_session(request, team):
     stripe.api_key = settings.STRIPE_SECRET_KEY
     if team.payment_mode == 'team_prepay':

@@ -90,11 +90,14 @@ class LeagueFreeAgentAdmin(admin.ModelAdmin):
 
     @admin.action(description="Place selected free agents on their assigned team (requires 'Placed team' to be set; agent must already be Paid)")
     def place_on_team(self, request, queryset):
-        from .views import send_free_agent_placement_email
-        placed, skipped = 0, 0
+        from .views import send_free_agent_placement_email, send_free_agent_added_to_roster_email
+        placed, skipped, full = 0, 0, 0
         for agent in queryset:
             if not agent.placed_team or agent.status != 'Paid':
                 skipped += 1
+                continue
+            if agent.placed_team.players.filter(status='Paid').count() >= 8:
+                full += 1
                 continue
             LeagueTeamPlayer.objects.create(
                 team=agent.placed_team,
@@ -111,8 +114,11 @@ class LeagueFreeAgentAdmin(admin.ModelAdmin):
             agent.placement_email_sent = True
             agent.save()
             send_free_agent_placement_email(request, agent)
+            send_free_agent_added_to_roster_email(request, agent)
             placed += 1
         if placed:
-            self.message_user(request, f"Placed {placed} free agent(s) on their assigned team and notified them.")
+            self.message_user(request, f"Placed {placed} free agent(s) on their assigned team and notified them and their captain.")
+        if full:
+            self.message_user(request, f"Skipped {full} agent(s) — their assigned team already has 8 paid players.", level='warning')
         if skipped:
             self.message_user(request, f"Skipped {skipped} agent(s) — 'Placed team' must be set and status must be 'Paid' first.", level='warning')
