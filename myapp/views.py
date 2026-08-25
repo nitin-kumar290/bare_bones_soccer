@@ -831,7 +831,7 @@ def free_agent_checkout_success(request, agent_id):
             agent.payment_id = session_id
             agent.save()
             send_free_agent_signup_confirmation_email(request, agent)
-    return redirect(request.build_absolute_uri(reverse('waldy_league_register')))
+    return render(request, 'waldy_league_free_agent_success.html', {'agent': agent})
 
 
 def send_free_agent_signup_confirmation_email(request, agent):
