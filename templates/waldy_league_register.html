@@ -104,20 +104,18 @@
                             <p style="font-family:'Barlow Semi Condensed',sans-serif; color:#fdf5ed; margin-top:20px;">You're almost in &mdash; hit continue below to finish paying your $50.</p>
                         {% endif %}
                     {% else %}
-                        <p class="wlr-field-label" style="margin-top:20px;">{{ fa_form.first_name.label }}</p>
-                        <div style="display:flex; gap:12px;">
+                        <div style="display:flex; gap:12px; margin-top:20px;">
                             <div style="flex:1;">
+                                <p class="wlr-field-label">{{ fa_form.first_name.label }}</p>
                                 {{ fa_form.first_name }}
                             </div>
                             <div style="flex:1;">
-                                <p class="wlr-field-label" style="margin-bottom:6px;">{{ fa_form.last_name.label }}</p>
+                                <p class="wlr-field-label">{{ fa_form.last_name.label }}</p>
                                 {{ fa_form.last_name }}
                             </div>
                         </div>
                         <p class="wlr-field-label" style="margin-top:14px;">{{ fa_form.email.label }}</p>
                         {{ fa_form.email }}
-                        <p class="wlr-field-label" style="margin-top:14px;">Notes <span style="text-transform:none; letter-spacing:normal; font-weight:400;">(optional)</span></p>
-                        {{ fa_form.notes }}
                     {% endif %}
                 </div>
 
@@ -160,14 +158,27 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    function setRequired(container, active) {
+        container.querySelectorAll('input, select, textarea').forEach(function(el) {
+            if (el.dataset.wasRequired === undefined) {
+                el.dataset.wasRequired = el.required ? '1' : '0';
+            }
+            el.required = active && el.dataset.wasRequired === '1';
+        });
+    }
+
     function toggleType() {
         var checked = document.querySelector('input[name="registration_type"]:checked');
         var type = checked ? checked.value : 'individual';
+        var isFreeAgent = type === 'free_agent';
 
-        teamFields.style.display = type === 'free_agent' ? 'none' : 'block';
-        freeAgentFields.style.display = type === 'free_agent' ? 'block' : 'none';
+        teamFields.style.display = isFreeAgent ? 'none' : 'block';
+        freeAgentFields.style.display = isFreeAgent ? 'block' : 'none';
         prepayFields.style.display = type === 'team_prepay' ? 'block' : 'none';
         if (type === 'team_prepay') toggleTeammateRows();
+
+        setRequired(teamFields, !isFreeAgent);
+        setRequired(freeAgentFields, isFreeAgent);
 
         document.querySelectorAll('.wlr-type-card').forEach(function(card) {
             card.classList.toggle('active', card.querySelector('input').checked);

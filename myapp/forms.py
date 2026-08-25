@@ -35,12 +35,11 @@ class LeagueTeamCreateForm(forms.ModelForm):
 class LeagueFreeAgentForm(forms.ModelForm):
     class Meta:
         model = LeagueFreeAgent
-        fields = ['first_name', 'last_name', 'email', 'notes']
+        fields = ['first_name', 'last_name', 'email']
         widgets = {
             'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}),
             'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}),
-            'notes': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Anything useful for placement — availability, who you know, etc. (optional)', 'rows': 3}),
         }
 
 
