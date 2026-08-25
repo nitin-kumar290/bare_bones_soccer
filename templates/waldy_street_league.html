@@ -238,7 +238,7 @@
     <h2>League Full</h2>
     <p>All 6 team spots for this season are taken. Check back for the next season, or head to <a href="{% url 'leagues_hub' %}" style="color:#00b8e8;">Leagues</a> to see what else is running.</p>
     {% else %}
-    <p class="wsl-register-urgency"><strong>DON'T WAIT TO SIGN UP!</strong> &mdash; Registration ends 9/5</p>
+    <p class="wsl-register-urgency">DON'T WAIT TO SIGN UP! &mdash; <strong>Registration ends 9/5</strong></p>
     <div class="wsl-register-options">
         {% if user.is_authenticated %}
         <a href="{% url 'waldy_league_register' %}" class="wsl-register-btn primary">Register Today!</a>
