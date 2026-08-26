@@ -10,7 +10,7 @@ To add a new one: tell Claude to "put this in the AWS email doc" after finishing
 
 Standalone file: `email_templates/waldy_street_league_launch.html`.
 
-One-off blast to all accounts announcing the Waldy Street League. Excited "Heard the News?!" opener, quick league specs card (4v4, Wednesday nights 6:30–8:30 PM, starts 9/9, 18+ coed), pricing ($50 own way / $40 prepay), a one-line free agency mention, then a big glowing cyan/purple "Register Your Spot!" button linking straight to the live league page to let it do the rest of the selling. Two placeholder photo slots at the bottom (`REPLACE_ME_1.jpeg` / `REPLACE_ME_2.jpeg`) for Ian to swap in real Waldy photos via S3 before sending. Standard unsubscribe footer.
+One-off blast to all accounts announcing the Waldy Street League. Excited "Heard the News?!" opener, quick league specs card (4v4, Wednesday nights 6:30–8:30 PM, starts 9/9, 18+ coed), pricing ($50 own way / $40 prepay), a one-line free agency mention, then a big glowing cyan/purple "Register Your Spot!" button linking straight to the live league page to let it do the rest of the selling. Three-photo row at the bottom (Waldygroup, Waldypickup, Waldypickup2). Standard unsubscribe footer.
 
 ```html
 <!DOCTYPE html>
@@ -114,16 +114,19 @@ Register Your Spot!
 </td>
 </tr>
 
-<!-- Photo row (placeholders — swap src via S3) -->
+<!-- Photo row -->
 <tr>
 <td style="padding:0 20px 8px;">
 <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
 <tr>
-<td width="50%" style="padding:3px;">
-    <img src="https://bare-bones-soccer.s3.amazonaws.com/images/REPLACE_ME_1.jpeg" alt="Waldy Street League" width="100%" height="220" style="display:block; border-radius:8px; width:100%; height:220px; object-fit:cover;">
+<td width="33.33%" style="padding:3px;">
+    <img src="https://bare-bones-soccer.s3.amazonaws.com/images/Waldygroup.JPEG" alt="Waldy Street League group" width="100%" height="180" style="display:block; border-radius:8px; width:100%; height:180px; object-fit:cover;">
 </td>
-<td width="50%" style="padding:3px;">
-    <img src="https://bare-bones-soccer.s3.amazonaws.com/images/REPLACE_ME_2.jpeg" alt="Waldy Street League" width="100%" height="220" style="display:block; border-radius:8px; width:100%; height:220px; object-fit:cover;">
+<td width="33.33%" style="padding:3px;">
+    <img src="https://bare-bones-soccer.s3.amazonaws.com/images/Waldypickup.JPG" alt="Waldy Street League pickup" width="100%" height="180" style="display:block; border-radius:8px; width:100%; height:180px; object-fit:cover;">
+</td>
+<td width="33.33%" style="padding:3px;">
+    <img src="https://bare-bones-soccer.s3.amazonaws.com/images/Waldypickup2.JPG" alt="Waldy Street League pickup" width="100%" height="180" style="display:block; border-radius:8px; width:100%; height:180px; object-fit:cover;">
 </td>
 </tr>
 </table>
