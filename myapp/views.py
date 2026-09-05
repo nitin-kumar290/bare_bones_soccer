@@ -1268,7 +1268,7 @@ def send_league_claim_email(request, teammate):
 
                 <tr>
                     <td style="font-size:13px; padding:0 24px; line-height:20px; text-align:center; color:#555;">
-                    Log in or create a free account. New account? Activate it via email first, then click this link again &mdash; logging in alone won't confirm your spot.
+                    New account? Activate it via email first, then click this link again &mdash; logging in alone won't confirm your spot. Log in or create a free account.
                     </td>
                 </tr>
 
@@ -1848,7 +1848,7 @@ def send_tournament_claim_email(request, teammate):
 
                 <tr>
                     <td style="font-size:13px; padding:0 24px; line-height:20px; text-align:center; color:#555;">
-                    Log in or create a free account. New account? Activate it via email first, then click this link again &mdash; logging in alone won't confirm your spot.
+                    New account? Activate it via email first, then click this link again &mdash; logging in alone won't confirm your spot. Log in or create a free account.
                     </td>
                 </tr>
 
