@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}You're In! | Backyard 3v3 Tournament{% endblock %}
+{% block hero_background %}{% static 'images/banner_small.png' %}{% endblock %}
+{% block announcement_bar %}{% endblock %}
+
+{% block content %}
+<div class="wlr-page-bg py-5">
+    <div class="container text-center" style="position:relative; z-index:1; max-width:560px;">
+        <p class="wlr-eyebrow">Payment Confirmed</p>
+        <h1 class="wlr-title">You're On {{ team.team_name }}</h1>
+        <div class="wlr-rule"></div>
+        <div class="wlr-card">
+            <div class="wlr-check-email">📧 Check Your Email to Confirm</div>
+            <p style="font-family:'Barlow Semi Condensed',sans-serif; color:#fdf5ed;">Your spot is locked in. See you October 2nd at Insight Soccer Training.</p>
+        </div>
+    </div>
+</div>
+
+<style>
+    body { background: #fdf5ed; }
+    .wlr-page-bg {
+        background: linear-gradient(135deg, #08070b 0%, #290a44 100%);
+        position: relative; overflow: hidden;
+        margin: 32px auto 40px; max-width: 1140px; border-radius: 20px;
+    }
+    @media (max-width: 767px) { .wlr-page-bg { margin: 20px 16px 28px; border-radius: 14px; } }
+    .wlr-eyebrow { font-family:'Oswald',sans-serif; font-size:0.85rem; font-weight:700; letter-spacing:4px; text-transform:uppercase; color:#00b8e8; margin-bottom:4px; }
+    .wlr-title { color:#fdf5ed; font-family:'Oswald',sans-serif; font-weight:700; letter-spacing:1px; text-transform:uppercase; margin-bottom:0; }
+    .wlr-rule { width:60px; height:3px; background:#00b8e8; margin:14px auto; border-radius:2px; }
+    .wlr-card {
+        max-width: 460px; margin: 24px auto 0;
+        background: rgba(8,7,11,0.7); backdrop-filter: blur(10px);
+        border: 1.5px solid rgba(0,184,232,0.4); border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0,184,232,0.18), 0 0 0 1px rgba(41,10,68,0.4);
+        padding: 28px 30px 32px;
+    }
+    .wlr-check-email {
+        font-family:'Oswald',sans-serif; font-weight:700; letter-spacing:1px; text-transform:uppercase;
+        font-size:1rem; color:#08070b; background:#00b8e8; border-radius:10px; padding:12px 16px;
+        margin-bottom:18px;
+    }
+</style>
+{% endblock %}

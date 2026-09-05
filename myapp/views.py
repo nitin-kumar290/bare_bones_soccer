@@ -8,7 +8,7 @@ import stripe
 from datetime import datetime, timedelta
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-from .forms import PersonForm, UserRegistrationForm, UserLoginForm, PlayerProfileForm, UnsubscribeForm, EventRSVPForm, SponsorInquiryForm, ReferralSourceForm, LeagueTeamCreateForm, LeagueFreeAgentForm
+from .forms import PersonForm, UserRegistrationForm, UserLoginForm, PlayerProfileForm, UnsubscribeForm, EventRSVPForm, SponsorInquiryForm, ReferralSourceForm, LeagueTeamCreateForm, LeagueFreeAgentForm, TournamentTeamCreateForm
 from .models import Person, Pickup, Event, EventImage, AttendancePayment, EmailUnsubscribe, EventRSVP, OneOffEvent, Partner, ReferralSource, LeagueTeam, LeagueTeamPlayer, LeagueFreeAgent
 from django.core.mail import send_mail, EmailMessage
 from django.contrib import messages
@@ -487,10 +487,20 @@ def get_events(request):
 def events(request):
     events = Event.objects.all()
 
+    next_event = events.filter(start_time__gte=timezone.now()).order_by('start_time').first()
+    if next_event:
+        return render(request, 'event_detail.html', {
+            'event': next_event,
+            'gallery_images': next_event.images.all(),
+            'event_image_url': next_event.image.url if next_event.image else None,
+        })
+
     seen_urls = set()
     carousel_images = []
     for event in events:
-        for url, label in [(event.image.url, event.title)] + [(img.image.url, '') for img in event.images.all()]:
+        image_entries = [(event.image.url, event.title)] if event.image else []
+        image_entries += [(img.image.url, '') for img in event.images.all()]
+        for url, label in image_entries:
             if url not in seen_urls:
                 seen_urls.add(url)
                 carousel_images.append({'url': url, 'label': label})
@@ -643,12 +653,6 @@ def datadeletion(request):
     return render(request, 'data-deletion.html')
 
 
-def event_detail(request, event_id):
-    event = get_object_or_404(Event, id=event_id)  # Fetch specific event
-    gallery_images = event.images.all()  # Fetch associated gallery images
-    return render(request, 'event_detail.html', {'event': event, 'gallery_images': gallery_images})
-
-
 def get_presigned_url(request):
     """Generate a pre-signed S3 upload URL."""
     s3_client = boto3.client('s3', region_name=settings.AWS_S3_REGION_NAME)
@@ -698,7 +702,7 @@ def waldy_street_league(request):
 @login_required
 def waldy_league_register(request):
     from .context_processors import WALDY_LEAGUE_TEAM_CAP
-    if LeagueTeam.objects.filter(league_name='Waldy Street League').count() >= WALDY_LEAGUE_TEAM_CAP:
+    if LeagueTeam.paid_count('Waldy Street League') >= WALDY_LEAGUE_TEAM_CAP:
         return render(request, 'waldy_league_register.html', {'league_full': True})
 
     existing_agent = LeagueFreeAgent.objects.filter(player=request.user, league_name='Waldy Street League').first()
@@ -1545,6 +1549,502 @@ def waldy_league_claim(request, claim_code):
         return redirect(request.build_absolute_uri(reverse('waldy_league_claim', args=[claim_code])))
 
     return render(request, 'waldy_league_claim.html', {
+        'slot': slot, 'team': slot.team,
+        'already_claimed_by_other': already_claimed_by_other,
+        'account_conflict': account_conflict,
+    })
+
+
+# ============================================================
+# BACKYARD 3V3 TOURNAMENT — team registration (individual pay-in
+# and team prepay), mirrors the Waldy Street League flow above
+# but reuses the same LeagueTeam/LeagueTeamPlayer models, scoped
+# by league_name='Backyard 3v3 Tournament'. $20/player flat, no
+# price discount for prepay, roster 3-6, no free agent option.
+# ============================================================
+TOURNAMENT_LEAGUE_NAME = 'Backyard 3v3 Tournament'
+TOURNAMENT_PRICE = 20
+TOURNAMENT_ROSTER_CAP = 6
+
+
+@login_required
+def backyard_tournament_register(request):
+    if request.method == 'POST':
+        registration_type = request.POST.get('registration_type', 'individual')
+        post_data = request.POST.copy()
+        post_data['payment_mode'] = registration_type
+        form = TournamentTeamCreateForm(post_data)
+        if form.is_valid():
+            payment_mode = form.cleaned_data['payment_mode']
+            roster_size = form.cleaned_data.get('prepaid_roster_size')
+            teammates = []
+
+            if payment_mode == 'team_prepay':
+                if not roster_size:
+                    messages.error(request, "Select a roster size.")
+                    return render(request, 'backyard_tournament_register.html', {
+                        'form': form, 'selected_type': registration_type,
+                    })
+                for i in range(1, int(roster_size)):
+                    fn = request.POST.get(f'teammate_first_name_{i}', '').strip()
+                    ln = request.POST.get(f'teammate_last_name_{i}', '').strip()
+                    em = request.POST.get(f'teammate_email_{i}', '').strip()
+                    if not (fn and ln and em):
+                        messages.error(request, "Enter a first name, last name, and email for every teammate on your roster — each of them will get an email to confirm their spot with their own Bare Bones account.")
+                        return render(request, 'backyard_tournament_register.html', {
+                            'form': form, 'selected_type': registration_type,
+                        })
+                    teammates.append((fn, ln, em))
+
+            team = form.save(commit=False)
+            team.captain = request.user
+            team.league_name = TOURNAMENT_LEAGUE_NAME
+            if payment_mode == 'team_prepay' and roster_size:
+                team.prepaid_amount = int(roster_size) * TOURNAMENT_PRICE
+            team.save()
+
+            LeagueTeamPlayer.objects.get_or_create(
+                team=team, player=request.user,
+                defaults={
+                    'is_captain': True,
+                    'first_name': form.cleaned_data['captain_first_name'],
+                    'last_name': form.cleaned_data['captain_last_name'],
+                    'email': request.user.email,
+                    'amount': TOURNAMENT_PRICE,
+                }
+            )
+
+            for fn, ln, em in teammates:
+                LeagueTeamPlayer.objects.create(
+                    team=team, first_name=fn, last_name=ln, email=em,
+                    claim_code=secrets.token_hex(4).upper(), amount=TOURNAMENT_PRICE,
+                )
+
+            session = create_tournament_team_stripe_session(request, team)
+            return redirect(session.url)
+
+        return render(request, 'backyard_tournament_register.html', {
+            'form': form, 'selected_type': registration_type,
+        })
+    else:
+        form = TournamentTeamCreateForm()
+
+    return render(request, 'backyard_tournament_register.html', {'form': form})
+
+
+def create_tournament_team_stripe_session(request, team):
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    if team.payment_mode == 'team_prepay':
+        amount_cents = int(team.prepaid_amount * 100)
+        name = f"{team.team_name} — Team Prepay ({team.prepaid_roster_size} players)"
+    else:
+        amount_cents = TOURNAMENT_PRICE * 100
+        name = f"{team.team_name} — Individual Spot"
+
+    return stripe.checkout.Session.create(
+        payment_method_types=["card"],
+        line_items=[{
+            "price_data": {
+                "currency": "usd",
+                "product_data": {"name": name},
+                "unit_amount": amount_cents,
+            },
+            "quantity": 1,
+        }],
+        mode="payment",
+        success_url=request.build_absolute_uri(reverse('tournament_checkout_success', args=[team.id])) + "?session_id={CHECKOUT_SESSION_ID}",
+        cancel_url=request.build_absolute_uri(reverse('payment_cancel')),
+    )
+
+
+@login_required
+def tournament_checkout_success(request, team_id):
+    team = get_object_or_404(LeagueTeam, id=team_id, captain=request.user)
+    session_id = request.GET.get("session_id")
+    if session_id:
+        stripe.api_key = settings.STRIPE_SECRET_KEY
+        session = stripe.checkout.Session.retrieve(session_id)
+        if session.payment_status == "paid":
+            if team.payment_mode == 'team_prepay':
+                if team.prepaid_status != 'Paid':
+                    team.prepaid_status = 'Paid'
+                    team.prepaid_payment_id = session_id
+                    team.save()
+                    team.players.update(status='Paid', payment_id=session_id)
+                    send_tournament_captain_confirmation_email(request, team)
+                    for teammate in team.players.filter(player__isnull=True):
+                        send_tournament_claim_email(request, teammate)
+            else:
+                was_already_paid = LeagueTeamPlayer.objects.filter(team=team, player=request.user, status='Paid').exists()
+                LeagueTeamPlayer.objects.filter(team=team, player=request.user).update(status='Paid', payment_id=session_id)
+                if not was_already_paid:
+                    send_tournament_captain_confirmation_email(request, team)
+    return render(request, 'backyard_tournament_checkout_success.html', {'team': team})
+
+
+def send_tournament_captain_confirmation_email(request, team):
+    invite_link = request.build_absolute_uri(reverse('tournament_join', args=[team.invite_code]))
+
+    if team.payment_mode == 'team_prepay':
+        subject = f"Team Payment Confirmed — {team.team_name} is Locked In for the Backyard 3v3 Tournament"
+        teammates = team.players.filter(is_captain=False)
+        names = "<br>".join(f"{p.first_name} {p.last_name}" for p in teammates)
+        roster_html = ""
+        if names:
+            roster_html = f"""
+            <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
+            <tr>
+                <td style="font-size:15px; padding:0 24px; text-align:center; line-height:24px;">
+                <b>Your Roster:</b><br>{names}
+                </td>
+            </tr>
+            <tr><td style="height:14px; line-height:14px;">&nbsp;</td></tr>
+            <tr>
+                <td style="font-size:13px; padding:0 24px; text-align:center; line-height:20px; color:#555;">
+                Each teammate above will get their own email to confirm their spot with a Bare Bones account &mdash; everyone needs one for game-day roster verification.
+                </td>
+            </tr>
+            """
+        body_details = f"""
+            <tr>
+                <td style="font-size:16px; padding:24px; text-align:center; line-height:26px;">
+                💰 <b>${team.prepaid_amount} paid</b> for {team.prepaid_roster_size} players<br>
+                🧢 <b>Team:</b> {team.team_name}
+                </td>
+            </tr>
+            {roster_html}
+        """
+    else:
+        subject = f"You're In! {team.team_name} — Backyard 3v3 Tournament Confirmed"
+        body_details = f"""
+            <tr>
+                <td style="font-size:16px; padding:24px 24px 8px; text-align:center; line-height:26px;">
+                💰 <b>${TOURNAMENT_PRICE} paid</b> — your spot is locked in<br>
+                🧢 <b>Team:</b> {team.team_name}
+                </td>
+            </tr>
+            <tr><td style="height:12px; line-height:12px;">&nbsp;</td></tr>
+            <tr>
+                <td style="padding:0 24px 8px; text-align:center;">
+                <table role="presentation" align="center" cellspacing="0" cellpadding="0" style="border:1.5px solid #00b8e8; border-radius:10px; background:#f5fbfd;">
+                    <tr>
+                        <td style="padding:16px 20px; text-align:center; font-size:14px; line-height:22px;">
+                        <b>Share this with your teammates:</b><br>
+                        You need 3&ndash;6 players total, coed &mdash; each person pays their own ${TOURNAMENT_PRICE} spot. Send them the link BELOW!<br><br>
+                        <span style="font-family:monospace; font-size:13px; color:#08070b; background:#fff; border:1px solid #ddd; border-radius:6px; padding:8px 12px; display:inline-block; margin-top:4px; word-break:break-all;">{invite_link}</span>
+                        <br><br>
+                        <b>Copy &amp; paste to your teammates so they can sign up!</b>
+                        </td>
+                    </tr>
+                </table>
+                </td>
+            </tr>
+        """
+
+    html_message = f"""
+    <!DOCTYPE html>
+    <html>
+    <body>
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#ffffff; margin:0; padding:0;">
+    <tr>
+        <td align="center" style="padding:0;">
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="width:100%; max-width:600px; margin:0 auto;">
+            <tr>
+            <td align="center" style="padding:24px;">
+                <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width:600px; width:100%; font-family:Arial, Helvetica, sans-serif; color:#111;">
+
+                <tr>
+                    <td style="font-size:22px; line-height:30px; text-align:center; font-weight:bold; color:#290a44;">
+                    ⚽ BACKYARD 3V3 TOURNAMENT CONFIRMATION
+                    </td>
+                </tr>
+
+                <tr><td style="height:8px; line-height:8px;">&nbsp;</td></tr>
+
+                <tr>
+                    <td style="font-size:16px; line-height:24px; text-align:center;">
+                        You're all set! Details below.
+                    </td>
+                </tr>
+
+                {body_details}
+
+                <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
+
+                <tr>
+                    <td style="font-size:14px; padding:0 24px; line-height:22px; text-align:center; color:#555;">
+                    📅 See you <b>October 2nd</b> at Insight Soccer Training &mdash; start time and bracket will be posted soon.
+                    </td>
+                </tr>
+
+                <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
+
+                <tr>
+                    <td style="font-size:16px; line-height:24px; text-align:center;">
+                    See you on the pitch!
+                    <br>
+                    The Bare Bones Crew
+                    </td>
+                </tr>
+
+                </table>
+            </td>
+            </tr>
+        </table>
+        </td>
+    </tr>
+    </table>
+
+    </body>
+    </html>
+    """
+    email = EmailMessage(subject, html_message, settings.EMAIL_HOST_USER, [request.user.email])
+    email.content_subtype = "html"
+    try:
+        email.send()
+    except Exception:
+        logger.exception("Failed to send tournament captain confirmation email")
+
+
+def send_tournament_claim_email(request, teammate):
+    claim_link = request.build_absolute_uri(reverse('tournament_claim', args=[teammate.claim_code]))
+    team = teammate.team
+    subject = f"Confirm Your Spot on {team.team_name} — Backyard 3v3 Tournament"
+    html_message = f"""
+    <!DOCTYPE html>
+    <html>
+    <body>
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#ffffff; margin:0; padding:0;">
+    <tr>
+        <td align="center" style="padding:0;">
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="width:100%; max-width:600px; margin:0 auto;">
+            <tr>
+            <td align="center" style="padding:24px;">
+                <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width:600px; width:100%; font-family:Arial, Helvetica, sans-serif; color:#111;">
+
+                <tr>
+                    <td style="font-size:22px; line-height:30px; text-align:center; font-weight:bold; color:#290a44;">
+                    ⚽ YOU'RE ON THE ROSTER
+                    </td>
+                </tr>
+
+                <tr><td style="height:8px; line-height:8px;">&nbsp;</td></tr>
+
+                <tr>
+                    <td style="font-size:16px; padding:0 24px; line-height:24px; text-align:center;">
+                    {teammate.first_name}, your captain already paid your ${TOURNAMENT_PRICE} for <b>{team.team_name}</b> in the Backyard 3v3 Tournament. One last step &mdash; confirm your spot with a Bare Bones account so we can verify you on game day.
+                    </td>
+                </tr>
+
+                <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
+
+                <tr>
+                    <td style="padding:0 24px; text-align:center;">
+                    <a href="{claim_link}" style="color:#fdf5ed; background:linear-gradient(135deg, #00b8e8 0%, #290a44 100%); padding:12px 28px; border-radius:50px; text-decoration:none; font-weight:bold; display:inline-block;">Confirm My Spot</a>
+                    </td>
+                </tr>
+
+                <tr><td style="height:16px; line-height:16px;">&nbsp;</td></tr>
+
+                <tr>
+                    <td style="font-size:13px; padding:0 24px; line-height:20px; text-align:center; color:#555;">
+                    Log in or create a free account. New account? Activate it via email first, then click this link again &mdash; logging in alone won't confirm your spot.
+                    </td>
+                </tr>
+
+                <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
+
+                <tr>
+                    <td style="font-size:14px; padding:0 24px; line-height:22px; text-align:center; color:#555;">
+                    📅 See you <b>October 2nd</b> at Insight Soccer Training &mdash; start time and bracket will be posted soon.
+                    </td>
+                </tr>
+
+                <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
+
+                <tr>
+                    <td style="font-size:16px; line-height:24px; text-align:center;">
+                    See you on the pitch!
+                    <br>
+                    The Bare Bones Crew
+                    </td>
+                </tr>
+
+                </table>
+            </td>
+            </tr>
+        </table>
+        </td>
+    </tr>
+    </table>
+
+    </body>
+    </html>
+    """
+    email = EmailMessage(subject, html_message, settings.EMAIL_HOST_USER, [teammate.email])
+    email.content_subtype = "html"
+    try:
+        email.send()
+    except Exception:
+        logger.exception("Failed to send tournament claim email")
+
+
+@login_required
+def tournament_join(request, invite_code):
+    team = get_object_or_404(LeagueTeam, invite_code=invite_code, league_name=TOURNAMENT_LEAGUE_NAME)
+    roster_count = team.players.filter(status='Paid').count()
+    already_joined = team.players.filter(player=request.user, status='Paid').exists()
+    is_full = roster_count >= TOURNAMENT_ROSTER_CAP
+    return render(request, 'backyard_tournament_join.html', {
+        'team': team, 'roster_count': roster_count, 'already_joined': already_joined, 'is_full': is_full
+    })
+
+
+@login_required
+def create_tournament_join_checkout_session(request, invite_code):
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Only POST allowed'}, status=405)
+    team = get_object_or_404(LeagueTeam, invite_code=invite_code, league_name=TOURNAMENT_LEAGUE_NAME)
+    if team.players.filter(status='Paid').count() >= TOURNAMENT_ROSTER_CAP:
+        return JsonResponse({'error': "This team's roster is already full — no more spots available."}, status=400)
+
+    try:
+        body = json.loads(request.body or '{}')
+    except json.JSONDecodeError:
+        body = {}
+    first_name = body.get('first_name', '').strip()
+    last_name = body.get('last_name', '').strip()
+    if not (first_name and last_name):
+        return JsonResponse({'error': 'First and last name are required'}, status=400)
+
+    session = stripe.checkout.Session.create(
+        payment_method_types=["card"],
+        line_items=[{
+            "price_data": {
+                "currency": "usd",
+                "product_data": {"name": f"Join {team.team_name} — Backyard 3v3 Tournament"},
+                "unit_amount": TOURNAMENT_PRICE * 100,
+            },
+            "quantity": 1,
+        }],
+        mode="payment",
+        metadata={"first_name": first_name, "last_name": last_name},
+        success_url=request.build_absolute_uri(reverse('tournament_join_success', args=[invite_code])) + "?session_id={CHECKOUT_SESSION_ID}",
+        cancel_url=request.build_absolute_uri(reverse('payment_cancel')),
+    )
+    return JsonResponse({"id": session.id})
+
+
+@login_required
+def tournament_join_success(request, invite_code):
+    team = get_object_or_404(LeagueTeam, invite_code=invite_code, league_name=TOURNAMENT_LEAGUE_NAME)
+    session_id = request.GET.get("session_id")
+    if session_id and not LeagueTeamPlayer.objects.filter(team=team, player=request.user, status='Paid').exists():
+        stripe.api_key = settings.STRIPE_SECRET_KEY
+        session = stripe.checkout.Session.retrieve(session_id)
+        if session.payment_status == "paid":
+            LeagueTeamPlayer.objects.update_or_create(
+                team=team, player=request.user,
+                defaults={
+                    'status': 'Paid', 'payment_id': session_id, 'amount': TOURNAMENT_PRICE,
+                    'first_name': session.metadata.get('first_name', ''),
+                    'last_name': session.metadata.get('last_name', ''),
+                    'email': request.user.email,
+                }
+            )
+            send_tournament_player_join_confirmation_email(request, team)
+    return render(request, 'backyard_tournament_join_success.html', {'team': team})
+
+
+def send_tournament_player_join_confirmation_email(request, team):
+    roster_count = team.players.filter(status='Paid').count()
+    subject = f"You're In! You Joined {team.team_name} — Backyard 3v3 Tournament"
+    html_message = f"""
+    <!DOCTYPE html>
+    <html>
+    <body>
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#ffffff; margin:0; padding:0;">
+    <tr>
+        <td align="center" style="padding:0;">
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="width:100%; max-width:600px; margin:0 auto;">
+            <tr>
+            <td align="center" style="padding:24px;">
+                <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width:600px; width:100%; font-family:Arial, Helvetica, sans-serif; color:#111;">
+
+                <tr>
+                    <td style="font-size:22px; line-height:30px; text-align:center; font-weight:bold; color:#290a44;">
+                    ⚽ BACKYARD 3V3 TOURNAMENT CONFIRMATION
+                    </td>
+                </tr>
+
+                <tr><td style="height:8px; line-height:8px;">&nbsp;</td></tr>
+
+                <tr>
+                    <td style="font-size:16px; line-height:24px; text-align:center;">
+                        You're on the roster! Details below.
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="font-size:16px; padding:24px; text-align:center; line-height:26px;">
+                    💰 <b>${TOURNAMENT_PRICE} paid</b> — your spot is locked in<br>
+                    🧢 <b>Team:</b> {team.team_name}<br>
+                    👥 <b>Roster:</b> {roster_count}/{TOURNAMENT_ROSTER_CAP} paid
+                    </td>
+                </tr>
+
+                <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
+
+                <tr>
+                    <td style="font-size:14px; padding:0 24px; line-height:22px; text-align:center; color:#555;">
+                    📅 See you <b>October 2nd</b> at Insight Soccer Training &mdash; start time and bracket will be posted soon.
+                    </td>
+                </tr>
+
+                <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
+
+                <tr>
+                    <td style="font-size:16px; line-height:24px; text-align:center;">
+                    See you on the pitch!
+                    <br>
+                    The Bare Bones Crew
+                    </td>
+                </tr>
+
+                </table>
+            </td>
+            </tr>
+        </table>
+        </td>
+    </tr>
+    </table>
+
+    </body>
+    </html>
+    """
+    email = EmailMessage(subject, html_message, settings.EMAIL_HOST_USER, [request.user.email])
+    email.content_subtype = "html"
+    try:
+        email.send()
+    except Exception:
+        logger.exception("Failed to send tournament player join confirmation email")
+
+
+@login_required
+def tournament_claim(request, claim_code):
+    slot = get_object_or_404(LeagueTeamPlayer, claim_code=claim_code, team__league_name=TOURNAMENT_LEAGUE_NAME)
+    already_claimed_by_other = slot.player is not None and slot.player != request.user
+    account_conflict = LeagueTeamPlayer.objects.filter(team=slot.team, player=request.user).exclude(id=slot.id).exists()
+
+    if request.method == 'POST' and slot.player is None and not account_conflict:
+        slot.player = request.user
+        slot.claimed_at = timezone.now()
+        slot.save()
+        messages.success(request, "You're confirmed on the roster!")
+        return redirect(request.build_absolute_uri(reverse('tournament_claim', args=[claim_code])))
+
+    return render(request, 'backyard_tournament_claim.html', {
         'slot': slot, 'team': slot.team,
         'already_claimed_by_other': already_claimed_by_other,
         'account_conflict': account_conflict,

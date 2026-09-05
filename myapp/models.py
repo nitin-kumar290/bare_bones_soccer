@@ -56,23 +56,27 @@ class Pickup(models.Model):
 
 class Event(models.Model):
     title = models.CharField(max_length=200)
-    description = models.TextField(blank=True, null=True)
+    subtitle = models.CharField(max_length=200, blank=True, null=True, help_text="Short eyebrow line above the title, e.g. '3v3 · One Day · October 2'")
+    description = models.TextField(blank=True, null=True, help_text="Shown as the intro/concept paragraph on the event page")
+    location_name = models.CharField(max_length=200, blank=True, null=True)
     start_time = models.DateTimeField()
     end_time = models.DateTimeField(null=True)
     #image = models.ImageField(upload_to='events/', blank=True, null=True)  # Main event image
     image = models.ImageField(
         storage=EventMediaStorage(),
         upload_to='',  # Empty since we defined location in storage class
-        blank=True, 
+        blank=True,
         null=True
     )
+    rules_text = models.TextField(blank=True, null=True, help_text="One rule per line — shown as a bulleted list")
+    registration_url = models.CharField(max_length=500, blank=True, null=True, help_text="Leave blank to show a 'Registration Opens Soon' placeholder instead of a button")
+    registration_note = models.CharField(max_length=300, blank=True, null=True, help_text="Short line shown under the registration button/placeholder")
+    schedule_note = models.CharField(max_length=300, blank=True, null=True, help_text="One-line summary above the schedule rows, e.g. '22 games · 5-min games, 2-min breaks · Kickoff 6:30 PM'")
+    hero_video_url = models.URLField(max_length=500, blank=True, null=True, help_text="Autoplaying muted background video for the hero — takes priority over the image if both are set")
+    registration_deadline_note = models.CharField(max_length=100, blank=True, null=True, help_text="Short urgency line shown above the hero CTA button, e.g. 'Registration closes 9/30'")
 
     def __str__(self):
         return self.title
-
-    def get_absolute_url(self):
-        from django.urls import reverse
-        return reverse('event_detail', args=[str(self.id)])
 
 class EventImage(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='images')  # Links multiple images to an event
@@ -81,6 +85,65 @@ class EventImage(models.Model):
 
     def __str__(self):
         return f"Image for {self.event.title}"
+
+
+class EventSpec(models.Model):
+    """One card in the format-spec grid on the event detail page, e.g. '3v3' / 'On the field'."""
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='specs')
+    value = models.CharField(max_length=50, help_text="The big number/word, e.g. '3v3' or '18+'")
+    label = models.CharField(max_length=100, help_text="The small caption under it, e.g. 'On the field'")
+    highlight = models.BooleanField(default=False, help_text="Renders with the accent gradient treatment (use for the standout fact, e.g. the date)")
+    compact = models.BooleanField(default=False, help_text="Shrinks the label and keeps it on one line — use for a longer value like a full location name")
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['order', 'id']
+
+    def __str__(self):
+        return f"{self.value} — {self.label}"
+
+
+class EventPricingOption(models.Model):
+    """One card in the pricing/registration-options grid, e.g. 'Pay Your Own Way' / '$20' / 'per player'."""
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='pricing_options')
+    label = models.CharField(max_length=100, help_text="e.g. 'Pay Your Own Way' or 'Prepay Your Team'")
+    amount = models.CharField(max_length=20, help_text="e.g. '$20'")
+    per_text = models.CharField(max_length=50, blank=True, help_text="e.g. 'per player' or 'per player — save $10/player'")
+    description = models.CharField(max_length=300, help_text="Short explanation of how this path works")
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['order', 'id']
+
+    def __str__(self):
+        return f"{self.label} — {self.amount}"
+
+
+class EventScheduleRow(models.Model):
+    """One row in the tournament/season structure card, e.g. 'Round Robin' / '15 games — everyone plays once'."""
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='schedule_rows')
+    label = models.CharField(max_length=100, help_text="e.g. 'Round Robin' or 'Championship'")
+    description = models.CharField(max_length=300, help_text="e.g. '15 games — every team plays every other team once'")
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['order', 'id']
+
+    def __str__(self):
+        return self.label
+
+
+class EventFAQ(models.Model):
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='faqs')
+    question = models.CharField(max_length=300)
+    answer = models.TextField()
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['order', 'id']
+
+    def __str__(self):
+        return self.question
     
 
 # class SportsStable(models.Model):
@@ -203,6 +266,16 @@ class LeagueTeam(models.Model):
 
     def __str__(self):
         return f"{self.team_name} ({self.league_name})"
+
+    @classmethod
+    def paid_count(cls, league_name):
+        # A team row is saved on form submit, before Stripe checkout completes,
+        # so an unfiltered count() includes abandoned/never-paid registrations.
+        from django.db.models import Q
+        return cls.objects.filter(league_name=league_name).filter(
+            Q(payment_mode='individual', players__is_captain=True, players__status='Paid') |
+            Q(payment_mode='team_prepay', prepaid_status='Paid')
+        ).distinct().count()
 
 
 class LeagueTeamPlayer(models.Model):

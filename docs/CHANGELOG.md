@@ -4,6 +4,26 @@ A running log of site changes made through Claude Code, most recent first.
 
 ---
 
+## 2026-09-05
+
+### Backyard 3v3 Tournament: built end to end and deployed
+New one-day, 6-team, $20/player tournament (Insight Soccer Training, October 2, 2026), reusing as much of the proven Street League infrastructure as possible rather than inventing a parallel system.
+
+- **Registration/payment**: reuses `LeagueTeam`/`LeagueTeamPlayer` directly, scoped by `league_name='Backyard 3v3 Tournament'` — no new tables needed for this part. Both paths from Street League carried over: pay-your-own-way with a captain-shared invite link, or captain prepay for the whole roster (3-6 players). Flat $20/player, no prepay discount, no free-agent path. New views/templates: `backyard_tournament_register/join/checkout_success/join_success/claim`, all mirroring the Street League flow's Stripe checkout pattern and Gmail-SMTP confirmation emails (captain confirmation, teammate claim-your-spot, player-joined-via-link).
+- **Event content system, built generic (not tournament-specific)**: `event_detail.html` is now a single reusable template driven entirely by the `Event` model plus four new related models — `EventSpec` (format grid), `EventFAQ`, `EventScheduleRow` (round-by-round breakdown), `EventPricingOption` (registration option cards). All admin-editable inline on the Event, so the next one-off event doesn't need new template code. New migrations `0025`-`0030`, applied to Neon.
+- **Events page rebuilt**: `/events/` used to show a permanently-empty "No Events Scheduled" state (dead code — the real card grid underneath had been commented out for months, and Django still evaluates template tags inside HTML comments, which was the source of a live crash bug found and fixed along the way: unguarded `event.image.url` access for any event without a photo). Replaced with real logic: `/events/` now renders whichever event is soonest upcoming, in full, directly — no intermediate click-through card. Removed the now-redundant `/events/<id>/` URL and `event_detail` view/`get_absolute_url` entirely after confirming there's no real need for simultaneous multi-event support or a separate permalink.
+- **Format**: round robin (all 6 teams play each other once, 5 games/team) feeding a seeded playoff bracket (Quarterfinal → Semifinal → Championship, plus a 3rd Place Game) — every team keeps a mathematical path to the championship rather than being locked out after group play. 21 games total, 5-minute games, kickoff 6:30 PM.
+- **Hero video**: sourced from a portrait (9:16) drone clip of the actual Insight backyard field. Rotated 90° before cropping — this repurposes the large empty margin above/below the field in the portrait shot into left/right margin once landscape, which is what made it possible to hit Street League's ~2.31:1 hero ratio while still keeping the entire field in frame. Cropped, re-encoded (960×416, audio stripped), and uploaded to S3 as `videos/InsightTournamentHero.mp4`.
+
+### Fixed: abandoned registrations were counting toward the Street League 6-team cap
+`LeagueTeam` rows are created the moment someone submits the registration form — before Stripe checkout completes. Anyone who started registering but never finished payment left a permanent row behind with no cleanup. The team-count check (`WALDY_LEAGUE_FULL` cap, and the register view's own duplicate check) both used a raw unfiltered `.count()`, so these zombie rows counted the same as real paid teams. This is what caused the league to falsely show "full" and hide the site-wide announcement banner. Added `LeagueTeam.paid_count()`, which only counts a team if its captain (individual mode) or the roster prepay (team_prepay mode) actually shows Paid, and swapped both call sites to use it.
+
+### Data cleanup on the live Neon DB
+Two duplicate/abandoned team registrations were found and removed after a captain and a teammate each accidentally created a second team row instead of using the real one — both had payment_id `None` (never actually charged), confirmed before deleting. No refund was needed since no charge existed. The real, paid team ("Los Bandidos FC") was untouched.
+
+### Found and fixed a stage-mapping gap in the deploy process
+`barebonessoccer.com` is mapped to the Zappa **`prod`** stage, not `dev`. Every `zappa update dev` run earlier in this stretch of work deployed to a separate, disconnected Lambda that the live domain never routes to — meaning code fixes believed to be live (including the `paid_count` fix above) had not actually reached production; only direct database changes had taken effect. Caught this when the real tournament launch deploy needed to go out and `/events/` 500'd on `prod` from the pre-existing image-carousel crash bug that had only ever been fixed on the unused `dev` stage. Deployed to `prod` correctly; confirmed the live tournament page, Street League page, leagues hub, and home page all return 200, and that all 5 live Street League teams/rosters are untouched.
+
 ## 2026-08-25
 
 ### Free agency: built, reversed on payment timing, then merged into the register page

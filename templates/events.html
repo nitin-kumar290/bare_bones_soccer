@@ -23,7 +23,6 @@
 {% endfor %}
 {% endif %}
 
-<!-- ========== NO EVENT SCHEDULED — EMPTY STATE ========== -->
 <style>
 .events-empty-state {
     background: linear-gradient(rgba(10,22,40,0.6), rgba(10,22,40,0.6)), url('https://bare-bones-soccer.s3.amazonaws.com/images/Waldyevent1.jpeg') center 25%/cover no-repeat;
@@ -571,21 +570,4 @@ async function registerAsSpectator() {
 
 
 
-<!-- <div class="container my-5">
-    <h1 class="text-center mb-4">Our Events</h1>
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-        {% for event in events %}
-        <div class="col">
-            <div class="card h-100">
-                <img src="{{ event.image.url }}" class="card-img-top" alt="{{ event.title }}">
-                <div class="card-body">
-                    <h5 class="card-title">{{ event.title }}</h5>
-                    <p class="card-text">{{ event.description|truncatewords:15 }}</p>
-                    <a href="{{ event.get_absolute_url }}" class="btn btn-primary">View Details</a>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-</div> -->
 {% endblock %}

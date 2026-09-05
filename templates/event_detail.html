@@ -1,25 +1,289 @@
 {% extends "base.html" %}
+{% load static %}
+{% block title %}{{ event.title }} | Bare Bones Soccer{% endblock %}
+{% block meta_description %}{{ event.description|truncatewords:25 }}{% endblock %}
 
-{% block title %}{{ event.title }}{% endblock %}
+{% block navbar_bg %}style="background: rgba(255,255,255,0.18) !important;"{% endblock %}
+{% block announcement_bar %}{% endblock %}
+
+{% block hero_background %}{{ event_image_url|default:"" }}{% endblock %}
+
+{% block hero_video %}
+{% if event.hero_video_url %}
+<video class="evt-hero-video" autoplay muted loop playsinline preload="metadata">
+    <source src="{{ event.hero_video_url }}" type="video/mp4">
+</video>
+{% endif %}
+{% endblock %}
+
+{% block hero_overlay %}
+<div class="evt-hero-overlay text-center">
+    <h1 class="evt-hero-title">{{ event.title }}</h1>
+    {% if event.subtitle %}<p class="evt-hero-sub">{{ event.subtitle }}</p>{% endif %}
+    {% if event.registration_url %}
+    {% if event.registration_deadline_note %}<p class="evt-hero-deadline">{{ event.registration_deadline_note }}</p>{% endif %}
+    <a href="{{ event.registration_url }}" class="evt-hero-btn">Register Now!</a>
+    {% else %}
+    <span class="evt-soon-badge">Registration Opens Soon</span>
+    {% endif %}
+</div>
+{% endblock %}
 
 {% block content %}
-<div class="container my-5">
-    <h1 class="text-center">{{ event.title }}</h1>
-    <p class="text-muted text-center">
-        {{ event.start_time|date:"F j, Y" }}
-    </p>
-    <!-- <div class="text-center mb-4">
-        <img src="{{ event.image.url }}" class="img-fluid rounded" alt="{{ event.title }}">
-    </div> -->
-    <p>{{ event.description }}</p>
-    <hr>
-    <h3>Event Gallery</h3>
-    <div class="row g-3">
-        {% for image in gallery_images %}
-        <div class="col-md-4">
-            <img src="{{ image.image.url }}" class="img-fluid rounded" alt="Event Gallery Image">
+<style>
+.hero-section {
+    height: 72vh !important;
+    {% if event.hero_video_url %}background: #000 !important;{% elif not event_image_url %}background: linear-gradient(135deg, #08070b 0%, #290a44 100%) !important;{% endif %}
+    position: relative; overflow: hidden;
+}
+{% if event_image_url or event.hero_video_url %}
+.hero-section::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(8,7,11,0.35) 0%, rgba(8,7,11,0.75) 100%);
+    z-index: 1;
+}
+{% endif %}
+.evt-hero-video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+.hero-section .navbar { position: relative; z-index: 10; }
+
+.evt-hero-overlay {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 90%; max-width: 720px; z-index: 2;
+}
+.evt-hero-eyebrow {
+    font-family: 'Oswald', sans-serif; font-size: 0.85rem; font-weight: 700; letter-spacing: 3px;
+    text-transform: uppercase; color: #00b8e8; margin-bottom: 14px;
+}
+.evt-hero-title {
+    font-family: 'Oswald', sans-serif; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+    color: #fdf5ed; font-size: clamp(2.2rem, 6vw, 4rem); line-height: 1.05; margin-bottom: 10px;
+    text-shadow: 0 4px 24px rgba(0,0,0,0.5);
+}
+.evt-hero-sub {
+    font-family: 'Barlow Semi Condensed', sans-serif; font-style: italic; font-size: 1.1rem;
+    color: rgba(253,245,237,0.75); margin-bottom: 26px;
+}
+.evt-hero-deadline {
+    font-family: 'Oswald', sans-serif; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
+    font-size: 0.9rem; color: #00b8e8; margin-bottom: 14px;
+}
+.evt-soon-badge, .evt-hero-btn {
+    display: inline-block; font-family:'Oswald',sans-serif; font-weight:700; font-size:0.85rem;
+    letter-spacing:1.5px; text-transform:uppercase; border-radius:50px; padding:14px 32px;
+}
+.evt-soon-badge { color:#08070b; background:#00b8e8; }
+.evt-hero-btn { color:#fdf5ed; background: linear-gradient(135deg, #00b8e8 0%, #290a44 100%); text-decoration:none; transition: transform 0.2s ease; }
+.evt-hero-btn:hover { transform: translateY(-2px); color:#fdf5ed; }
+
+/* ── Concept panel ── */
+.evt-concept { background: linear-gradient(135deg, #08070b 0%, #290a44 100%); padding: 68px 20px; position: relative; overflow: hidden; }
+.evt-concept-ball { position: absolute; top: 50%; left: 8%; transform: translateY(-50%); font-size: 11rem; opacity: 0.06; pointer-events: none; }
+.evt-concept-inner { max-width: 640px; margin: 0 auto; text-align: center; position: relative; z-index: 1; }
+.evt-concept p { font-family: 'Barlow Semi Condensed', sans-serif; font-size: 1.15rem; color: rgba(253,245,237,0.85); line-height: 1.75; white-space: pre-line; }
+
+/* ── Format spec grid ── */
+.evt-specs { background: #fdf5ed; padding: 60px 20px 20px; }
+.evt-specs-eyebrow { font-family:'Oswald',sans-serif; font-size:0.75rem; font-weight:700; letter-spacing:4px; text-transform:uppercase; color:#00b8e8; text-align:center; margin-bottom:6px; }
+.evt-specs h2 { font-family:'Oswald',sans-serif; font-weight:700; text-transform:uppercase; letter-spacing:1px; text-align:center; color:#08070b; margin-bottom:18px; }
+.evt-spec-grid { max-width: 980px; margin: 0 auto; display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+@media (max-width:600px) { .evt-spec-grid { grid-template-columns:repeat(2,1fr); } }
+.evt-spec-card {
+    background:#fff; border:1.5px solid rgba(0,0,0,0.1); border-radius:14px; padding:22px 16px; text-align:center;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.evt-spec-card .num { font-family:'Oswald',sans-serif; font-weight:700; font-size:1.8rem; color:#290a44; }
+.evt-spec-card .label { font-family:'Barlow Semi Condensed',sans-serif; font-size:0.82rem; color:#555; text-transform:uppercase; letter-spacing:0.5px; margin-top:4px; }
+.evt-spec-card.highlight {
+    background: linear-gradient(135deg, #00b8e8 0%, #290a44 100%);
+    border: 1.5px solid #00b8e8;
+}
+.evt-spec-card.highlight .num { color: #fdf5ed; }
+.evt-spec-card.highlight .label { color: rgba(253,245,237,0.85); }
+.evt-spec-card.highlight:hover { transform: translateY(-4px); border-color: #290a44; box-shadow: 0 10px 28px rgba(0,184,232,0.4); }
+.evt-spec-card.compact .label { font-size: 0.68rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ── Schedule ── */
+.evt-schedule { background: #fdf5ed; padding: 40px 20px 60px; }
+.evt-schedule-note { text-align:center; font-family:'Barlow Semi Condensed',sans-serif; font-style:italic; color:#666; max-width:560px; margin:0 auto 22px; }
+.evt-schedule-card { max-width: 720px; margin: 0 auto; background:#fff; border:1.5px solid rgba(0,0,0,0.1); border-radius:16px; padding:28px 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.07); }
+.evt-schedule-row { display:grid; grid-template-columns:170px 1fr; gap:2px 20px; align-items:start; padding:14px 0; border-bottom:1px solid rgba(0,0,0,0.08); font-family:'Barlow Semi Condensed',sans-serif; }
+.evt-schedule-row:last-child { border-bottom:none; }
+.evt-schedule-row .label { font-family:'Oswald',sans-serif; font-weight:700; color:#08070b; padding-top:2px; text-transform:none; letter-spacing:normal; font-size:0.95rem; }
+.evt-schedule-row .desc { color:#555; text-align:left; line-height:1.45; }
+@media (max-width:480px) {
+    .evt-schedule-row { grid-template-columns:1fr; gap:2px; }
+}
+
+/* ── Rules ── */
+.evt-rules { background: #fdf5ed; padding: 40px 20px 60px; }
+.evt-rules-card { max-width: 720px; margin: 0 auto; text-align:center; }
+.evt-rules-card ul { text-align:left; max-width:520px; margin:20px auto 0; font-family:'Barlow Semi Condensed',sans-serif; color:#333; line-height:1.9; }
+
+/* ── Gallery ── */
+.evt-gallery { background: #fdf5ed; padding: 0 20px 60px; }
+.evt-gallery-inner { max-width: 980px; margin: 0 auto; }
+.evt-gallery-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+@media (max-width:700px) { .evt-gallery-grid { grid-template-columns:repeat(2,1fr); } }
+.evt-gallery-grid img { width:100%; aspect-ratio:4/3; object-fit:cover; border-radius:10px; display:block; }
+
+/* ── Pricing ── */
+.evt-pricing { background: linear-gradient(160deg, #08070b 0%, #290a44 60%, #08070b 100%); padding: 64px 20px; }
+.evt-price-grid { max-width: 700px; margin: 0 auto; display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+@media (max-width:600px) { .evt-price-grid { grid-template-columns:1fr; max-width:380px; } }
+.evt-price-card { text-align:center; background: rgba(253,245,237,0.04); border:1.5px solid rgba(0,184,232,0.35); border-radius:18px; padding:32px 26px; }
+.evt-price-card-label { font-family:'Oswald',sans-serif; font-weight:700; font-size:0.85rem; letter-spacing:1px; text-transform:uppercase; color:#00b8e8; margin-bottom:8px; }
+.evt-price-card .amount { font-family:'Oswald',sans-serif; font-weight:700; font-size:2.6rem; color:#fdf5ed; }
+.evt-price-card .per { font-family:'Barlow Semi Condensed',sans-serif; color:rgba(253,245,237,0.65); font-size:0.9rem; margin-bottom:14px; }
+.evt-price-card-desc { font-family:'Barlow Semi Condensed',sans-serif; color:rgba(253,245,237,0.75); font-size:0.9rem; margin:0; }
+
+/* ── Registration ── */
+.evt-register { background:#fdf5ed; padding:70px 20px; text-align:center; }
+.evt-register h2 { font-family:'Oswald',sans-serif; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#08070b; }
+.evt-register p { font-family:'Barlow Semi Condensed',sans-serif; color:#555; max-width:480px; margin:10px auto 26px; }
+.evt-register-btn {
+    display:inline-block; padding:16px 40px; border-radius:50px; text-decoration:none;
+    font-family:'Oswald',sans-serif; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; font-size:0.95rem;
+    transition: transform 0.2s ease;
+}
+.evt-register-btn.primary {
+    background: linear-gradient(135deg, #00b8e8 0%, #290a44 100%); color:#fdf5ed;
+    padding:20px 52px; font-size:1.1rem;
+    animation: evt-cta-glow 2.2s ease-in-out infinite;
+}
+.evt-register-btn.primary:hover { transform: translateY(-2px); color:#fdf5ed; }
+@keyframes evt-cta-glow {
+    0%, 100% { box-shadow: 0 6px 20px rgba(0,184,232,0.35); }
+    50% { box-shadow: 0 6px 32px rgba(0,184,232,0.85), 0 0 20px rgba(0,184,232,0.5); }
+}
+.evt-register-btn.soon { background: rgba(0,184,232,0.12); color:#00b8e8; border: 1.5px solid rgba(0,184,232,0.5); cursor: default; }
+
+/* ── FAQ ── */
+.evt-faq { background:#fdf5ed; padding: 0 20px 70px; }
+.evt-faq-inner { max-width: 680px; margin:0 auto; }
+.evt-faq-item { border-bottom: 1px solid rgba(0,0,0,0.1); padding: 18px 0; }
+.evt-faq-item summary { font-family:'Oswald',sans-serif; font-weight:600; color:#08070b; cursor:pointer; list-style:none; }
+.evt-faq-item summary::-webkit-details-marker { display:none; }
+.evt-faq-item summary::after { content:'+'; float:right; font-size:1.3rem; color:#00b8e8; }
+.evt-faq-item[open] summary::after { content:'\2212'; }
+.evt-faq-item p { font-family:'Barlow Semi Condensed',sans-serif; color:#555; margin-top:10px; margin-bottom:0; white-space: pre-line; }
+</style>
+
+<!-- Concept -->
+{% if event.description %}
+<div class="evt-concept">
+    <div class="evt-concept-ball" aria-hidden="true">⚽</div>
+    <div class="evt-concept-inner">
+        <p>{{ event.description }}</p>
+    </div>
+</div>
+{% endif %}
+
+<!-- Format specs -->
+{% if event.specs.all %}
+<div class="evt-specs">
+    <p class="evt-specs-eyebrow">Format</p>
+    <h2>The Basics</h2>
+    <div class="evt-spec-grid">
+        {% for spec in event.specs.all %}
+        <div class="evt-spec-card{% if spec.highlight %} highlight{% endif %}{% if spec.compact %} compact{% endif %}">
+            <div class="num">{{ spec.value }}</div>
+            <div class="label">{{ spec.label }}</div>
         </div>
         {% endfor %}
     </div>
 </div>
+{% endif %}
+
+<!-- Schedule -->
+{% if event.schedule_rows.all %}
+<div class="evt-schedule">
+    <p class="evt-specs-eyebrow">Format</p>
+    <h2 style="font-family:'Oswald',sans-serif; font-weight:700; text-transform:uppercase; letter-spacing:1px; text-align:center; color:#08070b; margin-bottom:6px;">Tournament Structure</h2>
+    {% if event.schedule_note %}<p class="evt-schedule-note">{{ event.schedule_note }}</p>{% endif %}
+    <div class="evt-schedule-card">
+        {% for row in event.schedule_rows.all %}
+        <div class="evt-schedule-row"><span class="label">{{ row.label }}</span><span class="desc">{{ row.description }}</span></div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Rules -->
+{% if event.rules_text %}
+<div class="evt-rules">
+    <div class="evt-rules-card">
+        <p class="evt-specs-eyebrow">How It Plays</p>
+        <h2>Rules, Short Version</h2>
+        <ul>
+            {% for line in event.rules_text.splitlines %}
+                {% if line %}<li>{{ line }}</li>{% endif %}
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endif %}
+
+<!-- Gallery -->
+{% if gallery_images %}
+<div class="evt-gallery">
+    <div class="evt-gallery-inner">
+        <p class="evt-specs-eyebrow">Gallery</p>
+        <h2 style="font-family:'Oswald',sans-serif; text-transform:uppercase; color:#08070b; text-align:center; margin-bottom:20px;">Moments</h2>
+        <div class="evt-gallery-grid">
+            {% for image in gallery_images %}
+            <img src="{{ image.image.url }}" alt="{{ event.title }} gallery image" loading="lazy">
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Pricing -->
+{% if event.pricing_options.all %}
+<div class="evt-pricing">
+    <p class="evt-specs-eyebrow" style="color:#00b8e8;">Pricing</p>
+    <h2 style="font-family:'Oswald',sans-serif; font-weight:700; text-transform:uppercase; text-align:center; color:#fdf5ed; margin-bottom:8px;">Two Ways to Register</h2>
+    <div class="evt-price-grid">
+        {% for option in event.pricing_options.all %}
+        <div class="evt-price-card">
+            <p class="evt-price-card-label">{{ option.label }}</p>
+            <div class="amount">{{ option.amount }}</div>
+            {% if option.per_text %}<div class="per">{{ option.per_text }}</div>{% endif %}
+            <p class="evt-price-card-desc">{{ option.description }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Registration -->
+<div class="evt-register" id="register">
+    {% if event.registration_url %}
+    <h2>Ready to Play?</h2>
+    {% if event.registration_note %}<p>{{ event.registration_note }}</p>{% endif %}
+    <a href="{{ event.registration_url }}" class="evt-register-btn primary">Register Now!</a>
+    {% else %}
+    <h2>Registration Opens Soon</h2>
+    <p>{% if event.registration_note %}{{ event.registration_note }}{% else %}Check back soon for registration details.{% endif %}</p>
+    <span class="evt-register-btn soon">Stay Tuned</span>
+    {% endif %}
+</div>
+
+<!-- FAQ -->
+{% if event.faqs.all %}
+<div class="evt-faq">
+    <div class="evt-faq-inner">
+        <p class="evt-specs-eyebrow">FAQ</p>
+        <h2 style="font-family:'Oswald',sans-serif; text-transform:uppercase; color:#08070b; margin-bottom:20px; text-align:center;">Common Questions</h2>
+        {% for faq in event.faqs.all %}
+        <details class="evt-faq-item">
+            <summary>{{ faq.question }}</summary>
+            <p>{{ faq.answer|safe }}</p>
+        </details>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
 {% endblock %}

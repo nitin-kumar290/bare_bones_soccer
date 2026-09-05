@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django import forms
-from .models import Pickup, Event, EventImage, LeagueTeam, LeagueTeamPlayer, LeagueFreeAgent
+from .models import Pickup, Event, EventImage, EventSpec, EventFAQ, EventScheduleRow, EventPricingOption, LeagueTeam, LeagueTeamPlayer, LeagueFreeAgent
 from django.utils import timezone
 
 import boto3
@@ -48,9 +48,34 @@ admin.site.register(Pickup)
 # admin.site.register(EventImage)
 
 
+class EventSpecInline(admin.TabularInline):
+    model = EventSpec
+    extra = 1
+    fields = ('value', 'label', 'highlight', 'compact', 'order')
+
+class EventFAQInline(admin.TabularInline):
+    model = EventFAQ
+    extra = 1
+    fields = ('question', 'answer', 'order')
+
+class EventScheduleRowInline(admin.TabularInline):
+    model = EventScheduleRow
+    extra = 1
+    fields = ('label', 'description', 'order')
+
+class EventPricingOptionInline(admin.TabularInline):
+    model = EventPricingOption
+    extra = 1
+    fields = ('label', 'amount', 'per_text', 'description', 'order')
+
+class EventImageInline(admin.TabularInline):
+    model = EventImage
+    extra = 1
+
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
-    list_display = ('title', 'start_time', 'end_time')
+    list_display = ('title', 'start_time', 'end_time', 'location_name')
+    inlines = [EventSpecInline, EventPricingOptionInline, EventScheduleRowInline, EventFAQInline, EventImageInline]
 
 @admin.register(EventImage)
 class EventImageAdmin(admin.ModelAdmin):

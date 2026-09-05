@@ -19,7 +19,7 @@ WALDY_LEAGUE_TEAM_CAP = 6
 
 def league_status(request):
     from .models import LeagueTeam
-    team_count = LeagueTeam.objects.filter(league_name='Waldy Street League').count()
+    team_count = LeagueTeam.paid_count('Waldy Street League')
     return {
         'WALDY_LEAGUE_FULL': team_count >= WALDY_LEAGUE_TEAM_CAP,
     }
