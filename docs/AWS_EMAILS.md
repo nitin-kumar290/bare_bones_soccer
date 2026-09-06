@@ -6,6 +6,261 @@ To add a new one: tell Claude to "put this in the AWS email doc" after finishing
 
 ---
 
+## Backyard 3v3 Tournament — Automated Registration Emails — 2026-09-06
+
+**Note:** unlike everything else in this doc, these are not one-off/blast emails — they're sent automatically by the Django app (Gmail SMTP) at the moments described below, mirroring the same pattern as the Waldy Street League registration emails. Archived here per request for reference. Live in `myapp/views.py`.
+
+### Captain confirmation — `send_tournament_captain_confirmation_email`
+Fires right after the captain's Stripe payment succeeds. Branches on payment mode:
+- **Individual pay-in**: confirms their own $20 spot, then hands them the team's private invite link in a copy-paste box to send to teammates (need 3–6 total, coed).
+- **Team prepay**: confirms the full roster payment and lists out the named teammates, noting each will get their own claim email.
+
+```html
+<!DOCTYPE html>
+<html>
+<body>
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#ffffff; margin:0; padding:0;">
+<tr>
+    <td align="center" style="padding:0;">
+    <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="width:100%; max-width:600px; margin:0 auto;">
+        <tr>
+        <td align="center" style="padding:24px;">
+            <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width:600px; width:100%; font-family:Arial, Helvetica, sans-serif; color:#111;">
+
+            <tr>
+                <td style="font-size:22px; line-height:30px; text-align:center; font-weight:bold; color:#290a44;">
+                ⚽ BACKYARD 3V3 TOURNAMENT CONFIRMATION
+                </td>
+            </tr>
+
+            <tr><td style="height:8px; line-height:8px;">&nbsp;</td></tr>
+
+            <tr>
+                <td style="font-size:16px; line-height:24px; text-align:center;">
+                    You're all set! Details below.
+                </td>
+            </tr>
+
+            <!-- Individual pay-in path -->
+            <tr>
+                <td style="font-size:16px; padding:24px 24px 8px; text-align:center; line-height:26px;">
+                💰 <b>$20 paid</b> — your spot is locked in<br>
+                🧢 <b>Team:</b> {team.team_name}
+                </td>
+            </tr>
+            <tr><td style="height:12px; line-height:12px;">&nbsp;</td></tr>
+            <tr>
+                <td style="padding:0 24px 8px; text-align:center;">
+                <table role="presentation" align="center" cellspacing="0" cellpadding="0" style="border:1.5px solid #00b8e8; border-radius:10px; background:#f5fbfd;">
+                    <tr>
+                        <td style="padding:16px 20px; text-align:center; font-size:14px; line-height:22px;">
+                        <b>Share this with your teammates:</b><br>
+                        You need 3&ndash;6 players total, coed &mdash; each person pays their own $20 spot. Send them the link BELOW!<br><br>
+                        <span style="font-family:monospace; font-size:13px; color:#08070b; background:#fff; border:1px solid #ddd; border-radius:6px; padding:8px 12px; display:inline-block; margin-top:4px; word-break:break-all;">{invite_link}</span>
+                        <br><br>
+                        <b>Copy &amp; paste to your teammates so they can sign up!</b>
+                        </td>
+                    </tr>
+                </table>
+                </td>
+            </tr>
+
+            <!-- OR team prepay path (replaces the block above) -->
+            <!--
+            <tr>
+                <td style="font-size:16px; padding:24px; text-align:center; line-height:26px;">
+                💰 <b>${team.prepaid_amount} paid</b> for {team.prepaid_roster_size} players<br>
+                🧢 <b>Team:</b> {team.team_name}
+                </td>
+            </tr>
+            <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
+            <tr>
+                <td style="font-size:15px; padding:0 24px; text-align:center; line-height:24px;">
+                <b>Your Roster:</b><br>{teammate names, one per line}
+                </td>
+            </tr>
+            <tr><td style="height:14px; line-height:14px;">&nbsp;</td></tr>
+            <tr>
+                <td style="font-size:13px; padding:0 24px; text-align:center; line-height:20px; color:#555;">
+                Each teammate above will get their own email to confirm their spot with a Bare Bones account &mdash; everyone needs one for game-day roster verification.
+                </td>
+            </tr>
+            -->
+
+            <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
+
+            <tr>
+                <td style="font-size:14px; padding:0 24px; line-height:22px; text-align:center; color:#555;">
+                📅 See you <b>October 2nd</b> at Insight Soccer Training &mdash; start time and bracket will be posted soon.
+                </td>
+            </tr>
+
+            <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
+
+            <tr>
+                <td style="font-size:16px; line-height:24px; text-align:center;">
+                See you on the pitch!
+                <br>
+                The Bare Bones Crew
+                </td>
+            </tr>
+
+            </table>
+        </td>
+        </tr>
+    </table>
+    </td>
+</tr>
+</table>
+
+</body>
+</html>
+```
+
+### Teammate claim link — `send_tournament_claim_email`
+Sent to each named-but-unpaid roster spot on a team-prepay team, right after the captain's payment clears. Asks them to confirm their spot with a Bare Bones account.
+
+```html
+<!DOCTYPE html>
+<html>
+<body>
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#ffffff; margin:0; padding:0;">
+<tr>
+    <td align="center" style="padding:0;">
+    <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="width:100%; max-width:600px; margin:0 auto;">
+        <tr>
+        <td align="center" style="padding:24px;">
+            <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width:600px; width:100%; font-family:Arial, Helvetica, sans-serif; color:#111;">
+
+            <tr>
+                <td style="font-size:22px; line-height:30px; text-align:center; font-weight:bold; color:#290a44;">
+                ⚽ YOU'RE ON THE ROSTER
+                </td>
+            </tr>
+
+            <tr><td style="height:8px; line-height:8px;">&nbsp;</td></tr>
+
+            <tr>
+                <td style="font-size:16px; padding:0 24px; line-height:24px; text-align:center;">
+                {first_name}, your captain already paid your $20 for <b>{team_name}</b> in the Backyard 3v3 Tournament. One last step &mdash; confirm your spot with a Bare Bones account so we can verify you on game day.
+                </td>
+            </tr>
+
+            <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
+
+            <tr>
+                <td style="padding:0 24px; text-align:center;">
+                <a href="{claim_link}" style="color:#fdf5ed; background:linear-gradient(135deg, #00b8e8 0%, #290a44 100%); padding:12px 28px; border-radius:50px; text-decoration:none; font-weight:bold; display:inline-block;">Confirm My Spot</a>
+                </td>
+            </tr>
+
+            <tr><td style="height:16px; line-height:16px;">&nbsp;</td></tr>
+
+            <tr>
+                <td style="font-size:13px; padding:0 24px; line-height:20px; text-align:center; color:#555;">
+                New account? Activate it via email first, then click this link again &mdash; logging in alone won't confirm your spot. Log in or create a free account.
+                </td>
+            </tr>
+
+            <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
+
+            <tr>
+                <td style="font-size:14px; padding:0 24px; line-height:22px; text-align:center; color:#555;">
+                📅 See you <b>October 2nd</b> at Insight Soccer Training &mdash; start time and bracket will be posted soon.
+                </td>
+            </tr>
+
+            <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
+
+            <tr>
+                <td style="font-size:16px; line-height:24px; text-align:center;">
+                See you on the pitch!
+                <br>
+                The Bare Bones Crew
+                </td>
+            </tr>
+
+            </table>
+        </td>
+        </tr>
+    </table>
+    </td>
+</tr>
+</table>
+
+</body>
+</html>
+```
+
+### Teammate joined via invite link — `send_tournament_player_join_confirmation_email`
+Sent to a teammate right after they pay their own $20 via a captain's shared invite link (individual pay-in path).
+
+```html
+<!DOCTYPE html>
+<html>
+<body>
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#ffffff; margin:0; padding:0;">
+<tr>
+    <td align="center" style="padding:0;">
+    <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="width:100%; max-width:600px; margin:0 auto;">
+        <tr>
+        <td align="center" style="padding:24px;">
+            <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width:600px; width:100%; font-family:Arial, Helvetica, sans-serif; color:#111;">
+
+            <tr>
+                <td style="font-size:22px; line-height:30px; text-align:center; font-weight:bold; color:#290a44;">
+                ⚽ BACKYARD 3V3 TOURNAMENT CONFIRMATION
+                </td>
+            </tr>
+
+            <tr><td style="height:8px; line-height:8px;">&nbsp;</td></tr>
+
+            <tr>
+                <td style="font-size:16px; line-height:24px; text-align:center;">
+                    You're on the roster! Details below.
+                </td>
+            </tr>
+
+            <tr>
+                <td style="font-size:16px; padding:24px; text-align:center; line-height:26px;">
+                💰 <b>$20 paid</b> — your spot is locked in<br>
+                🧢 <b>Team:</b> {team_name}<br>
+                👥 <b>Roster:</b> {roster_count}/6 paid
+                </td>
+            </tr>
+
+            <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
+
+            <tr>
+                <td style="font-size:14px; padding:0 24px; line-height:22px; text-align:center; color:#555;">
+                📅 See you <b>October 2nd</b> at Insight Soccer Training &mdash; start time and bracket will be posted soon.
+                </td>
+            </tr>
+
+            <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
+
+            <tr>
+                <td style="font-size:16px; line-height:24px; text-align:center;">
+                See you on the pitch!
+                <br>
+                The Bare Bones Crew
+                </td>
+            </tr>
+
+            </table>
+        </td>
+        </tr>
+    </table>
+    </td>
+</tr>
+</table>
+
+</body>
+</html>
+```
+
+---
+
 ## Waldy Street League — Launch Announcement — 2026-08-25
 
 Standalone file: `email_templates/waldy_street_league_launch.html`.

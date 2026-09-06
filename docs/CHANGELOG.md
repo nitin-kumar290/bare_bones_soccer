@@ -4,6 +4,24 @@ A running log of site changes made through Claude Code, most recent first.
 
 ---
 
+## 2026-09-06
+
+### Backyard 3v3 Tournament: staged through dev, then launched fully to prod
+Tournament code was deployed to the Zappa `dev` stage first (separate, disconnected Lambda — see the stage-mapping note below) so it could be tested end to end without being publicly visible, while the underlying Neon tables/data stayed in the one shared database either way. Verified registration and confirmation emails worked correctly on `dev`, then deployed the full feature set to `prod`. Live on barebonessoccer.com: hero video, format/schedule/pricing sections, registration (both individual and prepay paths), and confirmation emails.
+
+To hide the tournament from `prod` temporarily during that window without touching any Street League code, made a minimal surgical patch (removed the `events()` view's redirect into `event_detail.html`, removed the `backyard-tournament/*` URL routes) and deployed that reduced version to `prod` on its own, then restored the full committed version from git and redeployed it to `dev`. No stashing needed this time — everything was already committed, so `git checkout -- <file>` did the restore cleanly.
+
+### Fixed: free agent placement email told players to "introduce yourself to your team" in a leaguewide chat
+The Waldy Street League WhatsApp chat is shared across the whole league, not per-team — so a newly placed free agent had no way to identify who was actually on their new roster from that chat. Reworded to frame the chat as general league community, with a note that an admin will follow up separately with the actual roster.
+
+### Added: free-agent-only registration state for when Street League hits its 6-team cap
+Previously, hitting the 6-team cap blocked registration entirely — including free agency, even though individual roster spots (up to 8/team) can still be open on locked-in teams. Split the logic so team creation (individual pay-in, prepay) and free agency now gate independently: once 6 teams are locked in, the site swaps to a glowing "ONLY FREE AGENT SPOTS LEFT!" state (site-wide announcement bar, leagues hub card, Street League hero/pricing/registration sections) instead of hiding registration altogether, and the register page itself only shows the free agent option in that state (enforced server-side, not just hidden client-side).
+
+### Admin support: traced several player/team data questions on the live Neon DB
+Read-only lookups this session — a captain who'd started an extra unpaid team, a free agent whose signup never completed checkout (no charge, nothing to clean up), and a couple of direct player/phone-number lookups by name. No data changes from these; noting them here since they came up as real support requests during today's work.
+
+---
+
 ## 2026-09-05
 
 ### Backyard 3v3 Tournament: built end to end and deployed
