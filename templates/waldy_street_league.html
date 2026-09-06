@@ -216,7 +216,7 @@
     <p class="wsl-specs-eyebrow" style="color:#00b8e8;">Pricing</p>
     {% if WALDY_LEAGUE_FULL %}
     <h2 style="font-family:'Oswald',sans-serif; font-weight:700; text-transform:uppercase; text-align:center; color:#fdf5ed; margin-bottom:8px;">Teams Are Full</h2>
-    <p style="font-family:'Barlow Semi Condensed',sans-serif; text-align:center; color:#00b8e8; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:24px; animation: wsl-announcement-text-glow 1.6s ease-in-out infinite;">Only Free Agent Spots Left!</p>
+    <p style="font-family:'Barlow Semi Condensed',sans-serif; text-align:center; color:#00b8e8; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:24px; animation: wsl-announcement-text-glow 1.6s ease-in-out infinite;">Free Agent Spots Left!</p>
     <div class="wsl-price-grid" style="grid-template-columns:1fr; max-width:340px;">
         <div class="wsl-price-card">
             <p class="wsl-price-card-label">Free Agent</p>
@@ -253,7 +253,7 @@
 <!-- Registration -->
 <div class="wsl-register">
     {% if WALDY_LEAGUE_FULL %}
-    <h2>Only Free Agent Spots Left!</h2>
+    <h2>Free Agent Spots Left!</h2>
     <p>All 6 team spots are taken, but rosters still have open spots. Sign up as a free agent and we'll place you on a team.</p>
     <div class="wsl-register-options">
         {% if user.is_authenticated %}
