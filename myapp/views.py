@@ -930,7 +930,7 @@ def send_free_agent_placement_email(request, agent):
 
                 <tr>
                     <td style="font-size:15px; padding:0 24px; line-height:22px; text-align:center;">
-                    Introduce yourself to your new team in the <a href="https://chat.whatsapp.com/Gi75d6cjGbgBcaqgf9KqmI?s=cl&p=i&mlu=0&ilr=0" style="color:#00b8e8; font-weight:bold;">Waldy Street League WhatsApp chat &rarr;</a>
+                    Join the <a href="https://chat.whatsapp.com/Gi75d6cjGbgBcaqgf9KqmI?s=cl&p=i&mlu=0&ilr=0" style="color:#00b8e8; font-weight:bold;">Waldy Street League WhatsApp chat &rarr;</a> to stay connected with the league community &mdash; an admin will follow up with your team roster before the league starts.
                     </td>
                 </tr>
 
