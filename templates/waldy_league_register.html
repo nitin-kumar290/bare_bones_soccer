@@ -19,25 +19,20 @@
         {% endif %}
 
         <p class="wlr-eyebrow">Waldy Street League</p>
-        <h1 class="wlr-title">{% if league_full %}League Full{% else %}Register{% endif %}</h1>
+        <h1 class="wlr-title">{% if teams_full %}Only Free Agent Spots Left!{% else %}Register{% endif %}</h1>
+        {% if teams_full %}
+        <p style="font-family:'Barlow Semi Condensed',sans-serif; font-style:italic; font-size:0.85rem; text-align:center; color:#00b8e8; margin:6px 0 0; animation: wsl-announcement-text-glow 1.6s ease-in-out infinite;">All 6 teams are locked in &mdash; but rosters still have open spots</p>
+        {% else %}
         <p style="font-family:'Barlow Semi Condensed',sans-serif; font-style:italic; font-size:0.8rem; text-align:center; color:rgba(253,245,237,0.6); margin:2px 0 0;">*Starts September 9th*</p>
+        {% endif %}
         <div class="wlr-rule"></div>
 
-        {% if league_full %}
-        <p class="wlr-subtitle">All 6 team spots for this season are taken.</p>
-        <div class="wlr-card" style="text-align:center;">
-            <p style="font-family:'Barlow Semi Condensed',sans-serif; color:rgba(253,245,237,0.85); margin:0;">
-                Registration is closed for this season &mdash; every team spot is filled.
-                Check back for the next Waldy Street League season, or head to
-                <a href="{% url 'leagues_hub' %}" style="color:#00b8e8;">Leagues</a> to see what else is running.
-            </p>
-        </div>
-        {% else %}
         <div class="wlr-card">
             <form method="POST" id="registerForm">
                 {% csrf_token %}
 
-                <div class="wlr-type-grid">
+                <div class="wlr-type-grid" {% if teams_full %}style="grid-template-columns:1fr; max-width:280px; margin:0 auto;"{% endif %}>
+                    {% if not teams_full %}
                     <label class="wlr-type-card">
                         <input type="radio" name="registration_type" value="individual" {% if selected_type == 'free_agent' %}{% elif selected_type == 'team_prepay' %}{% else %}checked{% endif %}>
                         <span class="wlr-type-label">Pay My Own Way</span>
@@ -50,8 +45,9 @@
                         <span class="wlr-type-amount">$40<span>/player</span></span>
                         <span class="wlr-type-desc">Pay for the whole roster (5&ndash;8) in one payment.</span>
                     </label>
+                    {% endif %}
                     <label class="wlr-type-card">
-                        <input type="radio" name="registration_type" value="free_agent" {% if selected_type == 'free_agent' %}checked{% endif %}>
+                        <input type="radio" name="registration_type" value="free_agent" {% if teams_full or selected_type == 'free_agent' %}checked{% endif %}>
                         <span class="wlr-type-label">Free Agent</span>
                         <span class="wlr-type-amount">$50<span>/player</span></span>
                         <span class="wlr-type-desc">No team? Pay upfront and we'll place you on one with an open spot.</span>
@@ -123,7 +119,6 @@
                 <p class="wlr-fine-print">No refunds once the season starts, unless the league disbands or internal player issue resolved with league admin.</p>
             </form>
         </div>
-        {% endif %}
     </div>
 </div>
 
