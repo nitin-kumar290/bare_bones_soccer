@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Week 1 Schedule | Waldy Street League{% endblock %}
+{% block meta_description %}Waldy Street League Week 1 matchups and times.{% endblock %}
+{% block hero_background %}{% static 'images/banner_small.png' %}{% endblock %}
+{% block announcement_bar %}{% endblock %}
+{% block navbar_style %}
+.hero-section { height: 30vh !important; background: linear-gradient(135deg, #08070b 0%, #290a44 100%) !important; overflow: hidden !important; }
+{% endblock %}
+
+{% block content %}
+<div class="wk-page">
+    <div class="wk-card" id="wk-shareable">
+
+        <div class="wk-crosses wk-crosses-tl">
+            <span>&times;</span><span>&times;</span><span>&times;</span>
+            <span>&times;</span><span>&times;</span><span>&times;</span>
+        </div>
+        <div class="wk-crosses wk-crosses-br">
+            <span>&times;</span><span>&times;</span>
+            <span>&times;</span><span>&times;</span>
+        </div>
+
+        <h1 class="wk-title">WEEK 1</h1>
+        <p class="wk-subtitle">Wednesday Nights &middot; Waldsch&auml;nke &middot; The Lot</p>
+
+        <div class="wk-matchups">
+
+            <!-- Game 1 -->
+            <div class="wk-row">
+                <div class="wk-team wk-team-left">
+                    <div class="wk-badge" style="background: radial-gradient(circle at 35% 30%, #2a2a2a 0%, #08070b 70%); border-color:#d4af37;">
+                        <span class="wk-badge-icon">🤠</span>
+                    </div>
+                    <span class="wk-team-name">Los Bandidos FC</span>
+                </div>
+                <div class="wk-time">6:30</div>
+                <div class="wk-team wk-team-right">
+                    <span class="wk-team-name">Strangers United FC</span>
+                    <div class="wk-badge" style="background: radial-gradient(circle at 35% 30%, #4a2170 0%, #290a44 70%); border-color:#00b8e8;">
+                        <span class="wk-badge-icon">🎭</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game 2 -->
+            <div class="wk-row">
+                <div class="wk-team wk-team-left">
+                    <div class="wk-badge" style="background: radial-gradient(circle at 35% 30%, #1c3d6e 0%, #0a1a33 70%); border-color:#c7d2e0;">
+                        <span class="wk-badge-icon">⭐</span>
+                    </div>
+                    <span class="wk-team-name">Dan's Squad</span>
+                </div>
+                <div class="wk-time">7:15</div>
+                <div class="wk-team wk-team-right">
+                    <span class="wk-team-name">Ivory Toast FC</span>
+                    <div class="wk-badge" style="background: radial-gradient(circle at 35% 30%, #f3e3c3 0%, #e0c48f 70%); border-color:#8a5a2b;">
+                        <span class="wk-badge-icon">🍞</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game 3 -->
+            <div class="wk-row">
+                <div class="wk-team wk-team-left">
+                    <div class="wk-badge" style="background: radial-gradient(circle at 35% 30%, #ff9d42 0%, #d9691e 70%); border-color:#08070b;">
+                        <span class="wk-badge-icon">🍑</span>
+                    </div>
+                    <span class="wk-team-name">Arse N' All</span>
+                </div>
+                <div class="wk-time">8:00</div>
+                <div class="wk-team wk-team-right">
+                    <span class="wk-team-name">Cider-Genie&szlig;er</span>
+                    <div class="wk-badge" style="background: radial-gradient(circle at 35% 30%, #e8b84b 0%, #b8461a 70%); border-color:#fdf5ed;">
+                        <span class="wk-badge-icon">🍎</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <p class="wk-footnote">4v4 &middot; 12-min halves &middot; be there 10 min early</p>
+
+        <div class="wk-brand">
+            <img src="https://bare-bones-soccer.s3.amazonaws.com/images/Primary%20Glyph%20W.png" alt="Bare Bones Soccer" class="wk-brand-logo">
+            <span class="wk-brand-text">WALDY STREET LEAGUE</span>
+        </div>
+
+    </div>
+</div>
+
+<style>
+body { background: #fdf5ed; }
+.wk-page { padding: 32px 16px 60px; }
+.wk-card {
+    position: relative;
+    max-width: 460px; margin: 0 auto;
+    background: #fdf5ed;
+    border: 1.5px solid rgba(0,0,0,0.08);
+    border-radius: 20px;
+    padding: 40px 26px 32px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+.wk-crosses { position: absolute; display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; font-family: 'Oswald', sans-serif; font-weight: 700; color: rgba(0,184,232,0.35); font-size: 0.85rem; line-height: 1; }
+.wk-crosses-tl { top: 18px; left: 18px; }
+.wk-crosses-br { bottom: 18px; right: 18px; grid-template-columns: repeat(2, 1fr); }
+
+.wk-title {
+    font-family: 'Oswald', sans-serif; font-weight: 700; text-align: center;
+    font-size: clamp(3rem, 14vw, 4.2rem); letter-spacing: 2px; line-height: 1;
+    color: #00b8e8; -webkit-text-stroke: 2px #08070b; margin: 8px 0 6px;
+}
+.wk-subtitle {
+    font-family: 'Oswald', sans-serif; font-weight: 700; text-align: center; text-transform: uppercase;
+    font-size: 0.8rem; letter-spacing: 1.5px; color: #08070b;
+    background: #290a44; color: #fdf5ed; display: inline-block; padding: 6px 16px; border-radius: 4px;
+    position: relative; left: 50%; transform: translateX(-50%); margin-bottom: 30px;
+}
+
+.wk-matchups { display: flex; flex-direction: column; gap: 26px; position: relative; z-index: 1; }
+.wk-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+
+.wk-team { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+.wk-team-left { flex-direction: row; }
+.wk-team-right { flex-direction: row-reverse; text-align: right; }
+
+.wk-badge {
+    flex-shrink: 0; width: 56px; height: 56px; border-radius: 50%;
+    border: 3px solid; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+}
+.wk-badge-icon { font-size: 1.7rem; line-height: 1; }
+
+.wk-team-name {
+    font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 0.82rem; text-transform: uppercase;
+    letter-spacing: 0.3px; color: #08070b; line-height: 1.15;
+}
+
+.wk-time {
+    flex-shrink: 0; font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 1.1rem;
+    background: #fdf5ed; color: #08070b; border: 2px solid #08070b; border-radius: 6px;
+    padding: 6px 10px; min-width: 62px; text-align: center;
+}
+
+.wk-footnote {
+    text-align: center; font-family: 'Barlow Semi Condensed', sans-serif; font-style: italic;
+    color: #777; font-size: 0.82rem; margin: 30px 0 0;
+}
+
+.wk-brand {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    margin-top: 22px; padding-top: 18px; border-top: 1px solid rgba(0,0,0,0.08);
+}
+.wk-brand-logo { height: 22px; width: auto; filter: invert(1) brightness(0.2); }
+.wk-brand-text {
+    font-family: 'Oswald', sans-serif; font-weight: 700; letter-spacing: 2px; font-size: 0.78rem; color: #08070b;
+}
+
+@media (max-width: 420px) {
+    .wk-team-name { font-size: 0.72rem; }
+    .wk-badge { width: 48px; height: 48px; }
+    .wk-badge-icon { font-size: 1.4rem; }
+    .wk-time { font-size: 0.95rem; min-width: 52px; padding: 5px 8px; }
+}
+</style>
+{% endblock %}

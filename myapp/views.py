@@ -695,6 +695,10 @@ def leagues_hub(request):
     return render(request, 'leagues_hub.html')
 
 
+def waldy_league_week1_schedule(request):
+    return render(request, 'waldy_league_week1_schedule.html')
+
+
 def waldy_street_league(request):
     return render(request, 'waldy_street_league.html')
 
