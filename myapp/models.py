@@ -74,6 +74,8 @@ class Event(models.Model):
     schedule_note = models.CharField(max_length=300, blank=True, null=True, help_text="One-line summary above the schedule rows, e.g. '22 games · 5-min games, 2-min breaks · Kickoff 6:30 PM'")
     hero_video_url = models.URLField(max_length=500, blank=True, null=True, help_text="Autoplaying muted background video for the hero — takes priority over the image if both are set")
     registration_deadline_note = models.CharField(max_length=100, blank=True, null=True, help_text="Short urgency line shown above the hero CTA button, e.g. 'Registration closes 9/30'")
+    team_structure_note = models.CharField(max_length=150, blank=True, null=True, help_text="Bold highlighted callout shown above the pricing cards, e.g. 'Team Registration Only — No Free Agents'")
+    team_structure_subnote = models.CharField(max_length=200, blank=True, null=True, help_text="Small italic asterisk note shown under the team_structure_note callout")
 
     def __str__(self):
         return self.title
