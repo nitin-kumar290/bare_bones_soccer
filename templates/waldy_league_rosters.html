@@ -18,74 +18,9 @@
         {% for entry in team_rosters %}
         <div class="ro-card">
             <div class="ro-card-header">
-                <div class="ro-badge-outer" style="background:
-                    {% if entry.team.team_name == 'Los Bandidos FC' %}#d4af37
-                    {% elif entry.team.team_name == 'Tylenol' %}#c0192b
-                    {% elif entry.team.team_name == 'Arse N’ All' %}#08070b
-                    {% elif entry.team.team_name == 'Cider-Genießer' %}#fdf5ed
-                    {% elif entry.team.team_name == 'Ivory Toast FC' %}#8a5a2b
-                    {% elif entry.team.team_name == 'Strangers United FC' %}#00b8e8
-                    {% else %}#290a44{% endif %};">
-                    <div class="ro-badge-inner" style="background:
-                        {% if entry.team.team_name == 'Los Bandidos FC' %}linear-gradient(160deg, #3a3a3a 0%, #08070b 75%)
-                        {% elif entry.team.team_name == 'Tylenol' %}linear-gradient(160deg, #ffffff 0%, #e6e6e6 75%)
-                        {% elif entry.team.team_name == 'Arse N’ All' %}linear-gradient(160deg, #ffb066 0%, #d9691e 75%)
-                        {% elif entry.team.team_name == 'Cider-Genießer' %}linear-gradient(160deg, #f0be5a 0%, #b8461a 75%)
-                        {% elif entry.team.team_name == 'Ivory Toast FC' %}linear-gradient(160deg, #fbeecb 0%, #e0c48f 75%)
-                        {% elif entry.team.team_name == 'Strangers United FC' %}linear-gradient(160deg, #5a2a8a 0%, #1c0a30 75%)
-                        {% else %}linear-gradient(160deg, #4a2170 0%, #290a44 75%){% endif %};">
-
-                        {% if entry.team.team_name == 'Los Bandidos FC' %}
-                        <svg class="ro-badge-icon" viewBox="0 0 100 100">
-                            <ellipse cx="50" cy="63" rx="35" ry="9" fill="#e8c25a" stroke="#8a6a1f" stroke-width="2"/>
-                            <path d="M32,61 Q32,30 50,30 Q68,30 68,61 Z" fill="#d4af37" stroke="#8a6a1f" stroke-width="2"/>
-                            <ellipse cx="50" cy="61" rx="11" ry="3" fill="#8a6a1f"/>
-                        </svg>
-                        {% elif entry.team.team_name == 'Tylenol' %}
-                        <svg class="ro-badge-icon" viewBox="0 0 100 100">
-                            <g transform="rotate(-35 50 50)">
-                                <rect x="18" y="38" width="64" height="24" rx="12" fill="#f2f2f2" stroke="#a5122a" stroke-width="2.5"/>
-                                <path d="M50,38.5 h19 a11.5,11.5 0 0 1 0,23 h-19 Z" fill="#c0192b"/>
-                                <line x1="50" y1="38.5" x2="50" y2="61.5" stroke="#a5122a" stroke-width="2"/>
-                            </g>
-                        </svg>
-                        {% elif entry.team.team_name == 'Arse N’ All' %}
-                        <svg class="ro-badge-icon" viewBox="0 0 100 100">
-                            <ellipse cx="50" cy="58" rx="23" ry="21" fill="#c9895a" stroke="#7a4d24" stroke-width="2"/>
-                            <ellipse cx="28" cy="30" rx="7.5" ry="17" fill="#c9895a" stroke="#7a4d24" stroke-width="2" transform="rotate(-22 28 30)"/>
-                            <ellipse cx="72" cy="30" rx="7.5" ry="17" fill="#c9895a" stroke="#7a4d24" stroke-width="2" transform="rotate(22 72 30)"/>
-                            <ellipse cx="28" cy="31" rx="4" ry="11" fill="#8a5a3a" transform="rotate(-22 28 31)"/>
-                            <ellipse cx="72" cy="31" rx="4" ry="11" fill="#8a5a3a" transform="rotate(22 72 31)"/>
-                            <circle cx="41" cy="55" r="3.2" fill="#3a2418"/>
-                            <circle cx="59" cy="55" r="3.2" fill="#3a2418"/>
-                            <ellipse cx="50" cy="70" rx="11" ry="7" fill="#e0b088" stroke="#7a4d24" stroke-width="1.5"/>
-                        </svg>
-                        {% elif entry.team.team_name == 'Cider-Genießer' %}
-                        <svg class="ro-badge-icon" viewBox="0 0 100 100">
-                            <path d="M50,34 C42,21 21,25 17,44 C13,67 32,86 50,82 C68,86 87,67 83,44 C79,25 58,21 50,34 Z" fill="#c0392b" stroke="#7a1f16" stroke-width="2.5"/>
-                            <rect x="46.5" y="12" width="6" height="18" rx="2.5" fill="#6b4423" transform="rotate(18 50 21)"/>
-                            <path d="M53,18 Q66,11 69,22 Q57,25 53,18 Z" fill="#5a9c4a"/>
-                        </svg>
-                        {% elif entry.team.team_name == 'Ivory Toast FC' %}
-                        <svg class="ro-badge-icon" viewBox="0 0 100 100">
-                            <path d="M22,82 L22,46 Q22,17 50,17 Q78,17 78,46 L78,82 Z" fill="#c9955a" stroke="#7a4d24" stroke-width="3"/>
-                            <path d="M31,79 L31,47 Q31,26 50,26 Q69,26 69,47 L69,79 Z" fill="#f3d9a0"/>
-                            <path d="M41,13 Q39,7 43,2" fill="none" stroke="#c9a86a" stroke-width="2.5" stroke-linecap="round"/>
-                            <path d="M57,13 Q59,7 55,2" fill="none" stroke="#c9a86a" stroke-width="2.5" stroke-linecap="round"/>
-                        </svg>
-                        {% elif entry.team.team_name == 'Strangers United FC' %}
-                        <svg class="ro-badge-icon" viewBox="0 0 100 100">
-                            <rect x="14" y="40" width="32" height="24" rx="11" fill="#0d0d0d" stroke="#00b8e8" stroke-width="2.5"/>
-                            <rect x="54" y="40" width="32" height="24" rx="11" fill="#0d0d0d" stroke="#00b8e8" stroke-width="2.5"/>
-                            <rect x="45" y="47" width="10" height="4" fill="#0d0d0d"/>
-                            <line x1="14" y1="46" x2="3" y2="40" stroke="#0d0d0d" stroke-width="3.5" stroke-linecap="round"/>
-                            <line x1="86" y1="46" x2="97" y2="40" stroke="#0d0d0d" stroke-width="3.5" stroke-linecap="round"/>
-                        </svg>
-                        {% else %}
-                        <span style="font-family:'Oswald',sans-serif; font-weight:700; color:#fdf5ed; font-size:1.2rem;">{{ entry.team.team_name|slice:":2"|upper }}</span>
-                        {% endif %}
-                    </div>
-                </div>
+                {% if entry.logo_url %}
+                <img class="ro-logo" src="{{ entry.logo_url }}" alt="{{ entry.team.team_name }}">
+                {% endif %}
                 <h2 class="ro-team-name">{{ entry.team.team_name }}</h2>
             </div>
 
@@ -115,9 +50,7 @@ body { background: #fdf5ed; }
 .ro-card { background:#fff; border:1.5px solid rgba(0,0,0,0.1); border-radius:16px; padding:24px; box-shadow:0 4px 20px rgba(0,0,0,0.06); }
 .ro-card-header { display:flex; align-items:center; gap:14px; margin-bottom:16px; padding-bottom:16px; border-bottom:1px solid rgba(0,0,0,0.08); }
 
-.ro-badge-outer { flex-shrink:0; width:52px; height:59px; clip-path: polygon(0% 0%, 100% 0%, 100% 58%, 50% 100%, 0% 58%); display:flex; align-items:center; justify-content:center; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3)); }
-.ro-badge-inner { position:relative; width:calc(100% - 4px); height:calc(100% - 4px); clip-path: polygon(0% 0%, 100% 0%, 100% 58%, 50% 100%, 0% 58%); display:flex; align-items:center; justify-content:center; overflow:hidden; }
-.ro-badge-icon { width:32px; height:32px; margin-top:-4px; }
+.ro-logo { flex-shrink:0; width:52px; height:52px; border-radius:50%; object-fit:cover; border:2px solid rgba(0,184,232,0.5); box-shadow:0 2px 5px rgba(0,0,0,0.3); }
 
 .ro-team-name { font-family:'Oswald',sans-serif; font-weight:700; text-transform:uppercase; letter-spacing:0.3px; color:#08070b; font-size:1.15rem; margin:0; }
 

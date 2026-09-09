@@ -30,12 +30,7 @@
                 <!-- Game 1: Los Bandidos FC vs Strangers United FC -->
                 <div class="wk-row">
                     <div class="wk-team wk-team-left">
-                        <div class="wk-shield-outer" style="background:#d4af37;">
-                            <div class="wk-shield-inner" style="background: linear-gradient(160deg, #3a3a3a 0%, #08070b 75%);">
-                                <div class="wk-shield-pattern" style="background: repeating-linear-gradient(45deg, rgba(212,175,55,0.18) 0 4px, transparent 4px 10px);"></div>
-                                <span class="wk-shield-icon">🤠</span>
-                            </div>
-                        </div>
+                        <img class="wk-logo" src="https://bare-bones-soccer.s3.amazonaws.com/images/team_logos/los_bandidos.png" alt="Los Bandidos FC">
                         <span class="wk-team-name">Los Bandidos FC</span>
                     </div>
                     <div class="wk-center">
@@ -44,24 +39,14 @@
                     </div>
                     <div class="wk-team wk-team-right">
                         <span class="wk-team-name">Strangers United FC</span>
-                        <div class="wk-shield-outer" style="background:#00b8e8;">
-                            <div class="wk-shield-inner" style="background: linear-gradient(160deg, #5a2a8a 0%, #1c0a30 75%);">
-                                <div class="wk-shield-pattern" style="background-image: radial-gradient(rgba(0,184,232,0.35) 1.2px, transparent 1.2px); background-size: 9px 9px;"></div>
-                                <span class="wk-shield-icon">🎭</span>
-                            </div>
-                        </div>
+                        <img class="wk-logo" src="https://bare-bones-soccer.s3.amazonaws.com/images/team_logos/strangers_united.png" alt="Strangers United FC">
                     </div>
                 </div>
 
                 <!-- Game 2: Tylenol vs Ivory Toast FC -->
                 <div class="wk-row">
                     <div class="wk-team wk-team-left">
-                        <div class="wk-shield-outer" style="background:#c0192b;">
-                            <div class="wk-shield-inner" style="background: linear-gradient(160deg, #ffffff 0%, #e6e6e6 75%);">
-                                <div class="wk-shield-pattern" style="background: repeating-linear-gradient(0deg, rgba(192,25,43,0.12) 0 3px, transparent 3px 9px);"></div>
-                                <span class="wk-shield-icon">💊</span>
-                            </div>
-                        </div>
+                        <img class="wk-logo" src="https://bare-bones-soccer.s3.amazonaws.com/images/team_logos/tylenol.png" alt="Tylenol">
                         <span class="wk-team-name">Tylenol</span>
                     </div>
                     <div class="wk-center">
@@ -70,24 +55,14 @@
                     </div>
                     <div class="wk-team wk-team-right">
                         <span class="wk-team-name">Ivory Toast FC</span>
-                        <div class="wk-shield-outer" style="background:#8a5a2b;">
-                            <div class="wk-shield-inner" style="background: linear-gradient(160deg, #fbeecb 0%, #e0c48f 75%);">
-                                <div class="wk-shield-pattern" style="background: repeating-linear-gradient(-45deg, rgba(138,90,43,0.18) 0 4px, transparent 4px 10px);"></div>
-                                <span class="wk-shield-icon">🍞</span>
-                            </div>
-                        </div>
+                        <img class="wk-logo" src="https://bare-bones-soccer.s3.amazonaws.com/images/team_logos/ivory_toast.png" alt="Ivory Toast FC">
                     </div>
                 </div>
 
                 <!-- Game 3: Arse N' All vs Cider-Genießer -->
                 <div class="wk-row">
                     <div class="wk-team wk-team-left">
-                        <div class="wk-shield-outer" style="background:#08070b;">
-                            <div class="wk-shield-inner" style="background: linear-gradient(160deg, #ffb066 0%, #d9691e 75%);">
-                                <div class="wk-shield-pattern" style="background-image: radial-gradient(rgba(8,7,11,0.22) 1.4px, transparent 1.4px); background-size: 10px 10px;"></div>
-                                <span class="wk-shield-icon">🍑</span>
-                            </div>
-                        </div>
+                        <img class="wk-logo" src="https://bare-bones-soccer.s3.amazonaws.com/images/team_logos/arse_n_all.png" alt="Arse N' All">
                         <span class="wk-team-name">Arse N' All</span>
                     </div>
                     <div class="wk-center">
@@ -96,12 +71,7 @@
                     </div>
                     <div class="wk-team wk-team-right">
                         <span class="wk-team-name">Cider-Genie&szlig;er</span>
-                        <div class="wk-shield-outer" style="background:#fdf5ed;">
-                            <div class="wk-shield-inner" style="background: linear-gradient(160deg, #f0be5a 0%, #b8461a 75%);">
-                                <div class="wk-shield-pattern" style="background-image: radial-gradient(rgba(253,245,237,0.3) 1.4px, transparent 1.4px); background-size: 8px 8px;"></div>
-                                <span class="wk-shield-icon">🍎</span>
-                            </div>
-                        </div>
+                        <img class="wk-logo" src="https://bare-bones-soccer.s3.amazonaws.com/images/team_logos/cider_geniesser.png" alt="Cider-Genießer">
                     </div>
                 </div>
 
@@ -168,20 +138,12 @@ body { background: #fdf5ed; }
 .wk-team-left { flex-direction: row; }
 .wk-team-right { flex-direction: row-reverse; text-align: right; }
 
-/* ── Shield crest ── */
-.wk-shield-outer {
-    flex-shrink: 0; width: 60px; height: 68px;
-    clip-path: polygon(0% 0%, 100% 0%, 100% 58%, 50% 100%, 0% 58%);
-    display: flex; align-items: center; justify-content: center;
-    filter: drop-shadow(0 3px 6px rgba(0,0,0,0.35));
+/* ── Team crest ── */
+.wk-logo {
+    flex-shrink: 0; width: 60px; height: 60px; border-radius: 50%;
+    object-fit: cover; border: 2px solid rgba(0,184,232,0.5);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.35);
 }
-.wk-shield-inner {
-    position: relative; width: calc(100% - 5px); height: calc(100% - 5px);
-    clip-path: polygon(0% 0%, 100% 0%, 100% 58%, 50% 100%, 0% 58%);
-    display: flex; align-items: center; justify-content: center; overflow: hidden;
-}
-.wk-shield-pattern { position: absolute; inset: 0; }
-.wk-shield-icon { position: relative; z-index: 1; font-size: 1.55rem; line-height: 1; margin-top: -6px; }
 
 .wk-team-name {
     font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 0.8rem; text-transform: uppercase;
@@ -217,8 +179,7 @@ body { background: #fdf5ed; }
 
 @media (max-width: 420px) {
     .wk-team-name { font-size: 0.7rem; }
-    .wk-shield-outer { width: 50px; height: 58px; }
-    .wk-shield-icon { font-size: 1.3rem; }
+    .wk-logo { width: 46px; height: 46px; }
     .wk-time { font-size: 0.9rem; min-width: 56px; padding: 6px 9px; }
 }
 </style>

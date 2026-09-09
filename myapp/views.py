@@ -699,12 +699,22 @@ def waldy_league_week1_schedule(request):
     return render(request, 'waldy_league_week1_schedule.html')
 
 
+TEAM_LOGO_URLS = {
+    'Los Bandidos FC': 'https://bare-bones-soccer.s3.amazonaws.com/images/team_logos/los_bandidos.png',
+    'Tylenol': 'https://bare-bones-soccer.s3.amazonaws.com/images/team_logos/tylenol.png',
+    'Arse N’ All': 'https://bare-bones-soccer.s3.amazonaws.com/images/team_logos/arse_n_all.png',
+    'Cider-Genießer': 'https://bare-bones-soccer.s3.amazonaws.com/images/team_logos/cider_geniesser.png',
+    'Ivory Toast FC': 'https://bare-bones-soccer.s3.amazonaws.com/images/team_logos/ivory_toast.png',
+    'Strangers United FC': 'https://bare-bones-soccer.s3.amazonaws.com/images/team_logos/strangers_united.png',
+}
+
+
 def waldy_league_rosters(request):
     teams = LeagueTeam.objects.filter(league_name='Waldy Street League').order_by('id').prefetch_related('players')
     team_rosters = []
     for t in teams:
         players = list(t.players.filter(status='Paid').order_by('-is_captain', 'id'))
-        team_rosters.append({'team': t, 'players': players})
+        team_rosters.append({'team': t, 'players': players, 'logo_url': TEAM_LOGO_URLS.get(t.team_name)})
     return render(request, 'waldy_league_rosters.html', {'team_rosters': team_rosters})
 
 
