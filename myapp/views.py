@@ -699,6 +699,15 @@ def waldy_league_week1_schedule(request):
     return render(request, 'waldy_league_week1_schedule.html')
 
 
+def waldy_league_rosters(request):
+    teams = LeagueTeam.objects.filter(league_name='Waldy Street League').order_by('id').prefetch_related('players')
+    team_rosters = []
+    for t in teams:
+        players = list(t.players.filter(status='Paid').order_by('-is_captain', 'id'))
+        team_rosters.append({'team': t, 'players': players})
+    return render(request, 'waldy_league_rosters.html', {'team_rosters': team_rosters})
+
+
 def waldy_street_league(request):
     return render(request, 'waldy_street_league.html')
 
