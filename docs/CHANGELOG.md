@@ -4,6 +4,39 @@ A running log of site changes made through Claude Code, most recent first.
 
 ---
 
+## 2026-09-11
+
+### Added: Waldy Street League standings page (`templates/waldy_league_standings.html`, `myapp/views.py`, `myapp/urls.py`)
+New page at `/leagues/waldy-street-league/standings/` — Place, Team (with badge), GP, GF, GA, GD, PTS, sorted like a normal sports table (points, then goal difference, then goals for). Standings data lives in a `WALDY_LEAGUE_STANDINGS` list in `views.py`, hand-updated after each Matchday since there's no results/match model in the data model yet. Logged Matchday 1 results: Strangers United FC 10–3 over Los Bandidos FC, Ivory Toast FC 3–2 over Tylenol Team, Cider-Genießer 10–8 over Arse N' All (3 points for a win, standard soccer scoring).
+
+### Site-wide top nav announcement bar (`templates/base.html`)
+Replaced the Waldy Street League free-agent-spots promo with a Backyard 3v3 Tournament promo (🏟️ emoji, "OCT 2", links to `/events/`). Removed the old `WALDY_LEAGUE_FULL` if/else — now a single unified bar regardless of league cap state.
+
+---
+
+## 2026-09-09
+
+### Team logos: real illustrated artwork (S3 `images/team_logos/*.png`, `myapp/views.py`, `templates/waldy_league_week1_schedule.html`, `templates/waldy_league_rosters.html`)
+Replaced all 6 hand-coded SVG team badges with real illustrated logos (user-generated) for Los Bandidos FC, Tylenol Team, Arse N' All, Cider-Genießer, Ivory Toast FC, and Strangers United FC. Added a `TEAM_LOGO_URLS` lookup dict in `views.py`, shared by both the Matchday schedule and Rosters pages.
+
+### Fixed: "Tylenol" vs "Tylenol Team" naming mismatch
+The team's actual registered name is "Tylenol Team," not "Tylenol" — the shorter name had leaked into the `TEAM_LOGO_URLS` dict key and the hardcoded Matchday schedule template. Renamed the `LeagueTeam.team_name` row on Neon from "Tylenol" to "Tylenol Team" and updated both places to match, so the name is now consistent everywhere (DB, Matchday page, Rosters page). *(Note: briefly and mistakenly pixel-edited the word "TEAM" out of the logo artwork itself first, on a misreading of the request — reverted that edit before it shipped anywhere lasting; the original logo artwork is untouched.)*
+
+### Free agent placements (Neon data only — no code changes)
+Placed Cassandra Juarez onto a second team (Strangers United FC, in addition to her existing Arse N' All spot) as a confirmed $0 comp addition — no second charge. Rebalanced remaining free agents between Strangers United FC and Ivory Toast FC per a 3/3 split. Sent corrected placement + apology emails after an internal mixup on which teams a few players landed on — each email's exact copy was shown and approved before sending. Later placed 3 more paid free agents onto rosters: Santiago Orjuela → Los Bandidos FC, Nick Wills → Arse N' All, Tyler Godin → Cider-Genießer.
+
+---
+
+## 2026-09-08
+
+### Tournament page (`templates/event_detail.html`)
+Moved "Team Only / No Free Agents" messaging into the Tournament Structure section as a featured, highlighted callout box, with an italicized "will add if needed" subnote. Swapped the white clock emoji for a red one on the time card. Fixed the location card's label font size to match the other spec cards (was using a smaller hardcoded override that didn't inherit the shared size). Added `white-space: pre-line` so the venue address renders on its own line under "Insight Soccer Training."
+
+### Added: Waldy Street League full rosters page (`templates/waldy_league_rosters.html`)
+New page so players can see their team's complete roster at a glance — a card per team with logo, team name, player list (captain tagged), and player count.
+
+---
+
 ## 2026-09-06
 
 ### Backyard 3v3 Tournament: staged through dev, then launched fully to prod
