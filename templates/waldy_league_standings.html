@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Standings | Waldy Street League{% endblock %}
+{% block meta_description %}Waldy Street League standings — place, games played, goals, and points for every team.{% endblock %}
+{% block hero_background %}{% static 'images/banner_small.png' %}{% endblock %}
+{% block announcement_bar %}{% endblock %}
+{% block navbar_style %}
+.hero-section { height: 26vh !important; background: linear-gradient(135deg, #08070b 0%, #290a44 100%) !important; overflow: hidden !important; }
+{% endblock %}
+
+{% block content %}
+<div class="st-page">
+    <p class="st-eyebrow">Waldy Street League</p>
+    <h1 class="st-title">STANDINGS</h1>
+    <div class="st-rule"></div>
+
+    <div class="st-table-wrap">
+        <table class="st-table">
+            <thead>
+                <tr>
+                    <th class="st-col-place">#</th>
+                    <th class="st-col-team">Team</th>
+                    <th>GP</th>
+                    <th>GF</th>
+                    <th>GA</th>
+                    <th>GD</th>
+                    <th>PTS</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                <tr class="{% if row.place == 1 %}st-row-first{% endif %}">
+                    <td class="st-col-place">
+                        <span class="st-place">{{ row.place }}</span>
+                        {% if row.place == 1 %}<span class="st-crown">&#9812;</span>{% endif %}
+                    </td>
+                    <td class="st-col-team">
+                        <div class="st-team">
+                            {% if row.logo_url %}<img class="st-logo" src="{{ row.logo_url }}" alt="{{ row.team_name }}">{% endif %}
+                            <span class="st-team-name">{{ row.team_name }}</span>
+                        </div>
+                    </td>
+                    <td>{{ row.gp }}</td>
+                    <td>{{ row.gf }}</td>
+                    <td>{{ row.ga }}</td>
+                    <td>{{ row.gd|stringformat:"+d" }}</td>
+                    <td class="st-col-pts"><span class="st-pts-pill">{{ row.pts }}</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <p class="st-footnote">GP — games played &middot; GF — goals for &middot; GA — goals against &middot; GD — goal difference &middot; PTS — points</p>
+</div>
+
+<style>
+body { background: #fdf5ed; }
+.st-page { max-width: 900px; margin: 0 auto; padding: 40px 16px 70px; }
+
+.st-eyebrow { font-family:'Oswald',sans-serif; font-size:0.8rem; font-weight:700; letter-spacing:4px; text-transform:uppercase; color:#00b8e8; text-align:center; margin-bottom:4px; }
+.st-title { font-family:'Oswald',sans-serif; font-weight:700; text-transform:uppercase; letter-spacing:1px; text-align:center; color:#08070b; margin-bottom:0; font-size:clamp(1.8rem,5vw,2.6rem); }
+.st-rule { width:60px; height:3px; background:#00b8e8; margin:14px auto 32px; border-radius:2px; }
+
+.st-table-wrap {
+    background:#fff; border-radius:16px; border:1.5px solid rgba(0,0,0,0.1);
+    box-shadow:0 4px 20px rgba(0,0,0,0.06); overflow-x:auto;
+}
+.st-table { width:100%; border-collapse:collapse; min-width:560px; font-family:'Barlow Semi Condensed',sans-serif; }
+
+.st-table thead tr {
+    background: linear-gradient(90deg, #08070b 0%, #290a44 100%);
+}
+.st-table thead th {
+    font-family:'Oswald',sans-serif; font-weight:700; font-size:0.72rem; letter-spacing:1.5px;
+    text-transform:uppercase; color:#fdf5ed; padding:14px 10px; text-align:center;
+}
+.st-table thead th.st-col-team { text-align:left; padding-left:20px; }
+.st-table thead th.st-col-place { width:56px; }
+
+.st-table tbody td {
+    padding:14px 10px; text-align:center; font-size:1.05rem; color:#08070b;
+    border-bottom:1px solid rgba(0,0,0,0.06);
+}
+.st-table tbody tr:last-child td { border-bottom:none; }
+.st-table tbody tr:nth-child(even) { background:rgba(0,184,232,0.04); }
+.st-row-first { background: linear-gradient(90deg, rgba(255,199,0,0.14), rgba(0,184,232,0.06)) !important; }
+
+.st-col-place { position:relative; }
+.st-place { font-family:'Oswald',sans-serif; font-weight:700; font-size:1.1rem; }
+.st-crown { margin-left:4px; font-size:0.9rem; }
+
+.st-col-team { text-align:left; padding-left:20px !important; }
+.st-team { display:flex; align-items:center; gap:12px; }
+.st-logo { flex-shrink:0; width:38px; height:38px; border-radius:50%; object-fit:cover; border:2px solid rgba(0,184,232,0.5); box-shadow:0 2px 5px rgba(0,0,0,0.3); }
+.st-team-name { font-family:'Oswald',sans-serif; font-weight:700; text-transform:uppercase; font-size:0.95rem; letter-spacing:0.2px; }
+
+.st-col-pts .st-pts-pill {
+    display:inline-block; min-width:32px; font-family:'Oswald',sans-serif; font-weight:700;
+    background: linear-gradient(135deg, #00b8e8 0%, #290a44 100%); color:#fdf5ed;
+    border-radius:50px; padding:4px 12px; font-size:0.95rem;
+}
+
+.st-footnote { text-align:center; font-family:'Barlow Semi Condensed',sans-serif; font-style:italic; color:#999; font-size:0.8rem; margin:18px 0 0; }
+
+@media (max-width: 480px) {
+    .st-table tbody td, .st-table thead th { padding:10px 6px; font-size:0.9rem; }
+    .st-logo { width:30px; height:30px; }
+    .st-team-name { font-size:0.8rem; }
+}
+</style>
+{% endblock %}

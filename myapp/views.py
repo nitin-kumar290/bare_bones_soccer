@@ -701,7 +701,7 @@ def waldy_league_week1_schedule(request):
 
 TEAM_LOGO_URLS = {
     'Los Bandidos FC': 'https://bare-bones-soccer.s3.amazonaws.com/images/team_logos/los_bandidos.png',
-    'Tylenol': 'https://bare-bones-soccer.s3.amazonaws.com/images/team_logos/tylenol.png',
+    'Tylenol Team': 'https://bare-bones-soccer.s3.amazonaws.com/images/team_logos/tylenol.png',
     'Arse N’ All': 'https://bare-bones-soccer.s3.amazonaws.com/images/team_logos/arse_n_all.png',
     'Cider-Genießer': 'https://bare-bones-soccer.s3.amazonaws.com/images/team_logos/cider_geniesser.png',
     'Ivory Toast FC': 'https://bare-bones-soccer.s3.amazonaws.com/images/team_logos/ivory_toast.png',
@@ -720,6 +720,29 @@ def waldy_league_rosters(request):
 
 def waldy_street_league(request):
     return render(request, 'waldy_street_league.html')
+
+
+# Standings are hand-updated here after each Matchday — no results model exists yet.
+WALDY_LEAGUE_STANDINGS = [
+    {'team_name': 'Los Bandidos FC', 'gp': 1, 'gf': 3, 'ga': 10, 'pts': 0},
+    {'team_name': 'Tylenol Team', 'gp': 1, 'gf': 2, 'ga': 3, 'pts': 0},
+    {'team_name': 'Arse N’ All', 'gp': 1, 'gf': 8, 'ga': 10, 'pts': 0},
+    {'team_name': 'Cider-Genießer', 'gp': 1, 'gf': 10, 'ga': 8, 'pts': 3},
+    {'team_name': 'Ivory Toast FC', 'gp': 1, 'gf': 3, 'ga': 2, 'pts': 3},
+    {'team_name': 'Strangers United FC', 'gp': 1, 'gf': 10, 'ga': 3, 'pts': 3},
+]
+
+
+def waldy_league_standings(request):
+    rows = sorted(
+        WALDY_LEAGUE_STANDINGS,
+        key=lambda r: (-r['pts'], -(r['gf'] - r['ga']), -r['gf'], r['team_name']),
+    )
+    for i, r in enumerate(rows, start=1):
+        r['place'] = i
+        r['gd'] = r['gf'] - r['ga']
+        r['logo_url'] = TEAM_LOGO_URLS.get(r['team_name'])
+    return render(request, 'waldy_league_standings.html', {'rows': rows})
 
 
 @login_required
