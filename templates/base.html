@@ -128,7 +128,7 @@
 
     {% block announcement_bar %}
     <a href="{% url 'events' %}" class="wsl-announcement-bar">
-        🏟️ Backyard 3v3 Tournament — <span class="wsl-announcement-coed">OCT 2</span> <span class="wsl-announcement-cta">See Details!</span>
+        🏟️ BACKYARD 3V3 TOURNAMENT — OCTOBER 2ND <span class="wsl-announcement-cta">SIGN UP TODAY!</span>
     </a>
     <style>
         @keyframes wsl-announcement-text-glow {
@@ -138,7 +138,7 @@
         .wsl-announcement-bar {
             display: block; text-align: center; padding: 10px 16px;
             background: linear-gradient(90deg, #290a44 0%, #08070b 100%);
-            color: #fdf5ed; text-decoration: none;
+            color: #fdf5ed; text-decoration: none; text-transform: uppercase;
             font-family: 'Barlow Semi Condensed', sans-serif; font-size: 0.92rem; font-weight: 600;
             letter-spacing: 0.3px;
         }
@@ -148,7 +148,7 @@
             font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 0.65rem; letter-spacing: 1px; text-transform: uppercase;
             padding: 2px 9px; border-radius: 50px; margin-right: 8px; vertical-align: middle;
         }
-        .wsl-announcement-coed, .wsl-announcement-cta {
+        .wsl-announcement-cta {
             color: #00b8e8; font-weight: 700;
             display: inline-block;
             animation: wsl-announcement-text-glow 1.6s ease-in-out infinite;
