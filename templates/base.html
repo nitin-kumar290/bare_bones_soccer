@@ -127,9 +127,8 @@
     {% endif %}
 
     {% block announcement_bar %}
-    {% if WALDY_LEAGUE_FULL %}
-    <a href="{% url 'waldy_league_register' %}" class="wsl-announcement-bar">
-        Waldy Street League — <span class="wsl-announcement-coed">FREE AGENT SPOTS LEFT!</span> <span class="wsl-announcement-cta">Sign Up!</span>
+    <a href="{% url 'events' %}" class="wsl-announcement-bar">
+        🏟️ Backyard 3v3 Tournament — <span class="wsl-announcement-coed">OCT 2</span> <span class="wsl-announcement-cta">See Details!</span>
     </a>
     <style>
         @keyframes wsl-announcement-text-glow {
@@ -156,37 +155,6 @@
         }
         @media (max-width: 576px) { .wsl-announcement-bar { font-size: 0.8rem; padding: 9px 12px; } }
     </style>
-    {% else %}
-    <a href="{% url 'waldy_street_league' %}" class="wsl-announcement-bar">
-        <span class="wsl-announcement-badge">New</span>
-        Waldy Street League — <span class="wsl-announcement-coed">COED</span> 4v4, Wednesday nights at Waldschänke &middot; <span class="wsl-announcement-cta">Sign Up!</span>
-    </a>
-    <style>
-        @keyframes wsl-announcement-text-glow {
-            0%, 100% { text-shadow: 0 0 2px rgba(0,184,232,0.2); }
-            50% { text-shadow: 0 0 6px rgba(255,255,255,0.9), 0 0 16px rgba(0,184,232,1), 0 0 32px rgba(0,184,232,0.8); }
-        }
-        .wsl-announcement-bar {
-            display: block; text-align: center; padding: 10px 16px;
-            background: linear-gradient(90deg, #290a44 0%, #08070b 100%);
-            color: #fdf5ed; text-decoration: none;
-            font-family: 'Barlow Semi Condensed', sans-serif; font-size: 0.92rem; font-weight: 600;
-            letter-spacing: 0.3px;
-        }
-        .wsl-announcement-bar:hover { color: #fdf5ed; background: linear-gradient(90deg, #33124f 0%, #0d0b12 100%); }
-        .wsl-announcement-badge {
-            display: inline-block; background: #00b8e8; color: #08070b;
-            font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 0.65rem; letter-spacing: 1px; text-transform: uppercase;
-            padding: 2px 9px; border-radius: 50px; margin-right: 8px; vertical-align: middle;
-        }
-        .wsl-announcement-coed, .wsl-announcement-cta {
-            color: #00b8e8; font-weight: 700;
-            display: inline-block;
-            animation: wsl-announcement-text-glow 1.6s ease-in-out infinite;
-        }
-        @media (max-width: 576px) { .wsl-announcement-bar { font-size: 0.8rem; padding: 9px 12px; } }
-    </style>
-    {% endif %}
     {% endblock announcement_bar %}
 
     <!-- <header class="hero-section" style="background: url('{% static 'images/bb_banner.jpg' %}') no-repeat center center/cover;"> -->
