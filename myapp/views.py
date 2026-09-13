@@ -1617,6 +1617,108 @@ def waldy_league_claim(request, claim_code):
 TOURNAMENT_LEAGUE_NAME = 'Backyard 3v3 Tournament'
 TOURNAMENT_PRICE = 20
 TOURNAMENT_ROSTER_CAP = 6
+TOURNAMENT_TEAM_CAP = 6
+TOURNAMENT_MIN_PLAYERS = 3
+
+
+def finalize_tournament_team_status(request, team):
+    """
+    Call this right after a team's paid player count could have changed (captain's own
+    payment, a team-prepay payout, or a teammate joining via invite link). A team doesn't
+    count toward the 6-team tournament cap until it reaches the 3-player minimum — this is
+    the one place that decision gets made, exactly once, the first time a team crosses that
+    line, based on how many other teams already got there first. Teams that never reach 3
+    players just stay 'Pending' forever and never occupy a real slot.
+    """
+    if team.league_name != TOURNAMENT_LEAGUE_NAME or team.tournament_status != 'Pending':
+        return team.tournament_status
+
+    paid_count = team.players.filter(status='Paid').count()
+    if paid_count < TOURNAMENT_MIN_PLAYERS:
+        return team.tournament_status
+
+    confirmed_count = LeagueTeam.objects.filter(
+        league_name=TOURNAMENT_LEAGUE_NAME, tournament_status='Confirmed'
+    ).count()
+    team.tournament_status = 'Confirmed' if confirmed_count < TOURNAMENT_TEAM_CAP else 'Waitlisted'
+    team.save(update_fields=['tournament_status'])
+    send_tournament_team_status_email(request, team)
+    return team.tournament_status
+
+
+def send_tournament_team_status_email(request, team):
+    """Sent to the captain exactly once, the moment their team is finally decided as
+    Confirmed or Waitlisted (i.e., the moment it hits 3 paid players)."""
+    if team.tournament_status == 'Confirmed':
+        subject = f"You're Confirmed! {team.team_name} Has a Spot in the Backyard 3v3 Tournament"
+        headline = "🎉 YOUR TEAM IS CONFIRMED"
+        message = f"<b>{team.team_name}</b> just hit the 3-player minimum and locked in one of the 6 tournament spots. You're officially in!"
+    else:
+        subject = f"{team.team_name} Is Waitlisted for the Backyard 3v3 Tournament"
+        headline = "⏳ YOUR TEAM IS WAITLISTED"
+        message = f"<b>{team.team_name}</b> just hit the 3-player minimum, but all 6 tournament spots were already claimed by teams that got there first. You're first in line — if a confirmed team drops, you're in automatically. If a spot doesn't open up, everyone on your roster will be refunded."
+
+    html_message = f"""
+    <!DOCTYPE html>
+    <html>
+    <body>
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#ffffff; margin:0; padding:0;">
+    <tr>
+        <td align="center" style="padding:0;">
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="width:100%; max-width:600px; margin:0 auto;">
+            <tr>
+            <td align="center" style="padding:24px;">
+                <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width:600px; width:100%; font-family:Arial, Helvetica, sans-serif; color:#111;">
+
+                <tr>
+                    <td style="font-size:22px; line-height:30px; text-align:center; font-weight:bold; color:#290a44;">
+                    {headline}
+                    </td>
+                </tr>
+
+                <tr><td style="height:16px; line-height:16px;">&nbsp;</td></tr>
+
+                <tr>
+                    <td style="font-size:16px; padding:0 24px; line-height:26px; text-align:center;">
+                    {message}
+                    </td>
+                </tr>
+
+                <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
+
+                <tr>
+                    <td style="font-size:14px; padding:0 24px; line-height:22px; text-align:center; color:#555;">
+                    📅 <b>October 2nd</b> at Insight Soccer Training &mdash; start time and bracket will be posted soon.
+                    </td>
+                </tr>
+
+                <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
+
+                <tr>
+                    <td style="font-size:16px; line-height:24px; text-align:center;">
+                    See you on the pitch!
+                    <br>
+                    The Bare Bones Crew
+                    </td>
+                </tr>
+
+                </table>
+            </td>
+            </tr>
+        </table>
+        </td>
+    </tr>
+    </table>
+
+    </body>
+    </html>
+    """
+    email = EmailMessage(subject, html_message, settings.EMAIL_HOST_USER, [team.captain.email])
+    email.content_subtype = "html"
+    try:
+        email.send()
+    except Exception:
+        logger.exception("Failed to send tournament team status email")
 
 
 @login_required
@@ -1723,6 +1825,7 @@ def tournament_checkout_success(request, team_id):
                     team.prepaid_payment_id = session_id
                     team.save()
                     team.players.update(status='Paid', payment_id=session_id)
+                    finalize_tournament_team_status(request, team)
                     send_tournament_captain_confirmation_email(request, team)
                     for teammate in team.players.filter(player__isnull=True):
                         send_tournament_claim_email(request, teammate)
@@ -1730,15 +1833,44 @@ def tournament_checkout_success(request, team_id):
                 was_already_paid = LeagueTeamPlayer.objects.filter(team=team, player=request.user, status='Paid').exists()
                 LeagueTeamPlayer.objects.filter(team=team, player=request.user).update(status='Paid', payment_id=session_id)
                 if not was_already_paid:
+                    finalize_tournament_team_status(request, team)
                     send_tournament_captain_confirmation_email(request, team)
-    return render(request, 'backyard_tournament_checkout_success.html', {'team': team})
+    team.refresh_from_db()
+    roster_count = team.players.filter(status='Paid').count()
+    return render(request, 'backyard_tournament_checkout_success.html', {
+        'team': team, 'roster_count': roster_count, 'min_players': TOURNAMENT_MIN_PLAYERS,
+    })
+
+
+TOURNAMENT_CAP_DISCLAIMER = (
+    "Only 6 teams get into the tournament. A team's spot isn't secured until it reaches "
+    "3 paid players &mdash; spots go to whichever teams hit 3 first, not by registration order."
+)
+
+
+def _tournament_cap_disclaimer_html():
+    return f"""
+    <tr><td style="height:14px; line-height:14px;">&nbsp;</td></tr>
+    <tr>
+        <td style="padding:0 24px;">
+        <table role="presentation" align="center" cellspacing="0" cellpadding="0" style="border:1.5px solid #00b8e8; border-radius:10px; background:#fff5e6;">
+            <tr>
+                <td style="padding:14px 18px; text-align:center; font-size:13px; line-height:20px; color:#290a44;">
+                ⚠️ <b>{TOURNAMENT_CAP_DISCLAIMER}</b>
+                </td>
+            </tr>
+        </table>
+        </td>
+    </tr>
+    """
 
 
 def send_tournament_captain_confirmation_email(request, team):
     invite_link = request.build_absolute_uri(reverse('tournament_join', args=[team.invite_code]))
 
     if team.payment_mode == 'team_prepay':
-        subject = f"Team Payment Confirmed — {team.team_name} is Locked In for the Backyard 3v3 Tournament"
+        status_word = "Locked In" if team.tournament_status == 'Confirmed' else "Waitlisted"
+        subject = f"Team Payment Confirmed — {team.team_name} is {status_word} for the Backyard 3v3 Tournament"
         teammates = team.players.filter(is_captain=False)
         names = "<br>".join(f"{p.first_name} {p.last_name}" for p in teammates)
         roster_html = ""
@@ -1757,24 +1889,35 @@ def send_tournament_captain_confirmation_email(request, team):
                 </td>
             </tr>
             """
+        status_line = (
+            "🎉 <b>Your team is confirmed</b> for one of the 6 tournament spots!" if team.tournament_status == 'Confirmed'
+            else "⏳ <b>Your team is waitlisted</b> &mdash; all 6 spots were already claimed. You're first in line if one opens up."
+        )
         body_details = f"""
             <tr>
-                <td style="font-size:16px; padding:24px; text-align:center; line-height:26px;">
+                <td style="font-size:16px; padding:24px 24px 8px; text-align:center; line-height:26px;">
                 💰 <b>${team.prepaid_amount} paid</b> for {team.prepaid_roster_size} players<br>
                 🧢 <b>Team:</b> {team.team_name}
+                </td>
+            </tr>
+            <tr>
+                <td style="font-size:15px; padding:0 24px; text-align:center; line-height:24px;">
+                {status_line}
                 </td>
             </tr>
             {roster_html}
         """
     else:
-        subject = f"You're In! {team.team_name} — Backyard 3v3 Tournament Confirmed"
+        subject = f"Spot Paid — {team.team_name} — Backyard 3v3 Tournament"
         body_details = f"""
             <tr>
                 <td style="font-size:16px; padding:24px 24px 8px; text-align:center; line-height:26px;">
-                💰 <b>${TOURNAMENT_PRICE} paid</b> — your spot is locked in<br>
-                🧢 <b>Team:</b> {team.team_name}
+                💰 <b>${TOURNAMENT_PRICE} paid</b> &mdash; your own spot is confirmed<br>
+                🧢 <b>Team:</b> {team.team_name}<br>
+                👥 <b>Roster:</b> 1/{TOURNAMENT_MIN_PLAYERS} minimum players so far
                 </td>
             </tr>
+            {_tournament_cap_disclaimer_html()}
             <tr><td style="height:12px; line-height:12px;">&nbsp;</td></tr>
             <tr>
                 <td style="padding:0 24px 8px; text-align:center;">
@@ -2005,13 +2148,29 @@ def tournament_join_success(request, invite_code):
                     'email': request.user.email,
                 }
             )
+            finalize_tournament_team_status(request, team)
             send_tournament_player_join_confirmation_email(request, team)
-    return render(request, 'backyard_tournament_join_success.html', {'team': team})
+    team.refresh_from_db()
+    roster_count = team.players.filter(status='Paid').count()
+    return render(request, 'backyard_tournament_join_success.html', {
+        'team': team, 'roster_count': roster_count, 'min_players': TOURNAMENT_MIN_PLAYERS,
+    })
 
 
 def send_tournament_player_join_confirmation_email(request, team):
     roster_count = team.players.filter(status='Paid').count()
     subject = f"You're In! You Joined {team.team_name} — Backyard 3v3 Tournament"
+
+    if team.tournament_status == 'Confirmed':
+        status_line = "🎉 <b>This team is confirmed</b> for one of the 6 tournament spots!"
+        extra_disclaimer = ""
+    elif team.tournament_status == 'Waitlisted':
+        status_line = "⏳ <b>This team is waitlisted</b> &mdash; all 6 spots were already claimed. First in line if one opens up."
+        extra_disclaimer = ""
+    else:
+        status_line = f"👥 <b>Roster:</b> {roster_count}/{TOURNAMENT_MIN_PLAYERS} minimum players so far"
+        extra_disclaimer = _tournament_cap_disclaimer_html()
+
     html_message = f"""
     <!DOCTYPE html>
     <html>
@@ -2039,12 +2198,18 @@ def send_tournament_player_join_confirmation_email(request, team):
                 </tr>
 
                 <tr>
-                    <td style="font-size:16px; padding:24px; text-align:center; line-height:26px;">
-                    💰 <b>${TOURNAMENT_PRICE} paid</b> — your spot is locked in<br>
+                    <td style="font-size:16px; padding:24px 24px 8px; text-align:center; line-height:26px;">
+                    💰 <b>${TOURNAMENT_PRICE} paid</b> &mdash; your own spot is confirmed<br>
                     🧢 <b>Team:</b> {team.team_name}<br>
-                    👥 <b>Roster:</b> {roster_count}/{TOURNAMENT_ROSTER_CAP} paid
+                    👥 <b>Team Roster:</b> {roster_count}/{TOURNAMENT_ROSTER_CAP} paid
                     </td>
                 </tr>
+                <tr>
+                    <td style="font-size:15px; padding:0 24px; text-align:center; line-height:24px;">
+                    {status_line}
+                    </td>
+                </tr>
+                {extra_disclaimer}
 
                 <tr><td style="height:20px; line-height:20px;">&nbsp;</td></tr>
 

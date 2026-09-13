@@ -259,6 +259,14 @@ class LeagueTeam(models.Model):
     prepaid_amount = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
     prepaid_status = models.CharField(max_length=20, choices=[('Pending', 'Pending'), ('Paid', 'Paid')], default='Pending')
     created_at = models.DateTimeField(auto_now_add=True)
+    # Tournament-only: a team doesn't count toward the tournament's hard team cap until it
+    # reaches the minimum playable roster (3 paid players) — set once, the first time that
+    # happens, based on how many other teams already got there first. Unused by Street League.
+    tournament_status = models.CharField(
+        max_length=20,
+        choices=[('Pending', 'Pending — Building Roster'), ('Confirmed', 'Confirmed'), ('Waitlisted', 'Waitlisted')],
+        default='Pending',
+    )
 
     def save(self, *args, **kwargs):
         if not self.invite_code:

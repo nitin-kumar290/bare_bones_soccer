@@ -11,17 +11,28 @@
 <div class="wlr-page-bg py-5">
     <div class="container text-center" style="position:relative; z-index:1; max-width:560px;">
         <p class="wlr-eyebrow">Payment Confirmed</p>
-        <h1 class="wlr-title">{{ team.team_name }} Is In</h1>
+        {% if team.payment_mode == 'team_prepay' %}
+            <h1 class="wlr-title">{% if team.tournament_status == 'Confirmed' %}{{ team.team_name }} Is In{% elif team.tournament_status == 'Waitlisted' %}{{ team.team_name }} Is Waitlisted{% else %}{{ team.team_name }} — Payment Received{% endif %}</h1>
+        {% else %}
+            <h1 class="wlr-title">Spot Paid — {{ team.team_name }}</h1>
+        {% endif %}
         <div class="wlr-rule"></div>
 
         <div class="wlr-card">
             <div class="wlr-check-email">📧 Check Your Email to Confirm</div>
             {% if team.payment_mode == 'team_prepay' %}
-                <p style="font-family:'Barlow Semi Condensed',sans-serif; color:#fdf5ed;">You're in! See you October 2nd at Insight Soccer Training. Start time and bracket will be posted soon.</p>
+                {% if team.tournament_status == 'Confirmed' %}
+                <p style="font-family:'Barlow Semi Condensed',sans-serif; color:#fdf5ed;">🎉 You're confirmed for one of the 6 tournament spots! See you October 2nd at Insight Soccer Training. Start time and bracket will be posted soon.</p>
+                {% elif team.tournament_status == 'Waitlisted' %}
+                <p style="font-family:'Barlow Semi Condensed',sans-serif; color:#fdf5ed;">⏳ All 6 tournament spots were already claimed, so your team is waitlisted. You're first in line if a confirmed team drops — otherwise everyone on your roster will be refunded.</p>
+                {% else %}
+                <p style="font-family:'Barlow Semi Condensed',sans-serif; color:#fdf5ed;">Payment received — we'll confirm your tournament status shortly.</p>
+                {% endif %}
             {% else %}
-                <p style="font-family:'Barlow Semi Condensed',sans-serif; color:#fdf5ed; margin-bottom:16px;">Your spot is confirmed. Share this link with your teammates so they can join and pay for their own spot:</p>
+                <p style="font-family:'Barlow Semi Condensed',sans-serif; color:#fdf5ed; margin-bottom:16px;">Your own $20 spot is paid. Share this link with your teammates so they can join and pay for their own spot:</p>
                 <div class="wlr-invite-box">{{ request.scheme }}://{{ request.get_host }}{% url 'tournament_join' team.invite_code %}</div>
                 <p style="font-family:'Barlow Semi Condensed',sans-serif; font-size:0.85rem; color:rgba(253,245,237,0.6); margin-top:14px;">Roster fills up to 6 players. Only people with this link can join your team.</p>
+                <div class="wlr-cap-disclaimer">⚠️ ONLY 6 TEAMS GET IN — YOUR TEAM'S SPOT ISN'T SECURED UNTIL IT REACHES 3 PAID PLAYERS ({{ roster_count }}/{{ min_players }} SO FAR). SPOTS GO TO WHOEVER HITS 3 FIRST, NOT BY REGISTRATION ORDER.</div>
             {% endif %}
         </div>
     </div>
@@ -53,6 +64,12 @@
     .wlr-invite-box {
         font-family:'Barlow Semi Condensed',sans-serif; font-size:0.9rem; color:#00b8e8; word-break:break-all;
         background: rgba(0,184,232,0.08); border:1px solid rgba(0,184,232,0.3); border-radius:10px; padding:12px 14px;
+    }
+    .wlr-cap-disclaimer {
+        background: #fff5e6; border: 1.5px solid #e8a33d; border-radius: 10px;
+        padding: 12px 16px; margin-top: 16px; text-align: center;
+        font-family:'Barlow Semi Condensed',sans-serif; font-weight: 700; text-transform: uppercase;
+        letter-spacing: 0.3px; font-size: 0.74rem; color: #7a4a0a; line-height: 1.5;
     }
 </style>
 {% endblock %}

@@ -6,6 +6,72 @@ A running log of site changes made through Claude Code, most recent first.
 
 ## 2026-09-11
 
+### Removed: "Stay In The Loop" placeholder card on the Game Catalog (`templates/series_catalog.html`)
+Removed the dark placeholder card that filled the catalog grid slot when no event was currently scheduled (Instagram + WhatsApp follow buttons). Archiving the full markup/CSS here in case it's needed again later:
+
+```html
+<!-- Stay in the Loop — Placeholder Card (no event currently scheduled) -->
+<div class="col">
+    <div class="card h-100 loop-card">
+        <div class="card-body text-center" style="display:flex; flex-direction:column;">
+            <div class="mb-3">
+                <span style="font-size:2.8rem;">📣</span>
+                <h3 class="card-title mt-2" style="font-family:'Oswald',sans-serif; font-size:1.6rem; font-weight:700; color:#fdf5ed; letter-spacing:1px;">Stay In The Loop</h3>
+                <p style="font-size:0.85rem; color:rgba(253,245,237,0.75); margin:10px 0 0; font-family:'Barlow Semi Condensed', sans-serif;">No event on the books right now — follow along so you're first to know when the next one drops.</p>
+            </div>
+            <div style="margin-top:auto; display:flex; flex-direction:column; gap:10px;">
+                <a href="https://www.instagram.com/barebonessoccer" target="_blank" rel="noopener" class="loop-btn loop-btn-primary">FOLLOW ON INSTAGRAM</a>
+                <a href="https://chat.whatsapp.com/IzHQHb1UODABuoABqXotvm" target="_blank" rel="noopener" class="loop-btn loop-btn-secondary">JOIN THE WHATSAPP GROUP</a>
+            </div>
+        </div>
+    </div>
+</div>
+```
+
+```css
+/* ── Stay in the loop placeholder card ── */
+.loop-card {
+    background: linear-gradient(160deg, #08070b 0%, #290a44 55%, #08070b 100%);
+    border: 1.5px solid rgba(0,184,232,0.4);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(41,10,68,0.3), 0 0 0 1px rgba(0,184,232,0.1);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    position: relative;
+    overflow: hidden;
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+}
+.loop-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 48px rgba(41,10,68,0.45), 0 0 0 1px rgba(0,184,232,0.2);
+}
+.loop-btn {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    border-radius: 50px;
+    padding: 11px 0;
+    width: 100%;
+    text-align: center;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.loop-btn:hover { transform: translateY(-2px); }
+.loop-btn-primary {
+    background: #fdf5ed;
+    color: #290a44;
+    box-shadow: 0 4px 14px rgba(0,184,232,0.35);
+}
+.loop-btn-secondary {
+    background: rgba(253,245,237,0.08);
+    color: #fdf5ed;
+    border: 1.5px solid rgba(253,245,237,0.25);
+}
+```
+
 ### Added: Waldy Street League standings page (`templates/waldy_league_standings.html`, `myapp/views.py`, `myapp/urls.py`)
 New page at `/leagues/waldy-street-league/standings/` — Place, Team (with badge), GP, GF, GA, GD, PTS, sorted like a normal sports table (points, then goal difference, then goals for). Standings data lives in a `WALDY_LEAGUE_STANDINGS` list in `views.py`, hand-updated after each Matchday since there's no results/match model in the data model yet. Logged Matchday 1 results: Strangers United FC 10–3 over Los Bandidos FC, Ivory Toast FC 3–2 over Tylenol Team, Cider-Genießer 10–8 over Arse N' All (3 points for a win, standard soccer scoring).
 

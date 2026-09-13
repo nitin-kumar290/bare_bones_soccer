@@ -91,8 +91,8 @@ class LeagueTeamPlayerInline(admin.TabularInline):
 
 @admin.register(LeagueTeam)
 class LeagueTeamAdmin(admin.ModelAdmin):
-    list_display = ('team_name', 'league_name', 'captain', 'payment_mode', 'prepaid_status', 'invite_code', 'created_at')
-    list_filter = ('league_name', 'payment_mode', 'prepaid_status')
+    list_display = ('team_name', 'league_name', 'captain', 'payment_mode', 'prepaid_status', 'tournament_status', 'invite_code', 'created_at')
+    list_filter = ('league_name', 'payment_mode', 'prepaid_status', 'tournament_status')
     search_fields = ('team_name', 'captain__username', 'captain__email', 'invite_code')
     inlines = [LeagueTeamPlayerInline]
 
