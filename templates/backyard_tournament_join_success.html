@@ -18,7 +18,7 @@
             {% elif team.tournament_status == 'Waitlisted' %}
             <p style="font-family:'Barlow Semi Condensed',sans-serif; color:#fdf5ed; margin-top:10px;">⏳ All 6 tournament spots were already claimed, so this team is waitlisted — first in line if one opens up.</p>
             {% else %}
-            <div class="wlr-cap-disclaimer">⚠️ ONLY 6 TEAMS GET IN — THIS TEAM'S SPOT ISN'T SECURED UNTIL IT REACHES 3 PAID PLAYERS ({{ roster_count }}/{{ min_players }} SO FAR). SPOTS GO TO WHOEVER HITS 3 FIRST, NOT BY REGISTRATION ORDER.</div>
+            <div class="wlr-cap-disclaimer">⚠️ TOURNAMENT CAPPED AT 6 TEAMS. THIS TEAM'S SPOT ISN'T SECURED UNTIL IT REACHES 3 PAID PLAYERS ({{ roster_count }}/{{ min_players }} SO FAR). SPOTS GO TO WHOEVER HITS 3 FIRST, NOT BY REGISTRATION ORDER. IF IT DOESN'T REACH 3 PLAYERS IN TIME, ALL PLAYERS WILL BE REFUNDED.</div>
             {% endif %}
         </div>
     </div>

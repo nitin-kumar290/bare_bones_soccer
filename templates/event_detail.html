@@ -112,6 +112,11 @@
 .evt-schedule-row:last-child { border-bottom:none; }
 .evt-schedule-row .label { font-family:'Oswald',sans-serif; font-weight:700; color:#08070b; padding-top:2px; text-transform:none; letter-spacing:normal; font-size:0.95rem; }
 .evt-schedule-row .desc { color:#555; text-align:left; line-height:1.45; }
+.evt-schedule-cap-line {
+    font-family:'Oswald',sans-serif; font-weight:700; text-transform:uppercase; letter-spacing:1px;
+    font-size:0.95rem; color:#e8a33d; text-align:center; padding-bottom:14px; margin-bottom:14px;
+    border-bottom:1px solid rgba(0,0,0,0.08);
+}
 .evt-team-structure {
     max-width: 720px; margin: 22px auto 0; text-align: center;
     background: linear-gradient(135deg, rgba(0,184,232,0.1) 0%, rgba(41,10,68,0.1) 100%);
@@ -229,7 +234,11 @@
     <p class="evt-specs-eyebrow">Format</p>
     <h2 style="font-family:'Oswald',sans-serif; font-weight:700; text-transform:uppercase; letter-spacing:1px; text-align:center; color:#08070b; margin-bottom:6px;">Tournament Structure</h2>
     {% if event.schedule_note %}<p class="evt-schedule-note">{{ event.schedule_note }}</p>{% endif %}
+    <div class="evt-cap-disclaimer">
+        ⚠️ TOURNAMENT CAPPED AT 6 TEAMS. A TEAM'S SPOT ISN'T SECURED UNTIL IT REACHES 3 PAID PLAYERS. SPOTS GO TO WHOEVER HITS 3 FIRST, NOT BY REGISTRATION ORDER. IF A TEAM DOESN'T REACH 3 PLAYERS IN TIME, ALL ITS PLAYERS WILL BE REFUNDED.
+    </div>
     <div class="evt-schedule-card">
+        <div class="evt-schedule-cap-line">⚠️ 6-TEAM CAP</div>
         {% for row in event.schedule_rows.all %}
         <div class="evt-schedule-row"><span class="label">{{ row.label }}</span><span class="desc">{{ row.description }}</span></div>
         {% endfor %}
@@ -241,9 +250,6 @@
         {% if event.team_structure_subnote %}<p class="evt-team-structure-subnote">*{{ event.team_structure_subnote }}</p>{% endif %}
     </div>
     {% endif %}
-    <div class="evt-cap-disclaimer">
-        ⚠️ ONLY 6 TEAMS GET IN — A TEAM'S SPOT ISN'T SECURED UNTIL IT REACHES 3 PAID PLAYERS. SPOTS GO TO WHOEVER HITS 3 FIRST, NOT BY REGISTRATION ORDER.
-    </div>
 </div>
 {% endif %}
 

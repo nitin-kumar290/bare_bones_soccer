@@ -1843,8 +1843,9 @@ def tournament_checkout_success(request, team_id):
 
 
 TOURNAMENT_CAP_DISCLAIMER = (
-    "Only 6 teams get into the tournament. A team's spot isn't secured until it reaches "
-    "3 paid players &mdash; spots go to whichever teams hit 3 first, not by registration order."
+    "Tournament capped at 6 teams. A team's spot isn't secured until it reaches "
+    "3 paid players &mdash; spots go to whoever hits 3 first, not by registration order. "
+    "If a team doesn't reach 3 players in time, all its players will be refunded."
 )
 
 
