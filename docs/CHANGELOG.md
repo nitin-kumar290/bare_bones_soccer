@@ -4,6 +4,32 @@ A running log of site changes made through Claude Code, most recent first.
 
 ---
 
+## 2026-09-13
+
+### Added: tournament 6-team cap logic with a Confirmed/Waitlisted system (`myapp/models.py`, `myapp/views.py`, `myapp/admin.py`, migration `0032`)
+The tournament's individual pay-in flow let a captain pay and become a "registered team" in Neon instantly, even with zero teammates — identical to a bug already fixed for Street League, except the tournament had no cap-counting protection at all (no team-count cap existed anywhere in the registration code). Investigated the live data and found 3 of 4 "registered" teams stuck at 1 paid player, with no expiration or warning system.
+
+Built a proper fix:
+- New `LeagueTeam.tournament_status` field (`Pending` / `Confirmed` / `Waitlisted`), default `Pending`. Tournament-only; unused by Street League.
+- New `finalize_tournament_team_status()` — runs the instant a team's paid player count could change (captain's own payment, a team-prepay payout, or a teammate joining via invite link). A team doesn't count toward the 6-team cap until it hits 3 paid players; at that exact moment, it's marked `Confirmed` if fewer than 6 teams got there first, or `Waitlisted` otherwise. Wired into both `tournament_checkout_success` and `tournament_join_success`.
+- Captain gets a dedicated status email the moment that decision is made (`send_tournament_team_status_email`) — "🎉 Confirmed" or "⏳ Waitlisted, first in line if a confirmed team drops."
+- Removed the false "your spot is locked in" language from both existing tournament confirmation emails (it was never true for a 1-person team) and replaced it with real roster-progress copy.
+- `tournament_status` added to the admin list/filter columns for `LeagueTeam`.
+
+### Added: consistent 6-team-cap disclaimer copy across every tournament touchpoint (`templates/event_detail.html`, `backyard_tournament_register.html`, `backyard_tournament_join.html`, `backyard_tournament_checkout_success.html`, `backyard_tournament_join_success.html`, `myapp/views.py`)
+Same sentence everywhere, iterated a few times on wording and placement before landing here: *"⚠️ TOURNAMENT CAPPED AT 6 TEAMS. A TEAM'S SPOT ISN'T SECURED UNTIL IT REACHES 3 PAID PLAYERS. SPOTS GO TO WHOEVER HITS 3 FIRST, NOT BY REGISTRATION ORDER. IF A TEAM DOESN'T REACH 3 PLAYERS IN TIME, ALL ITS PLAYERS WILL BE REFUNDED."* Placed on: the event page (right after the Tournament Structure list, above the Prize/Team-Registration-Only callouts), the registration page (above the pay button), the join page (teammates paying via invite link), both Stripe success pages, and both confirmation emails. Also added a short "Team Limit — ⚠️ 6-Team Cap" row as the first item in the Tournament Structure list itself, styled like every other row (Round Robin, Quarterfinal, etc.).
+
+### Tightened teammate-share copy in the tournament captain confirmation email (`myapp/views.py`)
+Removed a redundant player-count mention (already covered by the disclaimer above it) and cut trailing filler phrases — now reads "Each person pays their own $20 spot. Send them this link 👇" / "Copy & paste to your teammates!"
+
+### Changed: tournament minimum age from 18+ to 17+ (Neon data — `EventSpec` and `EventFAQ` rows, no code)
+Updated both the "Min. Age" spec card value and the matching FAQ answer for the Backyard 3v3 Tournament.
+
+### Fixed: two leftover uncommitted changes from earlier sessions
+Found while auditing git status against what was actually live on prod — the "Tylenol Team" rename fix to `waldy_league_week1_schedule.html` (9/9) and the "Stay In The Loop" card removal on the Game Catalog (9/11) were both deployed live but the git commits themselves never happened. Committed both now so prod and git history actually match.
+
+---
+
 ## 2026-09-11
 
 ### Removed: "Stay In The Loop" placeholder card on the Game Catalog (`templates/series_catalog.html`)

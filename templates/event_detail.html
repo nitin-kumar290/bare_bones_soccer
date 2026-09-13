@@ -235,6 +235,9 @@
         <div class="evt-schedule-row"><span class="label">{{ row.label }}</span><span class="desc">{{ row.description }}</span></div>
         {% endfor %}
     </div>
+    <div class="evt-cap-disclaimer">
+        ⚠️ TOURNAMENT CAPPED AT 6 TEAMS. A TEAM'S SPOT ISN'T SECURED UNTIL IT REACHES 3 PAID PLAYERS. SPOTS GO TO WHOEVER HITS 3 FIRST, NOT BY REGISTRATION ORDER. IF A TEAM DOESN'T REACH 3 PLAYERS IN TIME, ALL ITS PLAYERS WILL BE REFUNDED.
+    </div>
     <p class="evt-prize-note">🏆 PRIZE: TBD</p>
     {% if event.team_structure_note %}
     <div class="evt-team-structure">
@@ -242,9 +245,6 @@
         {% if event.team_structure_subnote %}<p class="evt-team-structure-subnote">*{{ event.team_structure_subnote }}</p>{% endif %}
     </div>
     {% endif %}
-    <div class="evt-cap-disclaimer">
-        ⚠️ TOURNAMENT CAPPED AT 6 TEAMS. A TEAM'S SPOT ISN'T SECURED UNTIL IT REACHES 3 PAID PLAYERS. SPOTS GO TO WHOEVER HITS 3 FIRST, NOT BY REGISTRATION ORDER. IF A TEAM DOESN'T REACH 3 PLAYERS IN TIME, ALL ITS PLAYERS WILL BE REFUNDED.
-    </div>
 </div>
 {% endif %}
 
