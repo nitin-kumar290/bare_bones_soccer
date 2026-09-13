@@ -87,6 +87,26 @@
             </a>
         </div>
 
+        <!-- Denver Footy League at Soccer Post Card — external LeagueApps registration, background image coming soon -->
+        <div class="col">
+            <a href="https://denverfooty.leagueapps.com/leagues/soccer-(indoor)/5141440-2026-fall--thursdays--denver-soccer-post--6v6-coed--p3" target="_blank" rel="noopener" class="text-decoration-none">
+                <div class="card h-100 featured-event-card hover-card">
+                    <div class="featured-badge">New &middot; Now Registering</div>
+                    <div class="card-body text-center" style="display:flex; flex-direction:column; flex:1;">
+                        <div class="mb-4">
+                            <h3 class="card-title" style="color:#fdf5ed;">Denver Footy League at Soccer Post</h3>
+                        </div>
+                        <ul class="list-unstyled mb-4" style="color:rgba(253,245,237,0.85);">
+                            <li><i class="fas fa-map-marker-alt me-2"></i>Soccer Post Denver</li>
+                            <li><i class="fas fa-calendar me-2"></i>Starts October 1 &middot; Thursdays</li>
+                            <li><i class="fas fa-clock me-2"></i>6:30 PM - 9:00 PM</li>
+                        </ul>
+                        <div class="featured-btn glow-cta" style="margin-top:auto;">Register Today!</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
         <!-- Sports Stable Card -->
         <div class="col">
             <a href="{% url 'schedule' %}" class="text-decoration-none">
@@ -285,6 +305,11 @@
         background: linear-gradient(135deg, #29d1ff 0%, #3a1060 100%);
         box-shadow: 0 6px 24px rgba(0,184,232,0.55);
     }
+    @keyframes catalog-cta-glow {
+        0%, 100% { box-shadow: 0 4px 14px rgba(0,184,232,0.4); }
+        50% { box-shadow: 0 4px 22px rgba(0,184,232,0.95), 0 0 18px rgba(0,184,232,0.6); }
+    }
+    .glow-cta { animation: catalog-cta-glow 1.8s ease-in-out infinite; }
 
     body { background: #fdf5ed; }
 </style>
