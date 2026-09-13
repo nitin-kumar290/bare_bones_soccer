@@ -1926,10 +1926,10 @@ def send_tournament_captain_confirmation_email(request, team):
                     <tr>
                         <td style="padding:16px 20px; text-align:center; font-size:14px; line-height:22px;">
                         <b>Share this with your teammates:</b><br>
-                        You need 3&ndash;6 players total, coed &mdash; each person pays their own ${TOURNAMENT_PRICE} spot. Send them the link BELOW!<br><br>
+                        Each person pays their own ${TOURNAMENT_PRICE} spot. Send them this link 👇<br><br>
                         <span style="font-family:monospace; font-size:13px; color:#08070b; background:#fff; border:1px solid #ddd; border-radius:6px; padding:8px 12px; display:inline-block; margin-top:4px; word-break:break-all;">{invite_link}</span>
                         <br><br>
-                        <b>Copy &amp; paste to your teammates so they can sign up!</b>
+                        <b>Copy &amp; paste to your teammates!</b>
                         </td>
                     </tr>
                 </table>
