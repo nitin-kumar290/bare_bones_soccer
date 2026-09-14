@@ -2,12 +2,18 @@
 {% load static %}
 {% block title %}Leagues | Bare Bones Soccer{% endblock %}
 {% block meta_description %}Structured soccer leagues from Bare Bones Soccer — Denver metro's community-first soccer collective. Real seasons, real standings, same community energy.{% endblock %}
-{% block hero_background %}https://bare-bones-soccer.s3.amazonaws.com/images/waldy_brunch-ball2-1.jpg{% endblock %}
+{% block hero_video %}
+<video class="hero-video" autoplay muted loop playsinline preload="metadata">
+    <source src="https://bare-bones-soccer.s3.amazonaws.com/videos/SoccerPostHero.mp4" type="video/mp4">
+</video>
+{% endblock %}
 {% block announcement_bar %}{% endblock %}
 
 {% block content %}
 <style>
-.hero-section { height: 60vh !important; background-position: center 30% !important; }
+.hero-section { height: 60vh !important; background: #000 !important; position: relative; overflow: hidden; }
+.hero-video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; opacity: 0.85; }
+.hero-section .navbar { position: relative; z-index: 10; }
 
 .leagues-hero-break { background: #fdf5ed; height: 32px; }
 
@@ -179,7 +185,7 @@
                 </video>
             </div>
             <div class="league-card-body">
-                <h2>Denver Footy League at Soccer Post</h2>
+                <h2>Footy League at Soccer Post</h2>
                 <p>6v6 coed indoor soccer at Soccer Post Denver. Real season, real standings, same Bare Bones energy.</p>
                 <div class="league-card-meta">
                     <span><i class="fas fa-venus-mars"></i> Coed</span>
@@ -188,7 +194,7 @@
                     <span><i class="fas fa-calendar"></i> Thursdays</span>
                     <span><i class="fas fa-clock"></i> 6:30&ndash;9:00 PM</span>
                 </div>
-                <span class="league-card-cta league-card-cta-glow">Register Today!</span>
+                <span class="league-card-cta league-card-cta-glow">REGISTER TODAY!</span>
             </div>
         </a>
 
