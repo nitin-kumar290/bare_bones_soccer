@@ -730,7 +730,7 @@ WALDY_LEAGUE_ROUND_ROBIN = [
         ('Cider-Genießer', 'Strangers United FC'),
     ],
 ]
-WALDY_LEAGUE_MATCHDAY_TIMES = ['6:30', '7:15', '8:00']
+WALDY_LEAGUE_MATCHDAY_TIMES = ['6:20', '7:05', '7:50']
 
 
 def waldy_league_matchday_schedule(request, number):
