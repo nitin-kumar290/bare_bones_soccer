@@ -699,6 +699,57 @@ def waldy_league_week1_schedule(request):
     return render(request, 'waldy_league_week1_schedule.html')
 
 
+# Full 5-week round robin, generated once from the circle method so every team plays every
+# other team exactly once across the season with zero repeat matchups. Matchday 1 (already
+# played) is round[0] — kept here so future weeks can be looked up instead of recomputed.
+# Update WALDY_LEAGUE_STANDINGS with each week's real scores; this list only tracks pairings.
+WALDY_LEAGUE_ROUND_ROBIN = [
+    [  # Matchday 1 — played
+        ('Los Bandidos FC', 'Strangers United FC'),
+        ('Cider-Genießer', 'Arse N’ All'),
+        ('Ivory Toast FC', 'Tylenol Team'),
+    ],
+    [  # Matchday 2
+        ('Los Bandidos FC', 'Arse N’ All'),
+        ('Strangers United FC', 'Tylenol Team'),
+        ('Cider-Genießer', 'Ivory Toast FC'),
+    ],
+    [  # Matchday 3
+        ('Los Bandidos FC', 'Tylenol Team'),
+        ('Arse N’ All', 'Ivory Toast FC'),
+        ('Strangers United FC', 'Cider-Genießer'),
+    ],
+    [  # Matchday 4
+        ('Los Bandidos FC', 'Ivory Toast FC'),
+        ('Tylenol Team', 'Cider-Genießer'),
+        ('Arse N’ All', 'Strangers United FC'),
+    ],
+    [  # Matchday 5
+        ('Los Bandidos FC', 'Cider-Genießer'),
+        ('Ivory Toast FC', 'Strangers United FC'),
+        ('Tylenol Team', 'Arse N’ All'),
+    ],
+]
+WALDY_LEAGUE_MATCHDAY_TIMES = ['6:30', '7:15', '8:00']
+
+
+def waldy_league_matchday_schedule(request, number):
+    from django.http import Http404
+    if number < 1 or number > len(WALDY_LEAGUE_ROUND_ROBIN):
+        raise Http404("No matchday scheduled with that number.")
+    pairings = WALDY_LEAGUE_ROUND_ROBIN[number - 1]
+    matchups = []
+    for (home, away), time in zip(pairings, WALDY_LEAGUE_MATCHDAY_TIMES):
+        matchups.append({
+            'home': home, 'home_logo': TEAM_LOGO_URLS.get(home),
+            'away': away, 'away_logo': TEAM_LOGO_URLS.get(away),
+            'time': time,
+        })
+    return render(request, 'waldy_league_matchday_schedule.html', {
+        'matchday_number': number, 'matchups': matchups,
+    })
+
+
 TEAM_LOGO_URLS = {
     'Los Bandidos FC': 'https://bare-bones-soccer.s3.amazonaws.com/images/team_logos/los_bandidos.png',
     'Tylenol Team': 'https://bare-bones-soccer.s3.amazonaws.com/images/team_logos/tylenol.png',

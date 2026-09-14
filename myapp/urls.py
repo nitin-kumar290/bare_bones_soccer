@@ -26,6 +26,7 @@ urlpatterns = [
     path('schedule/', views.schedule, name='schedule'),
     path('leagues/', views.leagues_hub, name='leagues_hub'),
     path('leagues/waldy-street-league/week-1/', views.waldy_league_week1_schedule, name='waldy_league_week1_schedule'),
+    path('leagues/waldy-street-league/matchday/<int:number>/', views.waldy_league_matchday_schedule, name='waldy_league_matchday_schedule'),
     path('leagues/waldy-street-league/rosters/', views.waldy_league_rosters, name='waldy_league_rosters'),
     path('leagues/waldy-street-league/standings/', views.waldy_league_standings, name='waldy_league_standings'),
     path('leagues/waldy-street-league/', views.waldy_street_league, name='waldy_street_league'),

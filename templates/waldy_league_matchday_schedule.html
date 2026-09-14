@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Matchday {{ matchday_number }} | Waldy Street League{% endblock %}
+{% block meta_description %}Waldy Street League Matchday {{ matchday_number }} matchups and times.{% endblock %}
+{% block hero_background %}{% static 'images/banner_small.png' %}{% endblock %}
+{% block announcement_bar %}{% endblock %}
+{% block navbar_style %}
+.hero-section { height: 30vh !important; background: linear-gradient(135deg, #08070b 0%, #290a44 100%) !important; overflow: hidden !important; }
+{% endblock %}
+
+{% block content %}
+<div class="wk-page">
+    <div class="wk-frame">
+        <div class="wk-card" id="wk-shareable">
+
+            <div class="wk-crosses wk-crosses-tl">
+                <span>&times;</span><span>&times;</span><span>&times;</span>
+                <span>&times;</span><span>&times;</span><span>&times;</span>
+            </div>
+            <div class="wk-crosses wk-crosses-br">
+                <span>&times;</span><span>&times;</span>
+                <span>&times;</span><span>&times;</span>
+            </div>
+
+            <h1 class="wk-title">MATCHDAY {{ matchday_number }}</h1>
+            <p class="wk-subtitle">Wednesday Nights &middot; Waldsch&auml;nke &middot; The Lot</p>
+
+            <div class="wk-matchups">
+                {% for m in matchups %}
+                <div class="wk-row">
+                    <div class="wk-team wk-team-left">
+                        {% if m.home_logo %}<img class="wk-logo" src="{{ m.home_logo }}" alt="{{ m.home }}">{% endif %}
+                        <span class="wk-team-name">{{ m.home }}</span>
+                    </div>
+                    <div class="wk-center">
+                        <span class="wk-vs">VS</span>
+                        <div class="wk-time">{{ m.time }} <span>PM</span></div>
+                    </div>
+                    <div class="wk-team wk-team-right">
+                        <span class="wk-team-name">{{ m.away }}</span>
+                        {% if m.away_logo %}<img class="wk-logo" src="{{ m.away_logo }}" alt="{{ m.away }}">{% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <p class="wk-footnote">4v4 &middot; 12-min halves &middot; be there 10 min early</p>
+        </div>
+
+        <div class="wk-brand">
+            <img src="https://bare-bones-soccer.s3.amazonaws.com/images/Primary%20Glyph%20W.png" alt="Bare Bones Soccer" class="wk-brand-logo">
+            <span class="wk-brand-text">WALDY STREET LEAGUE</span>
+        </div>
+    </div>
+</div>
+
+<style>
+body { background: #fdf5ed; }
+.wk-page { padding: 32px 16px 60px; }
+
+.wk-frame {
+    max-width: 500px; margin: 0 auto;
+    background: linear-gradient(160deg, #08070b 0%, #290a44 55%, #08070b 100%);
+    border-radius: 26px;
+    padding: 18px;
+    box-shadow: 0 0 0 1.5px rgba(0,184,232,0.5), 0 12px 40px rgba(0,184,232,0.25), 0 12px 40px rgba(41,10,68,0.4);
+    animation: wk-frame-glow 2.4s ease-in-out infinite;
+}
+@keyframes wk-frame-glow {
+    0%, 100% { box-shadow: 0 0 0 1.5px rgba(0,184,232,0.5), 0 12px 40px rgba(0,184,232,0.25), 0 12px 40px rgba(41,10,68,0.4); }
+    50% { box-shadow: 0 0 0 2px rgba(0,184,232,0.9), 0 12px 50px rgba(0,184,232,0.5), 0 12px 40px rgba(41,10,68,0.5); }
+}
+
+.wk-card {
+    position: relative;
+    background: #fdf5ed;
+    border-radius: 18px;
+    padding: 40px 22px 32px;
+    overflow: hidden;
+}
+.wk-crosses { position: absolute; display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; font-family: 'Oswald', sans-serif; font-weight: 700; color: rgba(0,184,232,0.35); font-size: 0.85rem; line-height: 1; }
+.wk-crosses-tl { top: 18px; left: 18px; }
+.wk-crosses-br { bottom: 18px; right: 18px; grid-template-columns: repeat(2, 1fr); }
+
+.wk-title {
+    font-family: 'Oswald', sans-serif; font-weight: 700; text-align: center;
+    font-size: clamp(2.5rem, 11vw, 3.6rem); letter-spacing: 1px; line-height: 1;
+    background: linear-gradient(135deg, #00b8e8 0%, #290a44 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    -webkit-text-stroke: 2px #08070b; margin: 8px 0 6px;
+}
+.wk-subtitle {
+    font-family: 'Oswald', sans-serif; font-weight: 700; text-align: center; text-transform: uppercase;
+    font-size: 0.8rem; letter-spacing: 1.5px;
+    background: linear-gradient(90deg, #290a44 0%, #00b8e8 100%); color: #fdf5ed;
+    display: inline-block; padding: 6px 16px; border-radius: 4px;
+    position: relative; left: 50%; transform: translateX(-50%); margin-bottom: 30px;
+    box-shadow: 0 4px 14px rgba(0,184,232,0.35);
+}
+
+.wk-matchups { display: flex; flex-direction: column; gap: 26px; position: relative; z-index: 1; }
+.wk-row { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+
+.wk-team { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+.wk-team-left { flex-direction: row; }
+.wk-team-right { flex-direction: row-reverse; text-align: right; }
+
+/* ── Team crest ── */
+.wk-logo {
+    flex-shrink: 0; width: 60px; height: 60px; border-radius: 50%;
+    object-fit: cover; border: 2px solid rgba(0,184,232,0.5);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.35);
+}
+
+.wk-team-name {
+    font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 0.8rem; text-transform: uppercase;
+    letter-spacing: 0.3px; color: #08070b; line-height: 1.15;
+}
+
+.wk-center { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.wk-vs {
+    font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 0.72rem; letter-spacing: 1px;
+    color: #290a44; background: rgba(0,184,232,0.15); border-radius: 50px; padding: 1px 8px;
+}
+.wk-time {
+    font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 1.05rem;
+    background: linear-gradient(135deg, #00b8e8 0%, #290a44 100%); color: #fdf5ed; border-radius: 8px;
+    padding: 7px 12px; min-width: 66px; text-align: center;
+    box-shadow: 0 4px 12px rgba(0,184,232,0.4);
+}
+.wk-time span { font-size: 0.65rem; opacity: 0.85; }
+
+.wk-footnote {
+    text-align: center; font-family: 'Barlow Semi Condensed', sans-serif; font-style: italic;
+    color: #777; font-size: 0.82rem; margin: 30px 0 0;
+}
+
+.wk-brand {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    padding: 14px 0 6px;
+}
+.wk-brand-logo { height: 40px; width: auto; }
+.wk-brand-text {
+    font-family: 'Oswald', sans-serif; font-weight: 700; letter-spacing: 2px; font-size: 0.9rem; color: #fdf5ed;
+}
+
+@media (max-width: 420px) {
+    .wk-team-name { font-size: 0.7rem; }
+    .wk-logo { width: 46px; height: 46px; }
+    .wk-time { font-size: 0.9rem; min-width: 56px; padding: 6px 9px; }
+}
+</style>
+{% endblock %}
