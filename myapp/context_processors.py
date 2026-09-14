@@ -15,6 +15,7 @@ def stage_info(request):
 
 
 WALDY_LEAGUE_TEAM_CAP = 6
+WALDY_LEAGUE_FREE_AGENTS_CLOSED = True
 
 
 def league_status(request):
@@ -22,4 +23,5 @@ def league_status(request):
     team_count = LeagueTeam.paid_count('Waldy Street League')
     return {
         'WALDY_LEAGUE_FULL': team_count >= WALDY_LEAGUE_TEAM_CAP,
+        'WALDY_LEAGUE_FREE_AGENTS_CLOSED': WALDY_LEAGUE_FREE_AGENTS_CLOSED,
     }

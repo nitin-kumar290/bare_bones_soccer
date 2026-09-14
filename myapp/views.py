@@ -798,7 +798,7 @@ def waldy_league_standings(request):
 
 @login_required
 def waldy_league_register(request):
-    from .context_processors import WALDY_LEAGUE_TEAM_CAP
+    from .context_processors import WALDY_LEAGUE_TEAM_CAP, WALDY_LEAGUE_FREE_AGENTS_CLOSED
     teams_full = LeagueTeam.paid_count('Waldy Street League') >= WALDY_LEAGUE_TEAM_CAP
 
     existing_agent = LeagueFreeAgent.objects.filter(player=request.user, league_name='Waldy Street League').first()
@@ -807,6 +807,12 @@ def waldy_league_register(request):
         registration_type = request.POST.get('registration_type', 'individual')
 
         if registration_type == 'free_agent':
+            if WALDY_LEAGUE_FREE_AGENTS_CLOSED and not (existing_agent and existing_agent.status != 'Pending'):
+                messages.error(request, "Free agent registration is closed for this season.")
+                return render(request, 'waldy_league_register.html', {
+                    'form': LeagueTeamCreateForm(), 'fa_form': LeagueFreeAgentForm(initial={'email': request.user.email}),
+                    'existing_agent': existing_agent, 'selected_type': 'free_agent', 'teams_full': teams_full,
+                })
             if existing_agent:
                 if existing_agent.status != 'Pending':
                     messages.info(request, "You're already in the free agent pool.")

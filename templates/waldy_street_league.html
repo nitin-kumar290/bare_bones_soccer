@@ -15,7 +15,9 @@
 <div class="wsl-hero-overlay text-center">
     <h1 class="wsl-hero-title">Waldy Street League<br>at The Lot</h1>
     <p class="wsl-hero-eyebrow" style="margin-top:-16px;">4v4 &middot; Wednesday Nights &middot; Starts 9/9</p>
-    {% if WALDY_LEAGUE_FULL %}
+    {% if WALDY_LEAGUE_FULL and WALDY_LEAGUE_FREE_AGENTS_CLOSED %}
+        <span class="wsl-register-btn primary" style="opacity:0.7; cursor:default;">Registration Closed</span>
+    {% elif WALDY_LEAGUE_FULL %}
         {% if user.is_authenticated %}
         <a href="{% url 'waldy_league_register' %}" class="wsl-register-btn primary">Free Agent Spots Left!</a>
         {% else %}
@@ -214,7 +216,10 @@
 <!-- Pricing -->
 <div class="wsl-pricing" id="reserve">
     <p class="wsl-specs-eyebrow" style="color:#00b8e8;">Pricing</p>
-    {% if WALDY_LEAGUE_FULL %}
+    {% if WALDY_LEAGUE_FULL and WALDY_LEAGUE_FREE_AGENTS_CLOSED %}
+    <h2 style="font-family:'Oswald',sans-serif; font-weight:700; text-transform:uppercase; text-align:center; color:#fdf5ed; margin-bottom:8px;">Registration Closed</h2>
+    <p style="font-family:'Barlow Semi Condensed',sans-serif; text-align:center; color:rgba(253,245,237,0.6); margin-bottom:0;">All 6 teams are locked in and free agent spots are closed for this season.</p>
+    {% elif WALDY_LEAGUE_FULL %}
     <h2 style="font-family:'Oswald',sans-serif; font-weight:700; text-transform:uppercase; text-align:center; color:#fdf5ed; margin-bottom:8px;">Teams Are Full</h2>
     <p style="font-family:'Barlow Semi Condensed',sans-serif; text-align:center; color:#00b8e8; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:24px; animation: wsl-announcement-text-glow 1.6s ease-in-out infinite;">Free Agent Spots Left!</p>
     <div class="wsl-price-grid" style="grid-template-columns:1fr; max-width:340px;">
@@ -252,7 +257,10 @@
 
 <!-- Registration -->
 <div class="wsl-register">
-    {% if WALDY_LEAGUE_FULL %}
+    {% if WALDY_LEAGUE_FULL and WALDY_LEAGUE_FREE_AGENTS_CLOSED %}
+    <h2>Registration Closed</h2>
+    <p>All 6 teams are locked in and free agent spots are closed for this season. Follow along for the next one.</p>
+    {% elif WALDY_LEAGUE_FULL %}
     <h2>Free Agent Spots Left!</h2>
     <p>All 6 team spots are taken, but rosters still have open spots. Sign up as a free agent and we'll place you on a team.</p>
     <div class="wsl-register-options">

@@ -4,6 +4,17 @@ A running log of site changes made through Claude Code, most recent first.
 
 ---
 
+## 2026-09-14
+
+### Closed free agent registration for Waldy Street League (`myapp/context_processors.py`, `myapp/views.py`, `templates/waldy_league_register.html`, `templates/waldy_street_league.html`, `templates/leagues_hub.html`)
+New `WALDY_LEAGUE_FREE_AGENTS_CLOSED` flag (site-wide via context processor). With both the 6-team cap and this flag set, the free-agent POST path in `waldy_league_register` now rejects new signups with an error message instead of silently accepting them (it previously had no gate at all, even when teams were full). All "Free Agent Spots Left!" messaging across the registration page, the Street League page (hero CTA, pricing, registration section), and the leagues hub card now shows "Registration Closed" instead — the leagues hub card stays clickable (links to the league page to view standings/schedule) but uses the dimmed `league-card-full` styling.
+
+### Added reusable Matchday schedule system + Matchday 2 (`myapp/views.py`, `myapp/urls.py`, `templates/waldy_league_matchday_schedule.html`)
+Built a full 5-week round-robin for the 6 teams, derived from Matchday 1's actual results, so every team plays every other exactly once across the season with zero repeat matchups. New generic view serves any matchday number via `/leagues/waldy-street-league/matchday/<number>/`, reusing Matchday 1's visual design — future weeks just need a data update, not a new template. Iterated on Matchday 2's exact pairings/times per request (final: Cider-Geniesser vs Ivory Toast 6:20, Los Bandidos vs Tylenol Team 7:05, Arse N' All vs Strangers United 7:50), which also required recomputing Matchdays 3-5 to keep the whole season repeat-free.
+
+### Switched matchday game format to 14-min halves (`myapp/views.py`, `templates/waldy_league_matchday_schedule.html`)
+30-min games (14+14 plus 2-min halftime) with a 15-min gap between games — works out to the same 45-min slot cadence as before. New start time is 6:20 PM with the last game ending 8:20 PM. Applies to all future matchdays since the times are a shared constant.
+
 ## 2026-09-13
 
 ### Added: tournament 6-team cap logic with a Confirmed/Waitlisted system (`myapp/models.py`, `myapp/views.py`, `myapp/admin.py`, migration `0032`)

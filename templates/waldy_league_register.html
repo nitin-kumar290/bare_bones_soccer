@@ -19,14 +19,21 @@
         {% endif %}
 
         <p class="wlr-eyebrow">Waldy Street League</p>
-        <h1 class="wlr-title">{% if teams_full %}Free Agent Spots Left!{% else %}Register{% endif %}</h1>
-        {% if teams_full %}
+        <h1 class="wlr-title">{% if teams_full and WALDY_LEAGUE_FREE_AGENTS_CLOSED %}Registration Closed{% elif teams_full %}Free Agent Spots Left!{% else %}Register{% endif %}</h1>
+        {% if teams_full and WALDY_LEAGUE_FREE_AGENTS_CLOSED %}
+        <p style="font-family:'Barlow Semi Condensed',sans-serif; font-style:italic; font-size:0.85rem; text-align:center; color:rgba(253,245,237,0.6); margin:6px 0 0;">All 6 teams are locked in and free agent spots are closed for this season</p>
+        {% elif teams_full %}
         <p style="font-family:'Barlow Semi Condensed',sans-serif; font-style:italic; font-size:0.85rem; text-align:center; color:#00b8e8; margin:6px 0 0; animation: wsl-announcement-text-glow 1.6s ease-in-out infinite;">All 6 teams are registered &mdash; free agent spots still open</p>
         {% else %}
         <p style="font-family:'Barlow Semi Condensed',sans-serif; font-style:italic; font-size:0.8rem; text-align:center; color:rgba(253,245,237,0.6); margin:2px 0 0;">*Starts September 9th*</p>
         {% endif %}
         <div class="wlr-rule"></div>
 
+        {% if teams_full and WALDY_LEAGUE_FREE_AGENTS_CLOSED %}
+        <div class="wlr-card" style="text-align:center;">
+            <p style="font-family:'Barlow Semi Condensed',sans-serif; color:#fdf5ed; font-size:1.05rem; margin:0;">Registration for this season is closed. Follow along for the next Waldy Street League season.</p>
+        </div>
+        {% else %}
         <div class="wlr-card">
             <form method="POST" id="registerForm">
                 {% csrf_token %}
@@ -119,6 +126,7 @@
                 <p class="wlr-fine-print">No refunds once the season starts, unless the league disbands or internal player issue resolved with league admin.</p>
             </form>
         </div>
+        {% endif %}
     </div>
 </div>
 

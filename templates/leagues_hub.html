@@ -106,7 +106,27 @@
 <div class="leagues-grid-bg">
     <div class="leagues-grid">
 
-        {% if WALDY_LEAGUE_FULL %}
+        {% if WALDY_LEAGUE_FULL and WALDY_LEAGUE_FREE_AGENTS_CLOSED %}
+        <a href="{% url 'waldy_street_league' %}" class="league-card-featured league-card-full">
+            <div class="league-card-media">
+                <span class="league-card-badge league-card-badge-full">Registration Closed</span>
+                <video autoplay muted loop playsinline preload="metadata">
+                    <source src="https://bare-bones-soccer.s3.amazonaws.com/images/Waldyjo.mp4" type="video/mp4">
+                </video>
+            </div>
+            <div class="league-card-body">
+                <h2>Waldy Street League at The Lot</h2>
+                <p>4v4 street soccer in a cidery parking lot. 7-8 week season, full playoff bracket, food & drinks, patio hangouts every week.</p>
+                <div class="league-card-meta">
+                    <span><i class="fas fa-venus-mars"></i> Coed</span>
+                    <span><i class="fas fa-map-marker-alt"></i> Waldschänke &middot; The Lot</span>
+                    <span><i class="fas fa-calendar"></i> Wednesdays</span>
+                    <span><i class="fas fa-clock"></i> 6:20&ndash;8:20 PM</span>
+                </div>
+                <span class="league-card-cta">View League Details</span>
+            </div>
+        </a>
+        {% elif WALDY_LEAGUE_FULL %}
         <a href="{% url 'waldy_league_register' %}" class="league-card-featured">
             <div class="league-card-media">
                 <span class="league-card-badge">FREE AGENT SPOTS LEFT!</span>
