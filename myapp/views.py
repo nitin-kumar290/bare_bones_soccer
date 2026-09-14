@@ -711,23 +711,23 @@ WALDY_LEAGUE_ROUND_ROBIN = [
     ],
     [  # Matchday 2
         ('Cider-Genießer', 'Ivory Toast FC'),
-        ('Los Bandidos FC', 'Arse N’ All'),
-        ('Strangers United FC', 'Tylenol Team'),
-    ],
-    [  # Matchday 3
         ('Los Bandidos FC', 'Tylenol Team'),
-        ('Arse N’ All', 'Ivory Toast FC'),
-        ('Strangers United FC', 'Cider-Genießer'),
-    ],
-    [  # Matchday 4
-        ('Los Bandidos FC', 'Ivory Toast FC'),
-        ('Tylenol Team', 'Cider-Genießer'),
         ('Arse N’ All', 'Strangers United FC'),
     ],
-    [  # Matchday 5
+    [  # Matchday 3
+        ('Tylenol Team', 'Strangers United FC'),
         ('Los Bandidos FC', 'Cider-Genießer'),
-        ('Ivory Toast FC', 'Strangers United FC'),
+        ('Arse N’ All', 'Ivory Toast FC'),
+    ],
+    [  # Matchday 4
+        ('Tylenol Team', 'Cider-Genießer'),
+        ('Strangers United FC', 'Ivory Toast FC'),
+        ('Los Bandidos FC', 'Arse N’ All'),
+    ],
+    [  # Matchday 5
         ('Tylenol Team', 'Arse N’ All'),
+        ('Los Bandidos FC', 'Ivory Toast FC'),
+        ('Cider-Genießer', 'Strangers United FC'),
     ],
 ]
 WALDY_LEAGUE_MATCHDAY_TIMES = ['6:30', '7:15', '8:00']
