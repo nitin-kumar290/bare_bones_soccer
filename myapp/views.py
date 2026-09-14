@@ -710,9 +710,9 @@ WALDY_LEAGUE_ROUND_ROBIN = [
         ('Ivory Toast FC', 'Tylenol Team'),
     ],
     [  # Matchday 2
+        ('Cider-Genießer', 'Ivory Toast FC'),
         ('Los Bandidos FC', 'Arse N’ All'),
         ('Strangers United FC', 'Tylenol Team'),
-        ('Cider-Genießer', 'Ivory Toast FC'),
     ],
     [  # Matchday 3
         ('Los Bandidos FC', 'Tylenol Team'),
