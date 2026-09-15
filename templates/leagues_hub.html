@@ -98,6 +98,17 @@
     50% { box-shadow: 0 4px 22px rgba(0,184,232,0.9), 0 0 16px rgba(0,184,232,0.6); }
 }
 .league-card-cta-glow { animation: league-cta-glow 1.8s ease-in-out infinite; }
+
+@keyframes league-discount-glow {
+    0%, 100% { box-shadow: 0 4px 14px rgba(232,163,61,0.3); }
+    50% { box-shadow: 0 4px 22px rgba(232,163,61,0.9), 0 0 16px rgba(232,163,61,0.6); }
+}
+.league-card-discount-cta {
+    display:block; width:fit-content; margin:0 auto 10px;
+    background: linear-gradient(135deg, #e8a33d 0%, #7a4a0a 100%); color:#08070b;
+    animation: league-discount-glow 1.8s ease-in-out infinite;
+}
+.league-card-discount-cta:hover { color:#08070b; }
 </style>
 
 <div class="leagues-hero-break"></div>
@@ -177,7 +188,7 @@
         {% endif %}
 
         <!-- Denver Footy League at Soccer Post — external LeagueApps registration, no internal page yet -->
-        <a href="https://denverfooty.leagueapps.com/leagues/soccer-(indoor)/5141440-2026-fall--thursdays--denver-soccer-post--6v6-coed--p3" target="_blank" rel="noopener" class="league-card-featured">
+        <div class="league-card-featured">
             <div class="league-card-media">
                 <span class="league-card-badge">New &middot; Now Registering</span>
                 <video autoplay muted loop playsinline preload="metadata">
@@ -194,9 +205,10 @@
                     <span><i class="fas fa-calendar"></i> Thursdays</span>
                     <span><i class="fas fa-clock"></i> 6:30&ndash;9:00 PM</span>
                 </div>
-                <span class="league-card-cta league-card-cta-glow">REGISTER TODAY!</span>
+                <a href="https://www.denverfooty.com/" target="_blank" rel="noopener" class="league-card-cta league-card-discount-cta">20% DISCOUNT CODE!</a>
+                <a href="https://denverfooty.leagueapps.com/leagues/soccer-(indoor)/5141440-2026-fall--thursdays--denver-soccer-post--6v6-coed--p3" target="_blank" rel="noopener" class="league-card-cta league-card-cta-glow">REGISTER TODAY!</a>
             </div>
-        </a>
+        </div>
 
     </div>
 </div>

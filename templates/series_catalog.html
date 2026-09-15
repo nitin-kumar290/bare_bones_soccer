@@ -89,25 +89,24 @@
 
         <!-- Denver Footy League at Soccer Post Card — external LeagueApps registration -->
         <div class="col">
-            <a href="https://denverfooty.leagueapps.com/leagues/soccer-(indoor)/5141440-2026-fall--thursdays--denver-soccer-post--6v6-coed--p3" target="_blank" rel="noopener" class="text-decoration-none">
-                <div class="card h-100 video-bg-card hover-card">
-                    <video autoplay muted loop playsinline preload="metadata" class="card-bg-video">
-                        <source src="https://bare-bones-soccer.s3.amazonaws.com/videos/SoccerPostFull.mp4" type="video/mp4">
-                    </video>
-                    <div class="card-bg-overlay"></div>
-                    <div class="card-body text-center" style="position:relative; z-index:2; display:flex; flex-direction:column;">
-                        <div class="mb-4">
-                            <h3 class="card-title" style="color:#fdf5ed;">Footy League at Soccer Post</h3>
-                        </div>
-                        <ul class="list-unstyled mb-4" style="color:rgba(253,245,237,0.85);">
-                            <li><i class="fas fa-map-marker-alt me-2"></i>Soccer Post Denver</li>
-                            <li><i class="fas fa-calendar me-2"></i>Starts October 1 &middot; Thursdays</li>
-                            <li><i class="fas fa-clock me-2"></i>6:30 PM - 9:00 PM</li>
-                        </ul>
-                        <div class="btn btn-light btn-lg w-100 fw-bold glow-cta" style="margin-top:auto;">REGISTER TODAY!</div>
+            <div class="card h-100 video-bg-card hover-card">
+                <video autoplay muted loop playsinline preload="metadata" class="card-bg-video">
+                    <source src="https://bare-bones-soccer.s3.amazonaws.com/videos/SoccerPostFull.mp4" type="video/mp4">
+                </video>
+                <div class="card-bg-overlay"></div>
+                <div class="card-body text-center" style="position:relative; z-index:2; display:flex; flex-direction:column;">
+                    <div class="mb-4">
+                        <h3 class="card-title" style="color:#fdf5ed;">Footy League at Soccer Post</h3>
                     </div>
+                    <ul class="list-unstyled mb-4" style="color:rgba(253,245,237,0.85);">
+                        <li><i class="fas fa-map-marker-alt me-2"></i>Soccer Post Denver</li>
+                        <li><i class="fas fa-calendar me-2"></i>Starts October 1 &middot; Thursdays</li>
+                        <li><i class="fas fa-clock me-2"></i>6:30 PM - 9:00 PM</li>
+                    </ul>
+                    <a href="https://www.denverfooty.com/" target="_blank" rel="noopener" class="btn btn-lg w-100 fw-bold discount-cta mb-2">20% DISCOUNT CODE!</a>
+                    <a href="https://denverfooty.leagueapps.com/leagues/soccer-(indoor)/5141440-2026-fall--thursdays--denver-soccer-post--6v6-coed--p3" target="_blank" rel="noopener" class="btn btn-light btn-lg w-100 fw-bold glow-cta" style="margin-top:auto;">REGISTER TODAY!</a>
                 </div>
-            </a>
+            </div>
         </div>
 
         <!-- Sports Stable Card -->
@@ -313,6 +312,16 @@
         50% { box-shadow: 0 4px 22px rgba(0,184,232,0.95), 0 0 18px rgba(0,184,232,0.6); }
     }
     .glow-cta { animation: catalog-cta-glow 1.8s ease-in-out infinite; }
+
+    @keyframes discount-cta-glow {
+        0%, 100% { box-shadow: 0 4px 14px rgba(232,163,61,0.4); }
+        50% { box-shadow: 0 4px 22px rgba(232,163,61,0.95), 0 0 18px rgba(232,163,61,0.6); }
+    }
+    .discount-cta {
+        background: linear-gradient(135deg, #e8a33d 0%, #7a4a0a 100%); color:#08070b;
+        animation: discount-cta-glow 1.8s ease-in-out infinite;
+    }
+    .discount-cta:hover { color:#08070b; }
 
     body { background: #fdf5ed; }
 </style>
