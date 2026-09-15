@@ -15,7 +15,7 @@ def stage_info(request):
 
 
 WALDY_LEAGUE_TEAM_CAP = 6
-WALDY_LEAGUE_FREE_AGENTS_CLOSED = True
+WALDY_LEAGUE_FREE_AGENTS_CLOSED = False
 
 
 def league_status(request):
