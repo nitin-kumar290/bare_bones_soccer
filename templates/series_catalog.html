@@ -81,7 +81,7 @@
                             <li><i class="fas fa-calendar me-2"></i>October 2, 2026</li>
                             <li><i class="fas fa-futbol me-2"></i>3v3 &middot; Coed</li>
                         </ul>
-                        <div class="btn btn-light btn-lg w-100 fw-bold" style="margin-top:auto;">REGISTER TODAY!</div>
+                        <div class="btn catalog-cta fw-bold" style="margin-top:auto;">REGISTER TODAY!</div>
                     </div>
                 </div>
             </a>
@@ -103,8 +103,8 @@
                         <li><i class="fas fa-calendar me-2"></i>Starts October 1 &middot; Thursdays</li>
                         <li><i class="fas fa-clock me-2"></i>6:30 PM - 9:00 PM</li>
                     </ul>
-                    <a href="https://www.denverfooty.com/" target="_blank" rel="noopener" class="btn btn-lg w-100 fw-bold discount-cta mb-2">20% DISCOUNT CODE!</a>
-                    <a href="https://denverfooty.leagueapps.com/leagues/soccer-(indoor)/5141440-2026-fall--thursdays--denver-soccer-post--6v6-coed--p3" target="_blank" rel="noopener" class="btn btn-light btn-lg w-100 fw-bold glow-cta" style="margin-top:auto;">REGISTER TODAY!</a>
+                    <a href="https://www.denverfooty.com/" target="_blank" rel="noopener" class="btn catalog-cta fw-bold discount-cta mb-2">20% DISCOUNT CODE!</a>
+                    <a href="https://denverfooty.leagueapps.com/leagues/soccer-(indoor)/5141440-2026-fall--thursdays--denver-soccer-post--6v6-coed--p3" target="_blank" rel="noopener" class="btn catalog-cta fw-bold glow-cta" style="margin-top:auto;">REGISTER TODAY!</a>
                 </div>
             </div>
         </div>
@@ -126,7 +126,7 @@
                             <li><i class="fas fa-calendar me-2"></i>Monday Nights</li>
                             <li><i class="fas fa-clock me-2"></i>6:15 PM - 8:15 PM</li>
                         </ul>
-                        <div class="btn btn-light btn-lg w-100 fw-bold" style="margin-top:auto;">View Schedule</div>
+                        <div class="btn catalog-cta fw-bold" style="margin-top:auto;">View Schedule</div>
                     </div>
                 </div>
             </a>
@@ -312,6 +312,13 @@
         50% { box-shadow: 0 4px 22px rgba(0,184,232,0.95), 0 0 18px rgba(0,184,232,0.6); }
     }
     .glow-cta { animation: catalog-cta-glow 1.8s ease-in-out infinite; }
+    .catalog-cta {
+        display:inline-block; width:fit-content; background: linear-gradient(135deg, #00b8e8 0%, #290a44 100%); color:#fdf5ed;
+        font-family:'Oswald',sans-serif; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; font-size:0.78rem;
+        padding:10px 24px; border-radius:50px; border:none;
+        box-shadow: 0 4px 14px rgba(0,184,232,0.25);
+    }
+    .catalog-cta:hover { color:#fdf5ed; }
 
     @keyframes discount-cta-glow {
         0%, 100% { box-shadow: 0 4px 14px rgba(232,163,61,0.4); }
