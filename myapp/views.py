@@ -160,7 +160,12 @@ def contact(request):
             <p><strong>Email:</strong> {form.cleaned_data['email']}</p>
             <p><strong>Message:</strong> {form.cleaned_data['message']}</p>
             """
-            send_email_ses('soccerbarebones@gmail.com', subject, message)
+            try:
+                email = EmailMessage(subject, message, settings.EMAIL_HOST_USER, ['soccerbarebones@gmail.com'])
+                email.content_subtype = "html"
+                email.send()
+            except Exception:
+                logger.exception("Failed to send contact form notification email")
 
             messages.success(request, "Thank you for contacting us! Your message has been received.")
             return redirect('contact')
