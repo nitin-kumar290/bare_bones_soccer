@@ -4,6 +4,14 @@ A running log of site changes made through Claude Code, most recent first.
 
 ---
 
+## 2026-09-17
+
+### Re-closed free agent registration for Waldy Street League (`myapp/context_processors.py`)
+Briefly reopened on 9/15, closed again per decision — flipped `WALDY_LEAGUE_FREE_AGENTS_CLOSED` back to `True`.
+
+### Swapped site-wide announcement bar to the new 6v6 indoor league (`templates/base.html`)
+Replaced the Backyard 3v3 Tournament promo with the new 6v6 co-ed indoor league (partnered with Soccer Post Denver), same glowing-text treatment as before. Reads "⚽ NEW 6V6 CO-ED INDOOR LEAGUE — STARTS OCTOBER 1ST" with a glowing "REGISTER TODAY!" CTA, linking straight to the LeagueApps registration page.
+
 ## 2026-09-14
 
 ### Closed free agent registration for Waldy Street League (`myapp/context_processors.py`, `myapp/views.py`, `templates/waldy_league_register.html`, `templates/waldy_street_league.html`, `templates/leagues_hub.html`)
