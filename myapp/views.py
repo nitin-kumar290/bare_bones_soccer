@@ -498,6 +498,7 @@ def events(request):
             'event': next_event,
             'gallery_images': next_event.images.all(),
             'event_image_url': next_event.image.url if next_event.image else None,
+            'tournament_registration_closed': next_event.title == 'Backyard 3v3 Tournament' and TOURNAMENT_REGISTRATION_CLOSED,
         })
 
     seen_urls = set()

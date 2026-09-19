@@ -20,7 +20,9 @@
 <div class="evt-hero-overlay text-center">
     <h1 class="evt-hero-title">{{ event.title }}</h1>
     {% if event.subtitle %}<p class="evt-hero-sub">{{ event.subtitle }}</p>{% endif %}
-    {% if event.registration_url %}
+    {% if tournament_registration_closed %}
+    <span class="evt-soon-badge">Registration Closed — Teams Filled</span>
+    {% elif event.registration_url %}
     {% if event.registration_deadline_note %}<p class="evt-hero-deadline">{{ event.registration_deadline_note }}</p>{% endif %}
     <a href="{{ event.registration_url }}" class="evt-hero-btn">Register Now!</a>
     {% else %}
@@ -230,13 +232,17 @@
     <h2 style="font-family:'Oswald',sans-serif; font-weight:700; text-transform:uppercase; letter-spacing:1px; text-align:center; color:#08070b; margin-bottom:6px;">Tournament Structure</h2>
     {% if event.schedule_note %}<p class="evt-schedule-note">{{ event.schedule_note }}</p>{% endif %}
     <div class="evt-schedule-card">
-        <div class="evt-schedule-row"><span class="label">Team Limit</span><span class="desc">⚠️ 6-Team Cap</span></div>
+        <div class="evt-schedule-row"><span class="label">Team Limit</span><span class="desc">⚠️ 6-Team Cap{% if tournament_registration_closed %} — Filled{% endif %}</span></div>
         {% for row in event.schedule_rows.all %}
         <div class="evt-schedule-row"><span class="label">{{ row.label }}</span><span class="desc">{{ row.description }}</span></div>
         {% endfor %}
     </div>
     <div class="evt-cap-disclaimer">
+        {% if tournament_registration_closed %}
+        ⚠️ TOURNAMENT IS FULL — ALL 6 TEAM SPOTS HAVE BEEN FILLED. REGISTRATION IS CLOSED.
+        {% else %}
         ⚠️ TOURNAMENT CAPPED AT 6 TEAMS. A TEAM'S SPOT ISN'T SECURED UNTIL IT REACHES 3 PAID PLAYERS. SPOTS GO TO WHOEVER HITS 3 FIRST, NOT BY REGISTRATION ORDER. IF A TEAM DOESN'T REACH 3 PLAYERS IN TIME, ALL ITS PLAYERS WILL BE REFUNDED.
+        {% endif %}
     </div>
     <p class="evt-prize-note">🏆 PRIZE: TBD</p>
     {% if event.team_structure_note %}
@@ -298,7 +304,11 @@
 
 <!-- Registration -->
 <div class="evt-register" id="register">
-    {% if event.registration_url %}
+    {% if tournament_registration_closed %}
+    <h2>Registration Closed</h2>
+    <p>All 6 team spots have been filled. Follow along for the next tournament.</p>
+    <span class="evt-register-btn soon">Teams Filled</span>
+    {% elif event.registration_url %}
     <h2>Ready to Play?</h2>
     {% if event.registration_note %}<p>{{ event.registration_note }}</p>{% endif %}
     <a href="{{ event.registration_url }}" class="evt-register-btn primary">Register Now!</a>
