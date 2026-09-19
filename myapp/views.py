@@ -1681,6 +1681,7 @@ TOURNAMENT_PRICE = 20
 TOURNAMENT_ROSTER_CAP = 6
 TOURNAMENT_TEAM_CAP = 6
 TOURNAMENT_MIN_PLAYERS = 3
+TOURNAMENT_REGISTRATION_CLOSED = True
 
 
 def finalize_tournament_team_status(request, team):
@@ -1785,6 +1786,8 @@ def send_tournament_team_status_email(request, team):
 
 @login_required
 def backyard_tournament_register(request):
+    if TOURNAMENT_REGISTRATION_CLOSED:
+        return render(request, 'backyard_tournament_register.html', {'registration_closed': True})
     if request.method == 'POST':
         registration_type = request.POST.get('registration_type', 'individual')
         post_data = request.POST.copy()

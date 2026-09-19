@@ -25,10 +25,15 @@
         {% endif %}
 
         <p class="wlr-eyebrow">Backyard 3v3 Tournament</p>
-        <h1 class="wlr-title">Register</h1>
+        <h1 class="wlr-title">{% if registration_closed %}Registration Closed{% else %}Register{% endif %}</h1>
         <p style="font-family:'Barlow Semi Condensed',sans-serif; font-style:italic; font-size:0.8rem; text-align:center; color:rgba(253,245,237,0.6); margin:2px 0 0;">*October 2, 2026 &middot; Insight Soccer Training*</p>
         <div class="wlr-rule"></div>
 
+        {% if registration_closed %}
+        <div class="wlr-card" style="text-align:center;">
+            <p style="font-family:'Barlow Semi Condensed',sans-serif; color:#fdf5ed; font-size:1.05rem; margin:0;">Registration for this tournament is closed. Follow along for the next one.</p>
+        </div>
+        {% else %}
         <div class="wlr-card">
             <form method="POST" id="registerForm">
                 {% csrf_token %}
@@ -89,6 +94,7 @@
                 <p class="wlr-fine-print">No refunds after October 2nd, unless the tournament is cancelled or an internal issue is resolved with tournament admin.</p>
             </form>
         </div>
+        {% endif %}
     </div>
 </div>
 
