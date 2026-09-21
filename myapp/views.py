@@ -197,12 +197,20 @@ def pickup_temp(request):
 #         form = UserRegistrationForm()
 #     return render(request, 'register.html', {'form': form})
 
+SAFE_NEXT_PATTERNS = (
+    '/leagues/waldy-street-league/claim/',
+    '/leagues/waldy-street-league/join/',
+    '/backyard-tournament/join/',
+)
+
+
 def register(request):
-    # Only ever carry `next` through account creation for the league claim-confirmation
-    # flow specifically — not for team registration or any other page, so a curious click
-    # into the league doesn't accidentally dump a brand-new user onto "Create Your Team".
+    # Only ever carry `next` through account creation for a small whitelist of "finish
+    # what you started" flows (claiming a named prepay slot, or paying to join a team via
+    # invite link) — not for team registration or any other page, so a curious click into
+    # the league doesn't accidentally dump a brand-new user onto "Create Your Team".
     raw_next = request.POST.get('next') or request.GET.get('next', '')
-    next_url = raw_next if '/leagues/waldy-street-league/claim/' in raw_next else ''
+    next_url = raw_next if any(p in raw_next for p in SAFE_NEXT_PATTERNS) else ''
     if request.method == 'POST':
         user_form = UserRegistrationForm(request.POST)
         profile_form = PlayerProfileForm(request.POST)
@@ -373,7 +381,7 @@ def activate(request, uidb64, token):
 
         login(request, user)
         next_url = request.GET.get('next', '')
-        if '/leagues/waldy-street-league/claim/' in next_url:
+        if any(p in next_url for p in SAFE_NEXT_PATTERNS):
             return redirect(next_url)
         return redirect('welcome_next_steps')
     else:
