@@ -201,6 +201,7 @@ SAFE_NEXT_PATTERNS = (
     '/leagues/waldy-street-league/claim/',
     '/leagues/waldy-street-league/join/',
     '/backyard-tournament/join/',
+    '/backyard-tournament/claim/',
 )
 
 
