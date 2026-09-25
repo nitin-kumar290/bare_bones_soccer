@@ -9,7 +9,7 @@ from django.utils.html import escape
 from myapp.models import EmailUnsubscribe, LeagueTeamPlayer
 from myapp.views import TOURNAMENT_LEAGUE_NAME
 
-SUBJECT = "Backyard 3v3 Tournament — Friday, October 2nd, first game at 6:30 PM"
+SUBJECT = "Reminder: Backyard 3v3 Tournament — Friday, October 2nd, first game at 6:30 PM"
 TEMPLATE_PATH = Path(settings.BASE_DIR) / 'email_templates' / 'tournament_reminder_oct2.html'
 MISTYPED_TLDS = ('.con', '.cmo', '.vom')
 
