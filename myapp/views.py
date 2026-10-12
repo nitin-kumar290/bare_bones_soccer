@@ -744,6 +744,11 @@ WALDY_LEAGUE_ROUND_ROBIN = [
         ('Los Bandidos FC', 'Arse N’ All'),
         ('Cider-Genießer', 'Tylenol Team'),
     ],
+    [  # Matchday 6 — rematch week, mirrors Matchday 1's pairings
+        ('Los Bandidos FC', 'Strangers United FC'),
+        ('Cider-Genießer', 'Arse N’ All'),
+        ('Ivory Toast FC', 'Tylenol Team'),
+    ],
 ]
 WALDY_LEAGUE_MATCHDAY_TIMES = ['6:20', '7:05', '7:50']
 
