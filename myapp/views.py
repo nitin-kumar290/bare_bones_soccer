@@ -795,12 +795,12 @@ def waldy_street_league(request):
 
 # Standings are hand-updated here after each Matchday — no results model exists yet.
 WALDY_LEAGUE_STANDINGS = [
-    {'team_name': 'Los Bandidos FC', 'gp': 4, 'gf': 17, 'ga': 40, 'pts': 0},
-    {'team_name': 'Tylenol Team', 'gp': 4, 'gf': 37, 'ga': 10, 'pts': 9},
-    {'team_name': 'Arse N’ All', 'gp': 4, 'gf': 29, 'ga': 37, 'pts': 3},
-    {'team_name': 'Cider-Genießer', 'gp': 4, 'gf': 39, 'ga': 20, 'pts': 12},
-    {'team_name': 'Ivory Toast FC', 'gp': 4, 'gf': 19, 'ga': 31, 'pts': 6},
-    {'team_name': 'Strangers United FC', 'gp': 4, 'gf': 30, 'ga': 33, 'pts': 6},
+    {'team_name': 'Los Bandidos FC', 'gp': 5, 'gf': 24, 'ga': 48, 'pts': 0},
+    {'team_name': 'Tylenol Team', 'gp': 5, 'gf': 47, 'ga': 16, 'pts': 12},
+    {'team_name': 'Arse N’ All', 'gp': 5, 'gf': 37, 'ga': 44, 'pts': 6},
+    {'team_name': 'Cider-Genießer', 'gp': 5, 'gf': 45, 'ga': 30, 'pts': 12},
+    {'team_name': 'Ivory Toast FC', 'gp': 5, 'gf': 27, 'ga': 42, 'pts': 6},
+    {'team_name': 'Strangers United FC', 'gp': 5, 'gf': 41, 'ga': 41, 'pts': 9},
 ]
 
 
